@@ -1,0 +1,45 @@
+:root {
+    --folder-color: #f4a261;
+    --file-color: #88a19e;
+    --folder-hover-color: #bd623c;
+    --file-hover-color: #2a9d8f;
+}
+.tree-pane {
+    display: flex;
+    flex-direction: column;
+}
+
+.tree-head {
+    flex: 0 0 25px;
+}
+.tree-body {
+    flex: 1;
+}
+
+.tree-head {
+    display: flex; gap: 0; width: 100%; margin:0; padding: 0 0 0 3px; background-color: white;
+}
+.tree-head .link { padding: 2px; color: #f4a261; cursor: pointer;}
+.tree-head .link:hover { transform: scale(1.2); color: #bd623c;}
+
+.tree-item {
+    display: flex;
+    width: 100%;
+    padding: 0 5px 0 5px;
+    box-sizing: border-box;
+}
+.tree-item.selected {
+    background-color: #bfd2e3;
+}
+
+.tree-item .depth { flex: 0 0 13px; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+.tree-item .nm { flex: 1 1 auto; display: flex; text-align: left; }
+.tree-item .nm .icon { flex: 0 0 18px; cursor: pointer;}
+.tree-item .nm .label { cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+
+
+
+.fa-folder-plus { color: var(--folder-color); margin-right: 5px;}
+.fa-folder-plus:hover { transform: var(--scale); color: var(--folder-hover-color); }
+.fa-file { color: var(--file-color); margin-right: 5px;}
+.fa-file:hover { transform: var(--scale); color: var(--file-hover-color);}
