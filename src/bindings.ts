@@ -52,6 +52,22 @@ async getDisks() : Promise<Result<DiskInfo[], ApiError>> {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+async loadTab() : Promise<Result<TabJson, ApiError>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("load_tab") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async saveTab(json: TabJson) : Promise<Result<null, ApiError>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("save_tab", { json }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
 }
 }
 
@@ -76,6 +92,7 @@ export type OrdItem = { nm: OrderBy; asc: OrderAsc }
 export type OrderAsc = "Asc" | "Desc"
 export type OrderBy = "Dir" | "Nm" | "Sz" | "Tm" | "Mt" | "Ext"
 export type ServInfo = { id: string; ip: string; port: number; path: string }
+export type TabJson = { items: string[] }
 
 /** tauri-specta globals **/
 

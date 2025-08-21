@@ -9,8 +9,7 @@ mod err;
 mod utils;
 mod http_server_api;
 mod dir_api;
-
-
+mod tab_api;
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 
 
@@ -30,6 +29,8 @@ pub fn run() {
         dir_api::read_folder,
         dir_api::get_home_dir,
         dir_api::get_disks,
+        tab_api::load_tab,
+        tab_api::save_tab,
     ]);
 
     #[cfg(debug_assertions)]

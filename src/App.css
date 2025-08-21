@@ -1,26 +1,59 @@
 @import 'resizer.css';
-@import 'components/tree/tree.css';
 :root {
-  --selected-color: #f4a261;
-  --selected-color2: #2a9d8f;
-  --hover-color: #bd623c;
+  --folder-color: #f4a261;
+  --file-color: #88a19e;
+  --folder-hover-color: #bd623c;
+  --file-hover-color: #2a9d8f;
+  --inactive-color: #999999;
   --scale: scale(1.3);
+}
+
+.ellipsis-start {
+  direction: rtl;
+  text-align: left;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 html, body, #root, .container {
   padding: 0;
   margin: 0;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
   box-sizing: border-box;
-  width: 100%;
-  height: 100%;
 }
-.main-pane {
 
+
+.main-pane {
   width: 100%;
   height: 100%;
-
-  /*font-family: 'Consolas', 'Courier New', monospace;*/
+  margin: 0;
   font-size: 0.8em;
+  box-sizing: border-box;
+}
+
+.SplitPane {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.Pane2 {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .tree-pane {
@@ -30,8 +63,12 @@ html, body, #root, .container {
 
 
 .content-pane {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   height: 100%;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .md-view {
@@ -42,3 +79,37 @@ html, body, #root, .container {
 .w-md-editor-preview {
   /*display: none !important;*/
 }
+
+.content-head {
+  display: flex;
+  width: 100%;
+  height: 25px;
+  padding: 0 0 0 5px;
+  background-color: white;
+  box-sizing: border-box;
+}
+
+
+
+
+
+.content-head .title-path { display: flex; align-items: center; width: 100%; height: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.content-head .title-path .icon { padding: 0; cursor: pointer; width: 18px;}
+.content-head .title-path .part-list { display: flex; cursor: pointer; }
+.content-head .title-path .part-list:hover { cursor: pointer; background-color: #bfd2e3}
+
+
+.fa-rocket {color: var(--folder-color); margin-right: 5px;}
+.fa-rocket:hover {transform: var(--scale); color: var(--folder-hover-color);}
+.fa-arrow-up {color: var(--folder-color); margin-right: 5px;}
+.fa-arrow-up:hover {transform: var(--scale); color: var(--folder-hover-color)}
+.fa-file {color: var(--file-color); margin-right: 5px;}
+.fa-file:hover {transform: var(--scale); color: var(--file-hover-color)}
+.fa-folder {color: var(--folder-color); margin-right: 5px;}
+.fa-folder:hover {transform: var(--scale); color: var(--folder-hover-color)}
+.fa-up-down-left-right {color: var(--folder-color); margin-right: 5px;}
+.fa-up-down-left-right:hover {transform: var(--scale); color: var(--folder-hover-color)}
+
+.fa-star { color: var(--folder-color); margin-right: 5px;}
+.fa-star.inactive { color: var(--inactive-color); margin-right: 5px;}
+.fa-star:hover { transform: var(--scale); color: var(--folder-hover-color); }

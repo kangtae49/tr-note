@@ -5,6 +5,21 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
-    "opener:default"
+    "opener:default",
+    {
+      "identifier": "opener:allow-open-path",
+      "allow": [
+        { "path": "**/*" }
+      ]
+    },
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [
+        { "url": "*" }
+      ]
+    },
+    "opener:allow-reveal-item-in-dir",
+    "opener:allow-default-urls",
+    "core:webview:allow-internal-toggle-devtools"
   ]
 }

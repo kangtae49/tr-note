@@ -1,4 +1,5 @@
 import {useEffect, useRef, useState} from "react";
+import "./tree.css";
 import { FixedSizeList as List } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import TreeItemView from "@/components/tree/TreeItemView.tsx";
@@ -40,9 +41,9 @@ function TreePaneView() {
   }, [folderTreeRef, setFolderTree, setSelectedItem])
 
   useEffect(() => {
-    if (selectedItem) {
-      scrollToItem({ selectedItem, folderTree, folderTreeRef }).then()
-    }
+    // if (selectedItem) {
+    //   scrollToItem({ selectedItem, folderTree, folderTreeRef }).then()
+    // }
   }, [selectedItem]);
 
   return (

@@ -5,15 +5,20 @@ import {useEffect, useState} from "react";
 import {arrayMove, horizontalListSortingStrategy, SortableContext} from "@dnd-kit/sortable";
 import TabItemView from "@/components/tab/TabItemView.tsx";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
+import {TabItem, useTabItemsStore} from "@/components/tab/stores/tabItemsStore.ts";
+import "./tab.css"
+import {commands} from "@/bindings.ts";
 
-type TabItem = TreeItem;
 
 export default function TabView() {
-  const [tabItems, setTabItems] = useState<TabItem[]>([]);
+  // const [tabItems, setTabItems] = useState<TabItem[]>([]);
+  const tabItems = useTabItemsStore((state) => state.tabItems);
+  const setTabItems = useTabItemsStore((state) => state.setTabItems);
+
   const selectedTreeItem = useSelectedTreeItemStore((state) => state.selectedItem);
   const removeItem = (tabItem: TabItem) => {
     if (tabItems === undefined) return;
-    setTabItems(tabItems.filter((item: TabItem) => getItemId(item) !== getItemId(tabItem)));
+    setTabItems(tabItems.filter((item: TabItem) => item !== tabItem));
   }
 
   function handleDragStart(event: DragStartEvent) {
@@ -55,22 +60,47 @@ export default function TabView() {
   }
 
   function getItemId (item: TabItem) {
-    return item.full_path;
+    return item;
   }
 
   useEffect(() => {
-    if (selectedTreeItem == undefined) return;
-    if (selectedTreeItem.dir) return;
-    setTabItems([selectedTreeItem])
-  }, [selectedTreeItem])
+    if (tabItems == undefined) return;
+    commands.saveTab({
+      items: tabItems
+    }).then(res => {
+      if (res.status === "ok") {
+        console.log('saveTab success')
+      } else {
+        console.log('saveTab failed', res)
+      }
+    })
+  }, [tabItems])
+
+
+  useEffect(() => {
+    // load tab items
+    commands.loadTab().then(res => {
+      if (res.status === "ok") {
+        const tabJson = res.data;
+        setTabItems(tabJson.items);
+      } else {
+        console.log('loadTab failed', res)
+      }
+    })
+  }, [])
+
+  // useEffect(() => {
+  //   if (selectedTreeItem == undefined) return;
+  //   setTabItems([selectedTreeItem])
+  // }, [selectedTreeItem])
 
   return (
-    <div>
+    <div className="tab-view">
       <DndContext
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}>
         <SortableContainer id="target">
-          <div className="color-list">
+          <div className="tab-list">
             {(tabItems != undefined) && (
               <SortableContext items={tabItems.map(item => getItemId(item))} strategy={horizontalListSortingStrategy}>
                 {(tabItems).map((tabItem, _index: number) => {

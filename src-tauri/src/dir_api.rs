@@ -76,7 +76,6 @@ pub enum MetaType {
     Ext,
 }
 
-#[allow(dead_code)]
 #[derive(Type, Serialize, Deserialize, Clone, Eq, PartialEq, Hash, Debug)]
 pub enum OrderBy {
     Dir,
@@ -87,14 +86,12 @@ pub enum OrderBy {
     Ext,
 }
 
-#[allow(dead_code)]
 #[derive(Type, Serialize, Deserialize, Eq, Clone, PartialEq, Hash, Debug)]
 pub enum OrderAsc {
     Asc,
     Desc,
 }
 
-#[allow(dead_code)]
 #[derive(Type, Serialize, Deserialize, Eq, Clone, PartialEq, Hash, Debug)]
 pub enum HomeType {
     RootDir,
@@ -158,7 +155,6 @@ pub struct CacheVal {
     pub ordering: Vec<OrdItem>,
 }
 
-#[allow(dead_code)]
 #[skip_serializing_none]
 #[derive(Type, Serialize, Deserialize, Debug, Default)]
 pub struct Folder {
@@ -211,7 +207,6 @@ pub struct OptParams {
 }
 
 
-#[allow(dead_code)]
 #[derive(Type, Serialize, Deserialize, Clone, Debug)]
 pub struct Params {
     pub path_str: String,
@@ -254,7 +249,6 @@ impl Default for DirApi {
 
 impl DirApi {
 
-    #[allow(dead_code)]
     pub fn new() -> Self {
         DirApi {
             cache_folder: Cache::new(100),

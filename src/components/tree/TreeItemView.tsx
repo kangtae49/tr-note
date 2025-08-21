@@ -2,7 +2,6 @@ import React, {useCallback, useEffect, useState} from "react";
 import {commands} from "@/bindings.ts";
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import { faFolderPlus, faFile } from '@fortawesome/free-solid-svg-icons'
-import {useFoldMapStore} from "@/stores/foldMapStore.ts";
 import {getNthParent, toggleDirectory, TreeItem} from "@/components/tree/tree.ts";
 import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
@@ -23,13 +22,14 @@ function TreeItemView({treeItem, style}: Prop) {
 
   const clickIcon = async (treeItem?: TreeItem): Promise<void> => {
     console.log('click', treeItem)
-    if (folderTree) {
+    if (folderTree && treeItem) {
       if (treeItem?.dir) {
         await toggleDirectory({ treeItem })
         setFolderTree([...folderTree])
       } else {
-        clickLabel(treeItem)
+        await clickLabel(treeItem)
       }
+      setSelectedItem({...treeItem})
     }
   }
 
@@ -42,7 +42,7 @@ function TreeItemView({treeItem, style}: Prop) {
       await toggleDirectory({ treeItem: newTreeItem })
       setFolderTree([...folderTree]);
     }
-    setSelectedItem(newTreeItem)
+    setSelectedItem({...newTreeItem})
   }
 
   let fullPath = treeItem.full_path
@@ -55,7 +55,7 @@ function TreeItemView({treeItem, style}: Prop) {
   })
   const iconWidth = 18
   const nm_minus = TREE_DEPT_SIZE * pathList.length + iconWidth
-  const classNameSelected = treeItem == selectedItem ? 'selected' : ''
+  const classNameSelected = treeItem.full_path == selectedItem?.full_path ? 'selected' : ''
   const icon_style = { flex: `0 0 ${iconWidth}px` }
   const nm_style = {
     width: `calc(100% - ${nm_minus}px)`

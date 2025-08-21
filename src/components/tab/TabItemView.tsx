@@ -1,17 +1,19 @@
 import {FontAwesomeIcon as Icon} from "@fortawesome/react-fontawesome";
-import {faFile, faCircleXmark} from "@fortawesome/free-solid-svg-icons";
+import {faUpDownLeftRight, faFile, faFolder, faCircleXmark} from "@fortawesome/free-solid-svg-icons";
 import {useSortable} from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities";
-import {TreeItem} from "@/components/tree/tree.ts";
+import {getShortName} from "@/components/tab/tab.ts";
+import {TabItem} from "@/components/tab/stores/tabItemsStore.ts";
+import {SEP} from "@/components/tree/tree.ts";
 
 type Props = {
-  item: TreeItem
-  removeItem: (item: TreeItem) => void
+  item: TabItem
+  removeItem: (item: TabItem) => void
 }
 
 function TabItemView({ item, removeItem }: Props) {
   const sortable = useSortable({
-    id: item.full_path,
+    id: item,
   });
   const mergedProps = {
     ...sortable.attributes,
@@ -22,6 +24,11 @@ function TabItemView({ item, removeItem }: Props) {
     transform: CSS.Translate.toString(sortable.transform),
   };
 
+  const clickTab = (item: TabItem) => {
+    console.log('clickTab', item);
+
+  }
+
   return (
     <div className="tab-item"
          ref={(node) => {
@@ -31,13 +38,18 @@ function TabItemView({ item, removeItem }: Props) {
       <div className="tab-icon"
            {...mergedProps}
       >
-        <Icon icon={faFile} />
+        <Icon icon={faUpDownLeftRight} />
+      </div>
+      <div className="tab-icon"
+        onClick={()=> clickTab(item)}
+      >
+        <Icon icon={item.endsWith(SEP) ? faFolder : faFile} />
       </div>
       <div className="tab-name"
-           {...mergedProps}
-           title={item.full_path || ""}
+           title={item}
+           onClick={()=> clickTab(item)}
       >
-        {item.nm || ""}
+        {getShortName(item)}
       </div>
       <div className="tab-close" onClick={() => removeItem(item)}>
         <Icon icon={faCircleXmark} />

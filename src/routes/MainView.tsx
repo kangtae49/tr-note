@@ -1,5 +1,4 @@
-import {useEffect, useState} from "react";
-import {commands} from "@/bindings.ts";
+import {useState} from "react";
 import {SplitPane} from "@rexxars/react-split-pane";
 import TreePaneView from "@/components/tree/TreePaneView.tsx";
 import ContentPaneView from "@/components/ContentPaneView.tsx";

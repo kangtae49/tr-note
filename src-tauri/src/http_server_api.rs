@@ -127,14 +127,12 @@ pub struct ServInfo {
 }
 
 
-#[allow(dead_code)]
 #[serde_as]
 #[derive(Type, Serialize, Deserialize, Clone, Debug)]
 pub enum HttpCmd {
     Refresh,
 }
 
-#[allow(dead_code)]
 #[skip_serializing_none]
 #[serde_as]
 #[derive(Type, Serialize, Deserialize, Clone, Debug)]
