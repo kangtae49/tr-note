@@ -1,6 +1,10 @@
 {
   "items": [
     {
+      "full_path": "C:\\sources\\tr-youtube\\README.md",
+      "dir": false
+    },
+    {
       "full_path": "C:\\Users\\kkt\\Downloads\\fontawesome-free-6.7.2-web\\svgs\\solid",
       "dir": true
     },

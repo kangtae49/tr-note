@@ -5,8 +5,7 @@ interface Props {
   item?: TreeItem
   sliderPos: { x: number; y: number }
 }
-function NoneView({ item, sliderPos }: Props) {
-  console.log(item);
+function NoneView({ item: _item, sliderPos }: Props) {
   return (
     <div className="none-view col"
          style={{ width: sliderPos.x, height: sliderPos.y }}>

@@ -1,4 +1,5 @@
 import {useEffect} from "react";
+import "@/components/directory.css"
 import { FixedSizeList as List } from 'react-window'
 import {fetchTreeItems, LIST_HEAD_SIZE, SLIDER_SIZE, SLIDER_STEP} from "@/components/tree/tree.ts";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";

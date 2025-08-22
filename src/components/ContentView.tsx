@@ -5,6 +5,7 @@ import FileView from "@/components/FileView.tsx";
 import DirectoryView from "@/components/DirectoryView.tsx";
 import GalleryView from "@/components/GalleryView.tsx";
 import DirectoryHeadView from "@/components/DirectoryHeadView.tsx";
+import FileHeadView from "@/components/FileHeadView.tsx";
 
 type ContentType = 'FileViewType' | DirectoryViewType
 function ContentView() {
@@ -18,7 +19,11 @@ function ContentView() {
   }
   return (
     <div className="content-view">
-      <DirectoryHeadView />
+      {selectedItem?.dir ? (
+        <DirectoryHeadView />
+      ):(
+        <FileHeadView />
+      )}
       {contentType == 'FileViewType' && (<FileView />)}
       {contentType == 'DirectoryViewType' && (<DirectoryView />)}
       {contentType == 'GalleryViewType' && (<GalleryView />)}
