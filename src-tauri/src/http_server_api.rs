@@ -194,20 +194,20 @@ impl HttpServer {
                 Some(state) => {
                     Router::new()
                         .fallback_service(serv_dir)
-                        .layer(cors)
                         .route("/health", get(get_health))
                         .route("/get_file", get(get_file))
                         // .route("/serv_info/{id}", get(get_serv_info))
                         .route("/emit_jstr", post(post_emit_jstr))
                         .route("/emit", post(post_emit))
+                        .layer(cors)
                         .with_state(state)
                 }
                 None => {
                     Router::new()
                         .fallback_service(serv_dir)
-                        .layer(cors)
                         .route("/health", get(get_health))
                         .route("/get_file", get(get_file))
+                        .layer(cors)
                 }
             };
 

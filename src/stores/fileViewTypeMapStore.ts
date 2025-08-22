@@ -3,10 +3,8 @@ import { create } from 'zustand'
 export type FileViewType =
   | 'Img'
   | 'Embed'
-  | 'Html'
-  | 'Iframe'
-  | 'Text'
   | 'Monaco'
+  | 'Md'
   | 'Video'
   | 'Audio'
   | 'Empty'
@@ -16,7 +14,7 @@ export type FileViewTypeGroup =
   | 'Binary'
   | 'Image'
   | 'Pdf'
-  | 'Html'
+  | 'Md'
   | 'Audio'
   | 'Video'
   | 'UnknownEmpty'
@@ -41,7 +39,7 @@ export const useFileViewTypeMapStore = create<FileViewTypeMapStore>((set) => ({
     Binary: "None",
     Image: "Img",
     Pdf: "Embed",
-    Html: "Html",
+    Md: "Md",
     Video: "Video",
     Audio: "Audio",
     UnknownEmpty: "Empty",

@@ -104,7 +104,9 @@ export function getFileTypeGroup(treeItem?: TreeItem): FileViewTypeGroup {
   } else if (treeItem?.mt?.endsWith('/pdf')) {
     fileViewTypeGroup = 'Pdf'
   } else if (treeItem?.mt?.endsWith('/html')) {
-    fileViewTypeGroup = 'Html'
+    fileViewTypeGroup = 'Md'
+  } else if (treeItem?.mt?.endsWith('/markdown')) {
+    fileViewTypeGroup = 'Md'
   } else if (treeItem?.mt?.startsWith('audio/') && sz > 1024 * 500) {
     fileViewTypeGroup = 'Audio'
   } else if (treeItem?.mt?.startsWith('video/') && sz > 1024 * 500) {

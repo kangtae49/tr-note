@@ -38,10 +38,8 @@ export type FolderListOrderVal = 'Asc' | 'Desc'
 export type FileViewType =
   | 'Img'
   | 'Embed'
-  | 'Html'
-  | 'Iframe'
-  | 'Text'
   | 'Monaco'
+  | 'Md'
   | 'Video'
   | 'Audio'
   | 'Empty'
@@ -51,7 +49,7 @@ export type FileViewTypeGroup =
   | 'Binary'
   | 'Image'
   | 'Pdf'
-  | 'Html'
+  | 'Md'
   | 'Audio'
   | 'Video'
   | 'UnknownEmpty'
@@ -71,7 +69,7 @@ export const fileViewTypeGroupMap: FileViewTypeGroupMap = {
   Binary: ["None"],
   Image: ["Img"],
   Pdf: ["Embed"],
-  Html: ["Html", "Monaco"],
+  Md: ["Md", "Monaco"],
   Video: ["Video"],
   Audio: ["Audio"],
   UnknownEmpty: ["Empty"],
