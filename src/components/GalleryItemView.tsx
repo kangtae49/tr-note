@@ -3,6 +3,8 @@ import React from "react";
 import NoneView from "@/components/gallery_views/NoneView.tsx";
 import NameView from "@/components/gallery_views/NameView.tsx";
 import ImageView from "@/components/gallery_views/ImageView.tsx";
+import VideoView from "@/components/gallery_views/VideoView.tsx";
+import AudioView from "@/components/gallery_views/AudioView.tsx";
 
 
 interface Props {
@@ -20,6 +22,10 @@ function GalleryItemView ({rowTreeItems, style, sliderPos}: Props) {
           return <NoneView key={idx} item={item} sliderPos={sliderPos} />
         }else if (item.mt?.startsWith('image/')) {
           return <ImageView key={idx} sliderPos={sliderPos} item={item} />
+        } else if (item.mt?.startsWith('video/') && sz > 1024 * 500) {
+          return <VideoView key={idx} sliderPos={sliderPos} item={item} />
+        } else if (item.mt?.startsWith('audio/') && sz > 1024 * 500) {
+          return <AudioView key={idx} sliderPos={sliderPos} item={item} />
         } else {
           return <NameView key={idx} item={item} sliderPos={sliderPos} />
         }

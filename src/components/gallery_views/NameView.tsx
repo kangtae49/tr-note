@@ -1,4 +1,4 @@
-import React from "react";
+import React, {memo} from "react";
 import {TreeItem} from "@/components/tree/tree.ts";
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import {faFile, faFolder, faRocket} from "@fortawesome/free-solid-svg-icons";
@@ -46,4 +46,4 @@ function NameView({ item, sliderPos }: Props) {
   )
 }
 
-export default NameView;
+export default memo(NameView);

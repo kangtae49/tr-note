@@ -1,4 +1,5 @@
 import {TreeItem} from "@/components/tree/tree.ts";
+import {memo} from "react";
 
 interface Props {
   item?: TreeItem
@@ -14,4 +15,4 @@ function NoneView({ item, sliderPos }: Props) {
   )
 }
 
-export default NoneView;
+export default memo(NoneView);

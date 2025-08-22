@@ -1,6 +1,7 @@
 import {TreeItem} from "@/components/tree/tree.ts";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 import {useHttp} from "@/components/HttpServerProvider.tsx";
+import {memo} from "react";
 
 interface Props {
   item?: TreeItem
@@ -28,4 +29,4 @@ function ImageView({ item, sliderPos }: Props) {
   )
 }
 
-export default ImageView;
+export default memo(ImageView);
