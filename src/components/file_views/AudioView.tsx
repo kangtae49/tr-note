@@ -2,7 +2,11 @@ import React, {useEffect, useRef} from "react";
 import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 
-function AudioView(): React.ReactElement {
+interface Props {
+  style?: React.CSSProperties
+}
+
+function AudioView({ style }: Props): React.ReactElement {
   const mediaRef = useRef<HTMLAudioElement>(null)
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
   const http = useHttp();
@@ -18,7 +22,7 @@ function AudioView(): React.ReactElement {
     return <div className='audio-view'></div>
   }
   return (
-    <div className="audio-view">
+    <div className="audio-view" style={style}>
       <audio ref={mediaRef} controls={true} autoPlay={true}>
         <source src={http.getSrc(selectedItem?.full_path)} type={selectedItem?.mt} />
       </audio>

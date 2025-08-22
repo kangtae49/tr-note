@@ -3,7 +3,11 @@ import MDEditor from '@uiw/react-md-editor';
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 import {useHttp} from "@/components/HttpServerProvider.tsx";
 
-function MdView() {
+interface Props {
+  style?: React.CSSProperties
+}
+
+function MdView({ style }: Props) {
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
   const [content, setContent] = useState<string | undefined>(undefined);
   const http = useHttp();
@@ -17,7 +21,7 @@ function MdView() {
   }, [selectedItem])
 
   return (
-    <div className="md-view">
+    <div className="md-view" style={style}>
       <MDEditor
         value={content}
         onChange={setContent}

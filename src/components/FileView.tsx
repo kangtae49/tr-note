@@ -12,6 +12,7 @@ import AudioView from "@/components/file_views/AudioView.tsx";
 import VideoView from "@/components/file_views/VideoView.tsx";
 import MonacoView from "@/components/file_views/MonacoView.tsx";
 import NoneView from "@/components/file_views/NoneView.tsx";
+import AutoSizer from "react-virtualized-auto-sizer";
 
 function FileView() {
   const fileViewTypeMap = useFileViewTypeMapStore((state) => state.fileViewTypeMap)
@@ -25,33 +26,26 @@ function FileView() {
     setFileViewType(selectedFileViewType)
   }, [selectedItem, fileViewTypeMap, fileViewType]);
 
+  const SwitchView = (() => {
+    switch (fileViewType) {
+      case 'Empty': return EmptyView;
+      case 'Img': return ImageView;
+      case 'Embed': return EmbedView;
+      case 'Md': return MdView;
+      case 'Audio': return AudioView;
+      case 'Video': return VideoView;
+      case 'Monaco': return MonacoView;
+      default: return NoneView;
+    }
+  })();
+
   return (
     <div className="file-view">
-      {(() => {
-        switch (fileViewType) {
-          case 'Empty':
-            return <EmptyView />
-          case 'Img':
-            return <ImageView />
-          case 'Embed':
-            return <EmbedView />
-          case 'Md':
-            return <MdView />
-          // return <ViewIframe selectedItem={selectedItem} />
-          // case 'Iframe':
-          //   return <ViewIframe selectedItem={selectedItem} />
-          // case 'Text':
-          //   return <ViewText selectedItem={selectedItem} />
-          case 'Audio':
-            return <AudioView />
-          case 'Video':
-            return <VideoView />
-          case 'Monaco':
-            return <MonacoView />
-          default:
-            return <NoneView />
-        }
-      })()}
+      <AutoSizer>
+        {({ height, width }) => (
+          <SwitchView style={{width, height: height-25}}/>
+        )}
+      </AutoSizer>
     </div>
   )
 }

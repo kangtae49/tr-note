@@ -2,7 +2,11 @@ import React, {useEffect, useRef} from "react";
 import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 
-function VideoView(): React.ReactElement {
+interface Props {
+  style?: React.CSSProperties
+}
+
+function VideoView({ style }: Props): React.ReactElement {
   const mediaRef = useRef<HTMLVideoElement>(null)
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
   const http = useHttp();
@@ -18,7 +22,7 @@ function VideoView(): React.ReactElement {
     return <div className='video-view'></div>
   }
   return (
-    <div className="video-view">
+    <div className="video-view" style={style}>
       <video ref={mediaRef} controls={true} autoPlay={true}>
         <source src={http.getSrc(selectedItem?.full_path)} type={selectedItem?.mt} />
       </video>

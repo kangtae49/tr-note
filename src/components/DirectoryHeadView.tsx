@@ -76,7 +76,7 @@ function DirectoryHeadView() {
   const size = folderList?.map((item) => item?.sz || 0).reduce((acc, val) => acc + val, 0) || 0
 
   return (
-    <div className="directory-head">
+    <div className="directory-head-view">
       {selectedItem?.dir && (
         <div className="dir-types">
           <Icon

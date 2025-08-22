@@ -8,6 +8,7 @@ import {renderTreeFromPath, SEP, TreeItem} from "@/components/tree/tree.ts";
 import * as utils from "@/components/utils.ts";
 import {useTabItemsStore} from "@/components/tab/stores/tabItemsStore.ts";
 import {includesTabItem} from "@/components/tab/tab.ts";
+import TabView from "@/components/tab/TabView.tsx";
 function ContentHeadView() {
   const folderTree = useFolderTreeStore((state) => state.folderTree)
   const setFolderTree = useFolderTreeStore((state) => state.setFolderTree)
@@ -86,6 +87,7 @@ function ContentHeadView() {
         })}
 
       </div>
+      <TabView />
     </div>
   )
 }

@@ -22,8 +22,11 @@ self.MonacoEnvironment = {
     return `${basePath}/monaco-editor/esm/vs/editor/editor.worker.js`
   }
 }
+interface Props {
+  style?: React.CSSProperties
+}
 
-function MonacoView(): React.ReactElement {
+function MonacoView({ style }: Props): React.ReactElement {
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
   const editorRef = useRef<HTMLDivElement>(null)
   const monacoEditorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null)
@@ -57,7 +60,7 @@ function MonacoView(): React.ReactElement {
   }, [content, selectedItem]);
 
   return (
-    <div className="monaco-view" ref={editorRef} />
+    <div className="monaco-view" ref={editorRef} style={style} />
   )
 }
 

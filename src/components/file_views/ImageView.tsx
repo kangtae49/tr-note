@@ -2,14 +2,18 @@ import React from "react";
 import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 
-function ImageView(): React.ReactElement {
+interface Props {
+  style?: React.CSSProperties
+}
+
+function ImageView({ style }: Props): React.ReactElement {
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
   const http = useHttp();
   if (selectedItem == undefined || http == undefined) {
     return <div className='image-view'></div>
   }
   return (
-    <div className="image-view">
+    <div className="image-view" style={style}>
       <img src={http.getSrc(selectedItem.full_path)} alt={selectedItem.full_path} />
     </div>
   )

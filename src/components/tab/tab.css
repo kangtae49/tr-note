@@ -4,6 +4,8 @@
 
 .tab-view {
     width: 100%;
+    height: 100%;
+    overflow-y: auto;
 }
 .sortable-container {
     width: 100%;
@@ -11,18 +13,19 @@
 }
 
 .tab-list {
+    flex: 1;
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
     width: 100%;
+    height: 100%;
     min-height: 22px;
-    height: 45px;
-    overflow-y: auto;
+
     border: 1px dotted #ccc;
     gap: 1px;
-    resize: vertical;
     margin: 0;
-    padding: 0;
+    padding: 3px;
+    box-sizing: border-box;
 }
 
 .tab-item {

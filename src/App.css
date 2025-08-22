@@ -82,8 +82,9 @@ html, body, #root, .container {
 
 .content-head {
   display: flex;
+  flex-direction: column;
   width: 100%;
-  height: 25px;
+  /*height: 50px;*/
   padding: 0 0 0 5px;
   background-color: white;
   box-sizing: border-box;
@@ -94,21 +95,21 @@ html, body, #root, .container {
   flex: 1;
 }
 
-.file-view {
-  height: 100%;
-}
-.directory-view {
-  height: 100%;
-}
+
+.file-view { height: 100%;}
+.directory-view { height: 100%;}
+
+
 .gallery-view {
   height: 100%;
 }
 
-.content-head .title-path { display: flex; align-items: center; width: 100%; height: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.content-head .title-path { flex: 0 0 25px; display: flex; align-items: center; width: 100%; height: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .content-head .title-path .icon { padding: 0; cursor: pointer; width: 18px;}
 .content-head .title-path .part-list { display: flex; cursor: pointer; }
 .content-head .title-path .part-list:hover { cursor: pointer; background-color: #bfd2e3}
 
+.content-head .tab-view {flex: 1;}
 
 .fa-rocket {color: var(--folder-color); margin-right: 5px;}
 .fa-rocket:hover {transform: var(--scale); color: var(--folder-hover-color);}
