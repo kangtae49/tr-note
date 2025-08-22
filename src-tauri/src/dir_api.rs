@@ -22,8 +22,8 @@ use sysinfo::Disks;
 use tauri::State;
 use tokio::sync::RwLock;
 use windows::core::PCWSTR;
-use windows::Win32::Foundation::{FILETIME, HANDLE};
-use windows::Win32::Storage::FileSystem::{FindClose, FindExInfoStandard, FindExSearchNameMatch, FindFirstFileExW, FindNextFileW, FILE_ATTRIBUTE_DIRECTORY, FIND_FIRST_EX_LARGE_FETCH, WIN32_FIND_DATAW};
+use windows::Win32::Foundation::{FILETIME, HANDLE, INVALID_HANDLE_VALUE};
+use windows::Win32::Storage::FileSystem::{FindClose, FindExInfoStandard, FindExSearchNameMatch, FindFirstFileExW, FindFirstFileW, FindNextFileW, FILE_ATTRIBUTE_DIRECTORY, FIND_FIRST_EX_LARGE_FETCH, WIN32_FIND_DATAW};
 
 use crate::AppState;
 use crate::err::{ApiError, ApiResult};
@@ -573,6 +573,22 @@ pub fn get_items_win32(p: &str, meta_types: &Vec<MetaType>) -> ApiResult<Vec<Ite
     }
     Ok(result)
 }
+
+
+pub fn get_file_item(path: &str, meta_types: &Vec<MetaType>) -> ApiResult<Item> {
+    let mut find_data = WIN32_FIND_DATAW::default();
+    let wide: Vec<u16> = path.encode_utf16().chain([0]).collect();
+
+    let handle = unsafe { FindFirstFileW(PCWSTR(wide.as_ptr()), &mut find_data) }?;
+    let _handle_guard = FindHandle(handle);
+
+    if handle == INVALID_HANDLE_VALUE {
+        return ApiResult::Err(ApiError::Error(String::from("Err FindFirstFileW")));
+    }
+
+    get_item_data_win32(&mut find_data, meta_types).ok_or(ApiError::Error(String::from("Err GetItemData")))
+}
+
 
 fn get_item_data_win32(find_data: &mut WIN32_FIND_DATAW, meta_types: &Vec<MetaType>) -> Option<Item> {
     let nm = String::from_utf16_lossy(

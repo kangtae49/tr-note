@@ -92,7 +92,8 @@ export type OrdItem = { nm: OrderBy; asc: OrderAsc }
 export type OrderAsc = "Asc" | "Desc"
 export type OrderBy = "Dir" | "Nm" | "Sz" | "Tm" | "Mt" | "Ext"
 export type ServInfo = { id: string; ip: string; port: number; path: string }
-export type TabJson = { items: string[] }
+export type TabItem = { full_path: string; dir: boolean }
+export type TabJson = { items: TabItem[] }
 
 /** tauri-specta globals **/
 

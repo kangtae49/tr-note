@@ -1,4 +1,4 @@
-import {TabItem} from "@/components/tab/stores/tabItemsStore.ts";
+import {TabItem} from "@/bindings.ts";
 
 export const getShortName = (name: string) => {
   const N = 10;
@@ -11,6 +11,10 @@ export const getShortName = (name: string) => {
 export const includesTabItem = (tabItem: TabItem | undefined, tabItems: TabItem [] | undefined)=> {
   if (tabItems == undefined) return false;
   if (tabItem == undefined) return false;
-  const find = tabItems.find((item) => item === tabItem);
+  const find = tabItems.find((item) => item.full_path === tabItem.full_path);
   return find !== undefined;
+}
+
+export function getItemId (item: TabItem) {
+  return item.full_path;
 }

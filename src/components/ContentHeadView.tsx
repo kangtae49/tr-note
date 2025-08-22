@@ -5,7 +5,7 @@ import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
 import {useFolderTreeRefStore} from "@/components/tree/stores/folderTreeRefStore.ts";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 import {renderTreeFromPath, SEP, TreeItem} from "@/components/tree/tree.ts";
-import * as opener from "@/components/opener.ts";
+import * as utils from "@/components/utils.ts";
 import {useTabItemsStore} from "@/components/tab/stores/tabItemsStore.ts";
 import {includesTabItem} from "@/components/tab/tab.ts";
 function ContentHeadView() {
@@ -22,10 +22,10 @@ function ContentHeadView() {
     console.log('toggleStar', treeItem);
     if (treeItem == undefined) return;
     if (tabItems == undefined) return;
-    if (includesTabItem(treeItem.full_path, tabItems)){
-      setTabItems(tabItems.filter((item) => item != treeItem.full_path))
+    if (includesTabItem({full_path: treeItem.full_path, dir: treeItem.dir || false}, tabItems)){
+      setTabItems(tabItems.filter((item) => item.full_path != treeItem.full_path))
     } else {
-      setTabItems([treeItem.full_path, ...tabItems])
+      setTabItems([{full_path: treeItem.full_path, dir: treeItem.dir || false}, ...tabItems])
     }
 
   }
@@ -59,17 +59,17 @@ function ContentHeadView() {
     <div className="content-head">
       <div className="title-path">
         <div className="icon">
-          <Icon icon={faStar} className={includesTabItem(selectedItem?.full_path, tabItems) ? "" : "inactive"} onClick={() => toggleStar(selectedItem)} />
+          <Icon icon={faStar} className={includesTabItem({full_path: selectedItem?.full_path || "", dir: selectedItem?.dir || false}, tabItems) ? "" : "inactive"} onClick={() => toggleStar(selectedItem)} />
         </div>
         <div className="icon">
           <Icon icon={faArrowUp} onClick={() => clickPath(selectedItem?.parent?.full_path)} />
         </div>
         <div className="icon">
-          <Icon icon={faRocket} onClick={() => opener.shellOpenPath(selectedItem?.full_path)} />
+          <Icon icon={faRocket} onClick={() => utils.shellOpenPath(selectedItem?.full_path)} />
         </div>
         <div
           className="icon"
-          onClick={() => opener.shellShowItemInFolder(selectedItem?.full_path)}
+          onClick={() => utils.shellShowItemInFolder(selectedItem?.full_path)}
         >
           <Icon icon={selectedItem?.dir ? faFolder: faFile} />
         </div>

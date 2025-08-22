@@ -1,7 +1,7 @@
 import { create } from 'zustand'
+import {TabItem} from "@/bindings.ts";
 
 
-export type TabItem = string;
 
 export interface TabItemsStore {
   tabItems: TabItem[] | undefined

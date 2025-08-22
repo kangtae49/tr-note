@@ -1,4 +1,5 @@
 use std::io::Write;
+use std::path::PathBuf;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use specta::Type;
@@ -7,8 +8,15 @@ use crate::utils::get_resource_path;
 
 #[skip_serializing_none]
 #[derive(Type, Serialize, Deserialize, Debug, Default)]
+pub struct TabItem {
+    full_path: String,
+    dir: bool
+}
+
+#[skip_serializing_none]
+#[derive(Type, Serialize, Deserialize, Debug, Default)]
 pub struct TabJson {
-    items: Vec<String>
+    items: Vec<TabItem>
 }
 
 #[tauri::command]
@@ -22,7 +30,23 @@ pub async fn load_tab() -> ApiResult<TabJson> {
     }
     let tab_json_str = std::fs::read_to_string(tab_json_path)?;
     let tab_json: TabJson = serde_json::from_str(&tab_json_str)?;
-    Ok(tab_json)
+
+    let mut new_items = Vec::new();
+
+    for item in tab_json.items {
+        let p = PathBuf::from(&item.full_path);
+        if !p.exists() {
+            new_items.push(item)
+        } else {
+            new_items.push(TabItem {
+                full_path: item.full_path,
+                dir: p.is_dir()
+            });
+        }
+    }
+    Ok(TabJson {
+        items: new_items,
+    })
 }
 
 #[tauri::command]

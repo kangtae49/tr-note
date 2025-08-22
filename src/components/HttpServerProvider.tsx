@@ -3,7 +3,7 @@ import {commands, ServInfo} from "@/bindings.ts";
 
 const HttpContext = createContext<HttpContextType | undefined>(undefined);
 
-type Props = {
+interface Props {
   children: React.ReactNode;
 };
 

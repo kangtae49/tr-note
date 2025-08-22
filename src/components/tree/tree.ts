@@ -27,7 +27,7 @@ export type TreeItem = {
   tm?: number
   items?: TreeItem[]
 }
-export type DirectoryViewType = 'FolderList' | 'GalleryList'
+export type DirectoryViewType = 'DirectoryViewType' | 'GalleryViewType'
 
 export type FolderListOrder = {
   key: FolderListOrderKey
@@ -341,7 +341,7 @@ export const renderTreeFromPath = async ({
   setSelectedItem: SelectedTreeItemStore['setSelectedItem']
   selectedItem: SelectedTreeItemStore['selectedItem']
 }): Promise<void> => {
-  if (fullPath == '/') {
+  if (fullPath == '/' || fullPath.endsWith(SEP)) {
     fetchDisks().then((disks) => {
       if (folderTree === undefined) {
         setFolderTree(disks)
@@ -353,6 +353,7 @@ export const renderTreeFromPath = async ({
             new_disk.push(disk);
           } else {
             new_disk.push(findItem);
+            setSelectedItem(findItem);
           }
         }
         setFolderTree(new_disk);

@@ -1,24 +1,23 @@
 import {DndContext, DragEndEvent, DragStartEvent} from "@dnd-kit/core";
 import SortableContainer from "@/components/tab/SortableContainer.tsx";
-import { TreeItem } from "../tree/tree";
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import {arrayMove, horizontalListSortingStrategy, SortableContext} from "@dnd-kit/sortable";
 import TabItemView from "@/components/tab/TabItemView.tsx";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
-import {TabItem, useTabItemsStore} from "@/components/tab/stores/tabItemsStore.ts";
+import {useTabItemsStore} from "@/components/tab/stores/tabItemsStore.ts";
 import "./tab.css"
-import {commands} from "@/bindings.ts";
+import {commands, TabItem} from "@/bindings.ts";
+import {getItemId} from "@/components/tab/tab.ts";
 
 
 export default function TabView() {
-  // const [tabItems, setTabItems] = useState<TabItem[]>([]);
   const tabItems = useTabItemsStore((state) => state.tabItems);
   const setTabItems = useTabItemsStore((state) => state.setTabItems);
 
   const selectedTreeItem = useSelectedTreeItemStore((state) => state.selectedItem);
   const removeItem = (tabItem: TabItem) => {
     if (tabItems === undefined) return;
-    setTabItems(tabItems.filter((item: TabItem) => item !== tabItem));
+    setTabItems(tabItems.filter((item: TabItem) => getItemId(item) !== getItemId(tabItem)));
   }
 
   function handleDragStart(event: DragStartEvent) {
@@ -59,9 +58,6 @@ export default function TabView() {
 
   }
 
-  function getItemId (item: TabItem) {
-    return item;
-  }
 
   useEffect(() => {
     if (tabItems == undefined) return;
