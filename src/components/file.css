@@ -8,7 +8,7 @@
     box-sizing: border-box;
     align-items: center;
 }
-.file-head-view .file-types {flex: 0 0 40px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+.file-head-view .file-types {flex: 0 0 45px; }
 .file-head-view .info {display:flex; flex: 1; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
 .file-head-view .info .nm { padding: 0; }
 .file-head-view .info .sz { padding: 0 0 0 5px; }
@@ -32,4 +32,7 @@
 
 /*.file-content { width: 100%; }*/
 
-.fa-file-lines { color: var(--file-color); margin-right: 5px;}
+.fa-file-lines { color: var(--folder-color); }
+.fa-file-lines.inactive { color: var(--inactive-color); }
+.fa-file-code { color: var(--folder-color); }
+.fa-file-code.inactive { color: var(--inactive-color); }

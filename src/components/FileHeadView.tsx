@@ -31,7 +31,7 @@ function FileHeadView(): React.ReactElement {
               return (
                 <Icon
                   key={idx}
-                  className={fileViewType == selectedFileViewType ? 'selected' : ''}
+                  className={fileViewType == selectedFileViewType ? '' : 'inactive'}
                   icon={getFileViewIcon(fileViewType)}
                   onClick={() => clickFileViewType(fileViewType)}
                 />
