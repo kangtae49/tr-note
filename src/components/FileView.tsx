@@ -19,7 +19,6 @@ function FileView() {
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
 
   useEffect(() => {
-    console.log("FileView useEffect", fileViewType)
     const fileViewTypeGroup = getFileTypeGroup(selectedItem)
     const selectedFileViewType = fileViewTypeMap[fileViewTypeGroup]
     setFileViewType(selectedFileViewType)

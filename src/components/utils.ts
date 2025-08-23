@@ -1,9 +1,10 @@
 import {openPath, openUrl, revealItemInDir} from "@tauri-apps/plugin-opener";
-import {SEP, TreeItem} from "@/components/tree/tree.ts";
+import {getNth, SEP, TreeItem} from "@/components/tree/tree.ts";
 import {commands} from "@/bindings.ts";
 import toast from "react-hot-toast";
 import {useCallback} from "react";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
+import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
 
 export const shellOpenPath = async (path?: string): Promise<void> => {
   if (!path) return
@@ -59,28 +60,38 @@ export const formatFileSize = (bytes: number | undefined): string => {
 }
 
 export function useSaveFile() {
+  const duration = 1000;
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
+  // const folderTree = useFolderTreeStore((state) => state.folderTree)
+  // const setFolderTree = useFolderTreeStore((state) => state.setFolderTree)
 
   const saveFile = useCallback(async (content: string) => {
     if (selectedItem == undefined) return;
 
     const full_path = selectedItem.full_path;
     console.log("Saved code:", selectedItem.full_path);
-    commands.saveFile(full_path, content).then(res => {
+    return commands.saveFile(full_path, content).then(res => {
       if (res.status == "ok") {
         const item = res.data;
-        console.log("item.sz:", item.sz);
         selectedItem.sz = item.sz ?? undefined;
         selectedItem.tm = item.tm ?? undefined;
-        toast.success('Success saved', { duration: 500 });
+        // const [treeItem, nth] = getNth(folderTree, selectedItem)
+        // if (treeItem !== undefined && folderTree !== undefined) {
+        //   treeItem.sz = item.sz ?? undefined;
+        //   treeItem.tm = item.tm ?? undefined;
+        //   setFolderTree([...folderTree])
+        // }
+        toast.success('Success saved', { duration });
+        return selectedItem;
       } else {
-        toast.success('Fail saved', { duration: 500 });
+        toast.success('Fail saved', { duration });
+        return undefined;
       }
     }).catch(err => {
       console.log("Error saving code:", err);
-      toast.error('Fail saved', { duration: 500 });
+      toast.error('Fail saved', { duration });
+      return undefined;
     })
-    return selectedItem;
   }, [selectedItem]);
 
   return {saveFile};

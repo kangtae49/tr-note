@@ -21,10 +21,10 @@ function FileHeadView(): React.ReactElement {
       [fileViewTypeGroup]: viewType
     })
   }
-  console.log("FileHeadView", selectedItem)
+
   return (
     <div className="file-head-view">
-      {selectedItem !== undefined && !selectedItem.dir && (
+      {(selectedItem !== undefined && selectedItem.dir == false) && (
         <div className="file-types">
           {
             fileViewTypeList.map((fileViewType, idx) => {

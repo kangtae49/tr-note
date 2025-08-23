@@ -1,11 +1,9 @@
-import React, {useCallback, useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import * as monaco from 'monaco-editor'
 import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 
 import {getMonacoLanguage} from "@/components/content.ts";
-import {commands} from "@/bindings.ts";
-import toast from "react-hot-toast";
 import {useSaveFile} from "@/components/utils.ts";
 
 self.MonacoEnvironment = {
@@ -41,15 +39,21 @@ function MonacoView({ style }: Props): React.ReactElement {
 
 
   const saveHandle = async () => {
-    console.log('saveHandle');
+    if(selectedItem == undefined) return;
+    const pos = monacoEditorRef.current?.getPosition();
     const text = monacoEditorRef.current?.getValue();
     if (text !== undefined && content !== text) {
       saveFile(text).then((item) => {
-        if(selectedItem == undefined) return;
         if (item !== undefined) {
           setSelectedItem({ ...selectedItem, sz: item.sz || 0, tm: item.tm || 0});
         }
-        console.log('saveFile done');
+        setTimeout(() => {
+          if (pos) {
+            monacoEditorRef.current?.focus();
+            monacoEditorRef.current?.setPosition(pos);
+          }
+          console.log('focus')
+        }, 1000);
       });
     }
   };

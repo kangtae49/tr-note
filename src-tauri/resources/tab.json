@@ -1,6 +1,14 @@
 {
   "items": [
     {
+      "full_path": "C:\\docs\\markdown.md",
+      "dir": false
+    },
+    {
+      "full_path": "C:\\docs\\1.html",
+      "dir": false
+    },
+    {
       "full_path": "C:\\sources\\tr-youtube\\README.md",
       "dir": false
     },

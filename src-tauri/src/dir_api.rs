@@ -2,11 +2,12 @@ use std::{cmp};
 use std::cmp::Ordering;
 use std::collections::{BTreeSet, HashMap};
 use std::ffi::OsStr;
+use std::io::Write;
 use std::os::windows::ffi::OsStrExt;
 use std::path::{absolute, Path, PathBuf};
 use std::path::Component::{Prefix, RootDir};
 use std::sync::Arc;
-use std::time::SystemTime;
+use std::time::{SystemTime, UNIX_EPOCH};
 use tokio;
 use tokio::io::AsyncReadExt;
 use mime_guess::{from_path};
@@ -14,6 +15,7 @@ use encoding_rs::Encoding;
 use chardetng::EncodingDetector;
 use moka::future::Cache;
 use dirs_next;
+use filetime::FileTime;
 use natord::compare;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none};
@@ -66,6 +68,25 @@ pub async fn get_disks(state: State<'_, Arc<RwLock<AppState>>>) -> ApiResult<Vec
 }
 
 
+#[tauri::command]
+#[specta::specta]
+pub async fn save_file(file_path: &str, text: &str) -> ApiResult<Item> {
+    let file_path_buf = PathBuf::from(file_path);
+    let mut file = std::fs::File::create(&file_path_buf)?;
+    file.write_all(text.as_bytes())?;
+    file.flush()?;
+    println!("save_file file_path {:?}", file_path);
+    let item = get_file_item(file_path, &vec![MetaType::Sz, MetaType::Tm, MetaType::Mt, MetaType::Ext])?;
+    println!("{:?}", item);
+    if let Some(parent) = file_path_buf.parent() {
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap();
+        let ft = FileTime::from_unix_time(now.as_secs() as i64, now.subsec_nanos());
+        filetime::set_file_mtime(parent, ft)?;
+    }
+    Ok(item)
+}
 
 
 #[derive(Type, Serialize, Deserialize, Clone, Eq, PartialEq, Hash, PartialOrd, Ord, Debug)]
