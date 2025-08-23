@@ -13,6 +13,14 @@ async getResourcePath() : Promise<Result<string, ApiError>> {
     else return { status: "error", error: e  as any };
 }
 },
+async saveFile(filePath: string, text: string) : Promise<Result<Item, ApiError>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("save_file", { filePath, text }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async runHttpServer(servInfo: ServInfo) : Promise<Result<ServInfo, ApiError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("run_http_server", { servInfo }) };

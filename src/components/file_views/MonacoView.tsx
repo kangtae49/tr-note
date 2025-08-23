@@ -1,8 +1,12 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import * as monaco from 'monaco-editor'
 import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
-import {getMonacoLanguage} from "@/components/utils.ts";
+
+import {getMonacoLanguage} from "@/components/content.ts";
+import {commands} from "@/bindings.ts";
+import toast from "react-hot-toast";
+import {useSaveFile} from "@/components/utils.ts";
 
 self.MonacoEnvironment = {
   getWorkerUrl(_, label) {
@@ -28,10 +32,29 @@ interface Props {
 
 function MonacoView({ style }: Props): React.ReactElement {
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
+  const setSelectedItem = useSelectedTreeItemStore((state) => state.setSelectedItem)
   const editorRef = useRef<HTMLDivElement>(null)
   const monacoEditorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null)
   const http = useHttp();
   const [content, setContent] = useState<string | undefined>(undefined);
+  const {saveFile} = useSaveFile();
+
+
+  const saveHandle = async () => {
+    console.log('saveHandle');
+    const text = monacoEditorRef.current?.getValue();
+    if (text !== undefined && content !== text) {
+      saveFile(text).then((item) => {
+        if(selectedItem == undefined) return;
+        if (item !== undefined) {
+          setSelectedItem({ ...selectedItem, sz: item.sz || 0, tm: item.tm || 0});
+        }
+        console.log('saveFile done');
+      });
+    }
+  };
+
+
 
   useEffect(() => {
     if (http == undefined) return;
@@ -42,7 +65,7 @@ function MonacoView({ style }: Props): React.ReactElement {
   }, [selectedItem])
 
   useEffect(() => {
-    if (selectedItem && content && editorRef && editorRef.current) {
+    if (selectedItem && content !== undefined && editorRef && editorRef.current) {
       if (monacoEditorRef?.current) {
         monacoEditorRef.current.dispose()
       }
@@ -52,10 +75,13 @@ function MonacoView({ style }: Props): React.ReactElement {
         // language: 'plaintext',
         language: getMonacoLanguage(selectedItem?.ext),
         theme: 'vs',
-        readOnly: true,
+        // readOnly: true,
         automaticLayout: true,
         scrollBeyondLastLine: false
       })
+
+      monacoEditorRef.current.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, saveHandle);
+
     }
   }, [content, selectedItem]);
 

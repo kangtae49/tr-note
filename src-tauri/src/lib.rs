@@ -24,6 +24,7 @@ struct AppState {
 pub fn run() {
     let builder = Builder::<tauri::Wry>::new().commands(collect_commands![
         utils::get_resource_path,
+        utils::save_file,
         http_server_api::run_http_server,
         http_server_api::shutdown_http_server,
         dir_api::read_folder,

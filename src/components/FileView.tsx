@@ -1,8 +1,6 @@
 import "@/components/file.css"
 import {useFileViewTypeMapStore} from "@/stores/fileViewTypeMapStore.ts";
 import {useEffect, useState} from "react";
-import {FileViewType} from "@/components/tree/tree.ts";
-import {getFileTypeGroup} from "@/components/utils.ts";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 import EmptyView from "@/components/file_views/EmptyView.tsx";
 import ImageView from "@/components/file_views/ImageView.tsx";
@@ -13,6 +11,7 @@ import VideoView from "@/components/file_views/VideoView.tsx";
 import MonacoView from "@/components/file_views/MonacoView.tsx";
 import NoneView from "@/components/file_views/NoneView.tsx";
 import AutoSizer from "react-virtualized-auto-sizer";
+import {FileViewType, getFileTypeGroup} from "@/components/content.ts";
 
 function FileView() {
   const fileViewTypeMap = useFileViewTypeMapStore((state) => state.fileViewTypeMap)

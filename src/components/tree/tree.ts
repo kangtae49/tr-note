@@ -1,8 +1,7 @@
-import {commands, HomeType} from "@/bindings.ts";
-import { DiskInfo, Item, OptParams } from '@/bindings.ts'
-import { FolderTreeStore } from '@/components/tree/stores/folderTreeStore.ts'
-import { FolderTreeRefStore } from '@/components/tree/stores/folderTreeRefStore.ts'
-import { SelectedTreeItemStore } from '@/components/tree/stores/selectedTreeItemStore.ts'
+import {commands, DiskInfo, HomeType, Item, OptParams} from "@/bindings.ts";
+import {FolderTreeStore} from '@/components/tree/stores/folderTreeStore.ts'
+import {FolderTreeRefStore} from '@/components/tree/stores/folderTreeRefStore.ts'
+import {SelectedTreeItemStore} from '@/components/tree/stores/selectedTreeItemStore.ts'
 
 export const SEP = '\\'
 export const TREE_ITEM_SIZE = 18
@@ -35,47 +34,6 @@ export type FolderListOrder = {
 }
 export type FolderListOrderKey = 'Nm' | 'Ext' | 'Tm' | 'Sz'
 export type FolderListOrderVal = 'Asc' | 'Desc'
-export type FileViewType =
-  | 'Img'
-  | 'Embed'
-  | 'Monaco'
-  | 'Md'
-  | 'Video'
-  | 'Audio'
-  | 'Empty'
-  | 'None'
-
-export type FileViewTypeGroup =
-  | 'Binary'
-  | 'Image'
-  | 'Pdf'
-  | 'Md'
-  | 'Audio'
-  | 'Video'
-  | 'UnknownEmpty'
-  | 'UnknownSmall'
-  | 'Unknown'
-
-
-export type FileViewTypeGroupMap = {
-  [key in FileViewTypeGroup]: FileViewType[];
-}
-
-export type FileViewTypeMap = {
-  [key in FileViewTypeGroup]: FileViewType;
-}
-
-export const fileViewTypeGroupMap: FileViewTypeGroupMap = {
-  Binary: ["None"],
-  Image: ["Img"],
-  Pdf: ["Embed"],
-  Md: ["Md", "Monaco"],
-  Video: ["Video"],
-  Audio: ["Audio"],
-  UnknownEmpty: ["Empty"],
-  UnknownSmall: ["Monaco"],
-  Unknown: ["None"],
-}
 
 
 const treeParams: OptParams = {

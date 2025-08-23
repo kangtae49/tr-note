@@ -2,8 +2,8 @@ import React from "react";
 import {FontAwesomeIcon as Icon} from "@fortawesome/react-fontawesome";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 import {useFileViewTypeMapStore} from "@/stores/fileViewTypeMapStore.ts";
-import {formatFileSize, getFileTypeGroup, getFileViewIcon, toDate} from "@/components/utils.ts";
-import {fileViewTypeGroupMap} from "@/components/tree/tree.ts";
+import {formatFileSize, toDate} from "@/components/utils.ts";
+import {fileViewTypeGroupMap, getFileTypeGroup, getFileViewIcon} from "@/components/content.ts";
 
 function FileHeadView(): React.ReactElement {
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
@@ -21,10 +21,10 @@ function FileHeadView(): React.ReactElement {
       [fileViewTypeGroup]: viewType
     })
   }
-
+  console.log("FileHeadView", selectedItem)
   return (
     <div className="file-head-view">
-      {!selectedItem?.dir && (
+      {selectedItem !== undefined && !selectedItem.dir && (
         <div className="file-types">
           {
             fileViewTypeList.map((fileViewType, idx) => {

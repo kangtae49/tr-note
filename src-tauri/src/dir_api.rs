@@ -576,17 +576,31 @@ pub fn get_items_win32(p: &str, meta_types: &Vec<MetaType>) -> ApiResult<Vec<Ite
 
 
 pub fn get_file_item(path: &str, meta_types: &Vec<MetaType>) -> ApiResult<Item> {
-    let mut find_data = WIN32_FIND_DATAW::default();
-    let wide: Vec<u16> = path.encode_utf16().chain([0]).collect();
-
-    let handle = unsafe { FindFirstFileW(PCWSTR(wide.as_ptr()), &mut find_data) }?;
-    let _handle_guard = FindHandle(handle);
-
-    if handle == INVALID_HANDLE_VALUE {
-        return ApiResult::Err(ApiError::Error(String::from("Err FindFirstFileW")));
+    let path = PathBuf::from(path);
+    let nm_os = path.file_name().ok_or(ApiError::Error(String::from("Err FileName")))?;
+    let nm = nm_os.to_string_lossy().to_string();
+    let mut ext = None;
+    let mut sz = None;
+    let mut tm = None;
+    let dir = path.is_dir();
+    if meta_types.contains(&MetaType::Ext) {
+        ext = get_extension(&nm).map(|x| x.to_string());
     }
-
-    get_item_data_win32(&mut find_data, meta_types).ok_or(ApiError::Error(String::from("Err GetItemData")))
+    if meta_types.contains(&MetaType::Sz) {
+        sz = Some(path.metadata()?.len());
+    }
+    if meta_types.contains(&MetaType::Tm) {
+        let system_time = path.metadata()?.modified()?;
+        tm = Some(system_time.to_sec());
+    }
+    Ok(Item {
+        nm,
+        dir,
+        ext,
+        tm,
+        sz,
+        ..Item::default()
+    })
 }
 
 

@@ -17,6 +17,7 @@ function ContentView() {
   } else if (selectedItem?.dir) {
     contentType = directoryViewTypeStore
   }
+  if (selectedItem == undefined) return null;
   return (
     <div className="content-view">
       {selectedItem?.dir ? (

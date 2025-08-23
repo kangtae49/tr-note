@@ -1,10 +1,9 @@
-import * as monaco from "monaco-editor";
 import {openPath, openUrl, revealItemInDir} from "@tauri-apps/plugin-opener";
-import {
-  faFileCode, faFileLines
-} from '@fortawesome/free-solid-svg-icons'
-import {FileViewType, FileViewTypeGroup, TreeItem} from "@/components/tree/tree.ts";
-import {SEP} from "@/components/tree/tree.ts";
+import {SEP, TreeItem} from "@/components/tree/tree.ts";
+import {commands} from "@/bindings.ts";
+import toast from "react-hot-toast";
+import {useCallback} from "react";
+import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 
 export const shellOpenPath = async (path?: string): Promise<void> => {
   if (!path) return
@@ -59,63 +58,31 @@ export const formatFileSize = (bytes: number | undefined): string => {
   return kb.toLocaleString('en-US') + 'KB'
 }
 
-export function isMonacoFile(ext?: string): boolean {
-  if (!ext) {
-    return false
-  }
-  const languages = monaco.languages.getLanguages()
-  const lang = languages.find((lang) => lang.extensions?.includes(`.${ext}`))
-  return !!lang
+export function useSaveFile() {
+  const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
+
+  const saveFile = useCallback(async (content: string) => {
+    if (selectedItem == undefined) return;
+
+    const full_path = selectedItem.full_path;
+    console.log("Saved code:", selectedItem.full_path);
+    commands.saveFile(full_path, content).then(res => {
+      if (res.status == "ok") {
+        const item = res.data;
+        console.log("item.sz:", item.sz);
+        selectedItem.sz = item.sz ?? undefined;
+        selectedItem.tm = item.tm ?? undefined;
+        toast.success('Success saved', { duration: 500 });
+      } else {
+        toast.success('Fail saved', { duration: 500 });
+      }
+    }).catch(err => {
+      console.log("Error saving code:", err);
+      toast.error('Fail saved', { duration: 500 });
+    })
+    return selectedItem;
+  }, [selectedItem]);
+
+  return {saveFile};
 }
 
-export function getMonacoLanguage(ext?: string): string {
-  let language = 'plaintext'
-  if (!ext) {
-    return 'plaintext'
-  }
-  const languages = monaco.languages.getLanguages()
-  // console.log('languages', languages)
-  const lang = languages.find((lang) => lang.extensions?.includes(`.${ext}`))
-  if (lang) {
-    language = lang.id
-  }
-  return language
-}
-
-export function getFileViewIcon(fileViewType: FileViewType) {
-  switch (fileViewType) {
-    case "Monaco": return faFileCode
-    default: return faFileLines
-  }
-}
-
-export function getFileTypeGroup(treeItem?: TreeItem): FileViewTypeGroup {
-  if(treeItem?.dir) {
-    return 'Unknown'
-  }
-  let fileViewTypeGroup: FileViewTypeGroup
-  const sz = treeItem?.sz || 0
-  if (sz == 0) {
-    fileViewTypeGroup = 'UnknownEmpty'
-  } else if (['exe', 'com', 'msi', 'dll', 'zip'].includes(treeItem?.ext || '')) {
-    fileViewTypeGroup = 'Binary'
-  } else if (treeItem?.mt?.startsWith('image/')) {
-    fileViewTypeGroup = 'Image'
-  } else if (treeItem?.mt?.endsWith('/pdf')) {
-    fileViewTypeGroup = 'Pdf'
-  } else if (treeItem?.mt?.endsWith('/html')) {
-    fileViewTypeGroup = 'Md'
-  } else if (treeItem?.mt?.endsWith('/markdown')) {
-    fileViewTypeGroup = 'Md'
-  } else if (treeItem?.mt?.startsWith('audio/') && sz > 1024 * 500) {
-    fileViewTypeGroup = 'Audio'
-  } else if (treeItem?.mt?.startsWith('video/') && sz > 1024 * 500) {
-    fileViewTypeGroup = 'Video'
-  } else if (sz <= 5 * 1024 * 1024) {
-    fileViewTypeGroup = 'UnknownSmall'
-  } else {
-    fileViewTypeGroup = 'Unknown'
-  }
-  return fileViewTypeGroup
-
-}
