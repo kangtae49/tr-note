@@ -1,4 +1,4 @@
-import React, {useCallback, useContext, useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import MDEditor, {commands } from '@uiw/react-md-editor';
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 import {useHttp} from "@/components/HttpServerProvider.tsx";
