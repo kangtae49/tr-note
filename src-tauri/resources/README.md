@@ -1,1 +1,1 @@
-tab.json
+~/AppData/Roaming/tr-note/tab.json
