@@ -3,12 +3,16 @@ import MDEditor from '@uiw/react-md-editor';
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {useSaveFile} from "@/components/utils.ts";
+import {getNth} from "@/components/tree/tree.ts";
+import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
 
 interface Props {
   style?: React.CSSProperties
 }
 
 function MdView({ style }: Props) {
+  const folderTree = useFolderTreeStore((state) => state.folderTree)
+  const setFolderTree = useFolderTreeStore((state) => state.setFolderTree)
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
   const setSelectedItem = useSelectedTreeItemStore((state) => state.setSelectedItem)
   const [content, setContent] = useState<string | undefined>(undefined);
@@ -29,11 +33,9 @@ function MdView({ style }: Props) {
       e.preventDefault();
       console.log('handleKeyDown');
       if (selectedItem == undefined) return;
+      if(folderTree == undefined) return;
       if (content == undefined) return;
-      saveFile(content).then((item) => {
-        if (item !== undefined) {
-          setSelectedItem({ ...selectedItem, sz: item.sz || 0, tm: item.tm || 0});
-        }
+      saveFile(content).then((_item) => {
         console.log('saveFile done');
       });
     }

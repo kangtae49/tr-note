@@ -48,23 +48,13 @@ function MonacoView({ style }: Props): React.ReactElement {
     const pos = monacoEditorRef.current?.getPosition();
     const text = monacoEditorRef.current?.getValue();
     if (text !== undefined && content !== text) {
-      saveFile(text).then((item) => {
-        if (item !== undefined) {
-          setSelectedItem({ ...selectedItem, sz: item.sz || 0, tm: item.tm || 0});
-          const [findTreeItem] = getNth(folderTree, selectedItem);
-          if (findTreeItem !== undefined) {
-            findTreeItem.sz = item.sz || 0;
-            findTreeItem.tm = item.tm || 0;
-            console.log('setFolderTree');
-            setFolderTree([...folderTree]);
-          }
-        }
+      saveFile(text).then((_item) => {
+        console.log('saveFile done');
         setTimeout(() => {
           if (pos) {
             monacoEditorRef.current?.focus();
             monacoEditorRef.current?.setPosition(pos);
           }
-          console.log('focus')
         }, 1000);
       });
     }

@@ -61,12 +61,14 @@ export const formatFileSize = (bytes: number | undefined): string => {
 
 export function useSaveFile() {
   const duration = 1000;
+  const folderTree = useFolderTreeStore((state) => state.folderTree)
+  const setFolderTree = useFolderTreeStore((state) => state.setFolderTree)
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
-  // const folderTree = useFolderTreeStore((state) => state.folderTree)
-  // const setFolderTree = useFolderTreeStore((state) => state.setFolderTree)
+  const setSelectedItem = useSelectedTreeItemStore((state) => state.setSelectedItem)
 
   const saveFile = useCallback(async (content: string) => {
     if (selectedItem == undefined) return;
+    if(folderTree == undefined) return;
 
     const full_path = selectedItem.full_path;
     console.log("Saved code:", selectedItem.full_path);
@@ -75,12 +77,15 @@ export function useSaveFile() {
         const item = res.data;
         selectedItem.sz = item.sz ?? undefined;
         selectedItem.tm = item.tm ?? undefined;
-        // const [treeItem, nth] = getNth(folderTree, selectedItem)
-        // if (treeItem !== undefined && folderTree !== undefined) {
-        //   treeItem.sz = item.sz ?? undefined;
-        //   treeItem.tm = item.tm ?? undefined;
-        //   setFolderTree([...folderTree])
-        // }
+
+        setSelectedItem({ ...selectedItem, sz: item.sz || 0, tm: item.tm || 0});
+        const [findTreeItem] = getNth(folderTree, selectedItem);
+        if (findTreeItem !== undefined) {
+          findTreeItem.sz = item.sz || 0;
+          findTreeItem.tm = item.tm || 0;
+          setFolderTree([...folderTree]);
+        }
+
         toast.success('Success saved', { duration });
         return selectedItem;
       } else {
