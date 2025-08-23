@@ -6,7 +6,6 @@ import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeIte
 import {getMonacoLanguage} from "@/components/content.ts";
 import {useSaveFile} from "@/components/utils.ts";
 import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
-import {getNth} from "@/components/tree/tree.ts";
 
 self.MonacoEnvironment = {
   getWorkerUrl(_, label) {
@@ -32,9 +31,7 @@ interface Props {
 
 function MonacoView({ style }: Props): React.ReactElement {
   const folderTree = useFolderTreeStore((state) => state.folderTree)
-  const setFolderTree = useFolderTreeStore((state) => state.setFolderTree)
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
-  const setSelectedItem = useSelectedTreeItemStore((state) => state.setSelectedItem)
   const editorRef = useRef<HTMLDivElement>(null)
   const monacoEditorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null)
   const http = useHttp();

@@ -28,10 +28,14 @@ function FileHeadView(): React.ReactElement {
         <div className="file-types">
           {
             fileViewTypeList.map((fileViewType, idx) => {
+              let inactive = fileViewType == selectedFileViewType ? '' : 'inactive';
+              if (fileViewTypeList.length == 1) {
+                inactive = ""
+              }
               return (
                 <Icon
                   key={idx}
-                  className={fileViewType == selectedFileViewType ? '' : 'inactive'}
+                  className={inactive}
                   icon={getFileViewIcon(fileViewType)}
                   onClick={() => clickFileViewType(fileViewType)}
                 />

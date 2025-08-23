@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import MDEditor from '@uiw/react-md-editor';
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 import {useHttp} from "@/components/HttpServerProvider.tsx";
@@ -28,7 +28,7 @@ function MdView({ style }: Props) {
   }, [selectedItem])
 
 
-  const handleKeyDown = (e: KeyboardEvent) => {
+  const keyDownHandler = useCallback((e: React.KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.code === "KeyS") {
       e.preventDefault();
       console.log('handleKeyDown');
@@ -39,15 +39,15 @@ function MdView({ style }: Props) {
         console.log('saveFile done');
       });
     }
-  }
+  }, [selectedItem, content])
 
-  useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedItem, content]);
+  // useEffect(() => {
+  //   window.addEventListener("keydown", keyDownHandler);
+  //   return () => window.removeEventListener("keydown", keyDownHandler);
+  // }, [selectedItem, content]);
 
   return (
-    <div className="md-view" style={style} >
+    <div className="md-view" style={style} tabIndex={0} onKeyDownCapture={keyDownHandler}>
       <MDEditor
         value={content}
         onChange={setContent}

@@ -26,7 +26,7 @@ function FileView() {
 
   const SwitchView = (() => {
     switch (fileViewType) {
-      case 'Empty': return EmptyView;
+      case 'Empty': return MonacoView;
       case 'Img': return ImageView;
       case 'Embed': return EmbedView;
       case 'Md': return MdView;
