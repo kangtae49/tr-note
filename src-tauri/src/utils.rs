@@ -30,7 +30,7 @@ pub fn get_app_dir(app_handle: tauri::AppHandle) -> ApiResult<PathBuf> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    // use super::*;
     #[test]
     fn test_get_app_dir() {
     }

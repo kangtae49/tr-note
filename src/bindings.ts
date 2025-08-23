@@ -61,6 +61,14 @@ async getDisks() : Promise<Result<DiskInfo[], ApiError>> {
     else return { status: "error", error: e  as any };
 }
 },
+async getFileItem(path: string, metaTypes: MetaType[]) : Promise<Result<Item, ApiError>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("get_file_item", { path, metaTypes }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async loadTab() : Promise<Result<TabJson, ApiError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("load_tab") };

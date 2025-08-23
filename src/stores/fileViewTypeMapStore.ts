@@ -1,33 +1,7 @@
 import { create } from 'zustand'
+import {FileViewTypeMap} from "@/components/content.ts";
 
-export type FileViewType =
-  | 'Img'
-  | 'Embed'
-  | 'Monaco'
-  | 'Md'
-  | 'Video'
-  | 'Audio'
-  | 'Empty'
-  | 'None'
 
-export type FileViewTypeGroup =
-  | 'Binary'
-  | 'Image'
-  | 'Pdf'
-  | 'Md'
-  | 'Audio'
-  | 'Video'
-  | 'UnknownEmpty'
-  | 'UnknownSmall'
-  | 'Unknown'
-
-export type FileViewTypeGroupMap = {
-  [key in FileViewTypeGroup]: FileViewType[];
-}
-
-export type FileViewTypeMap = {
-  [key in FileViewTypeGroup]: FileViewType;
-}
 
 export interface FileViewTypeMapStore {
   fileViewTypeMap: FileViewTypeMap

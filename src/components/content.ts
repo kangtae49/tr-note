@@ -31,7 +31,7 @@ export const fileViewTypeGroupMap: FileViewTypeGroupMap = {
   Binary: ["None"],
   Image: ["Img"],
   Pdf: ["Embed"],
-  Md: ["Md", "Monaco"],
+  Md: ["Monaco", "Md"],
   Video: ["Video"],
   Audio: ["Audio"],
   UnknownEmpty: ["Monaco"],

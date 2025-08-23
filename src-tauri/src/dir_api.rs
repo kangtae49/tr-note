@@ -73,7 +73,7 @@ pub async fn save_file(file_path: &str, text: &str) -> ApiResult<Item> {
     file.write_all(text.as_bytes())?;
     file.flush()?;
     println!("save_file file_path {:?}", file_path);
-    let item = get_file_item(file_path, &vec![MetaType::Sz, MetaType::Tm, MetaType::Mt, MetaType::Ext])?;
+    let item = get_file_item(file_path, vec![MetaType::Sz, MetaType::Tm, MetaType::Mt, MetaType::Ext])?;
     println!("{:?}", item);
     if let Some(parent) = file_path_buf.parent() {
         let now = SystemTime::now()
@@ -83,6 +83,41 @@ pub async fn save_file(file_path: &str, text: &str) -> ApiResult<Item> {
         filetime::set_file_mtime(parent, ft)?;
     }
     Ok(item)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn get_file_item(path: &str, meta_types: Vec<MetaType>) -> ApiResult<Item> {
+    let path = PathBuf::from(path);
+    let nm_os = path.file_name().ok_or(ApiError::Error(String::from("Err FileName")))?;
+    let nm = nm_os.to_string_lossy().to_string();
+    let mut ext = None;
+    let mut sz = None;
+    let mut tm = None;
+    let mut mt = None;
+    let dir = path.is_dir();
+    if meta_types.contains(&MetaType::Ext) {
+        ext = get_extension(&nm).map(|x| x.to_string());
+    }
+    if meta_types.contains(&MetaType::Sz) {
+        sz = Some(path.metadata()?.len());
+    }
+    if meta_types.contains(&MetaType::Tm) {
+        let system_time = path.metadata()?.modified()?;
+        tm = Some(system_time.to_sec());
+    }
+    if meta_types.contains(&MetaType::Mt) {
+        mt = get_mime_type(&nm);
+    }
+    Ok(Item {
+        nm,
+        dir,
+        ext,
+        mt,
+        sz,
+        tm,
+        ..Item::default()
+    })
 }
 
 
@@ -487,34 +522,6 @@ pub fn get_items_win32(p: &str, meta_types: &Vec<MetaType>) -> ApiResult<Vec<Ite
     Ok(result)
 }
 
-
-pub fn get_file_item(path: &str, meta_types: &Vec<MetaType>) -> ApiResult<Item> {
-    let path = PathBuf::from(path);
-    let nm_os = path.file_name().ok_or(ApiError::Error(String::from("Err FileName")))?;
-    let nm = nm_os.to_string_lossy().to_string();
-    let mut ext = None;
-    let mut sz = None;
-    let mut tm = None;
-    let dir = path.is_dir();
-    if meta_types.contains(&MetaType::Ext) {
-        ext = get_extension(&nm).map(|x| x.to_string());
-    }
-    if meta_types.contains(&MetaType::Sz) {
-        sz = Some(path.metadata()?.len());
-    }
-    if meta_types.contains(&MetaType::Tm) {
-        let system_time = path.metadata()?.modified()?;
-        tm = Some(system_time.to_sec());
-    }
-    Ok(Item {
-        nm,
-        dir,
-        ext,
-        tm,
-        sz,
-        ..Item::default()
-    })
-}
 
 
 fn get_item_data_win32(find_data: &mut WIN32_FIND_DATAW, meta_types: &Vec<MetaType>) -> Option<Item> {
