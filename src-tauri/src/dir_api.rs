@@ -392,7 +392,7 @@ impl DirApi {
             Some(n) => cmp::min(n, len_items - skip),
             None =>  len_items - skip
         };
-        let items_sliced: Vec<Item> = sorted_items.iter().skip(skip as usize).take(take as usize).cloned().collect();
+        let items_sliced: Vec<Item> = sorted_items.iter().skip(skip).take(take).cloned().collect();
 
         folder.skip_n = Some(skip);
         folder.take_n = Some(take);
@@ -699,9 +699,9 @@ pub trait SystemTimeExt {
     // fn to_ms(&self) -> u128;
 }
 
-impl SystemTimeExt for std::time::SystemTime {
+impl SystemTimeExt for SystemTime {
     fn to_sec(&self) -> u64 {
-        match self.duration_since(std::time::UNIX_EPOCH) {
+        match self.duration_since(UNIX_EPOCH) {
             Ok(dur) => dur.as_secs(),
             Err(_) => panic!("SystemTime before UNIX EPOCH!"),
         }
@@ -805,22 +805,6 @@ mod tests {
     }
 
 
-    #[tokio::test]
-    async fn test_read_txt() {
-        let api = DirApi::default();
-        // let s = r"c:\docs\t1.cp949.txt";
-        // let s = r"c:\docs\t1.utf8.txt";
-        // let s = r"c:\docs\t1.json";
-        let s = r"C:\Users\kkt\Downloads\vite.main.config.ts";
-        // let s = r"C:\sources\sample\header-logo.png";
-        match api.read_txt(s).await {
-            Ok(text_content) => {
-                println!("{:?}", text_content);
-            },
-            Err(err) => {
-                println!("err: {:?}", err);
-            },
-        }
-    }
+
 
 }
