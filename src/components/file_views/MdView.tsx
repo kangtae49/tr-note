@@ -1,10 +1,10 @@
-import React, {useCallback, useEffect, useState} from "react";
-import MDEditor from '@uiw/react-md-editor';
+import React, {useCallback, useContext, useEffect, useState} from "react";
+import MDEditor, {commands } from '@uiw/react-md-editor';
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {useSaveFile} from "@/components/utils.ts";
-import {getNth} from "@/components/tree/tree.ts";
 import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
+import {useMdPreviewTypeStore} from "@/stores/mdPreviewTypeStore.ts";
 
 interface Props {
   style?: React.CSSProperties
@@ -12,9 +12,9 @@ interface Props {
 
 function MdView({ style }: Props) {
   const folderTree = useFolderTreeStore((state) => state.folderTree)
-  const setFolderTree = useFolderTreeStore((state) => state.setFolderTree)
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
-  const setSelectedItem = useSelectedTreeItemStore((state) => state.setSelectedItem)
+  const mdPreviewType = useMdPreviewTypeStore((state) => state.mdPreviewType);
+  const setMdPreviewType = useMdPreviewTypeStore((state) => state.setMdPreviewType);
   const [content, setContent] = useState<string | undefined>(undefined);
   const http = useHttp();
   const {saveFile} = useSaveFile();
@@ -41,17 +41,43 @@ function MdView({ style }: Props) {
     }
   }, [selectedItem, content])
 
-  // useEffect(() => {
-  //   window.addEventListener("keydown", keyDownHandler);
-  //   return () => window.removeEventListener("keydown", keyDownHandler);
-  // }, [selectedItem, content]);
+  const handleEditClick = (state: any, api: any) => {
+    console.log("edit clicked", state);
+    setMdPreviewType(state.command.name);
+    if (commands.codeEdit.execute) {
+      commands.codeEdit.execute(state, api);
+    }
+  };
+
+  const handlePreviewClick = (state: any, api: any) => {
+    console.log("preview clicked", state);
+    setMdPreviewType(state.command.name);
+    if (commands.codePreview.execute) {
+      commands.codePreview.execute(state, api);
+    }
+  };
+
+  const handleLiveClick = (state: any, api: any) => {
+    console.log("live clicked", state);
+    setMdPreviewType(state.command.name);
+    if (commands.codeLive.execute) {
+      commands.codeLive.execute(state, api);
+    }
+  };
+
+
 
   return (
     <div className="md-view" style={style} tabIndex={0} onKeyDownCapture={keyDownHandler}>
       <MDEditor
         value={content}
+        preview={mdPreviewType}
         onChange={setContent}
-        preview='live'
+        extraCommands = {[
+            { ...commands.codeEdit, execute: handleEditClick },
+            { ...commands.codeLive, execute: handleLiveClick },
+            { ...commands.codePreview, execute: handlePreviewClick },
+        ]}
         height="100%"
       />
     </div>
