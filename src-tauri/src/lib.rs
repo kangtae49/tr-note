@@ -23,7 +23,7 @@ struct AppState {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let builder = Builder::<tauri::Wry>::new().commands(collect_commands![
-        utils::get_resource_path,
+        utils::get_app_dir,
         http_server_api::run_http_server,
         http_server_api::shutdown_http_server,
         dir_api::save_file,

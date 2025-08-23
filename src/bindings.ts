@@ -5,9 +5,9 @@
 
 
 export const commands = {
-async getResourcePath() : Promise<Result<string, ApiError>> {
+async getAppDir() : Promise<Result<string, ApiError>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("get_resource_path") };
+    return { status: "ok", data: await TAURI_INVOKE("get_app_dir") };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -99,7 +99,7 @@ export type OptParams = { path_str?: string | null; meta_types?: MetaType[] | nu
 export type OrdItem = { nm: OrderBy; asc: OrderAsc }
 export type OrderAsc = "Asc" | "Desc"
 export type OrderBy = "Dir" | "Nm" | "Sz" | "Tm" | "Mt" | "Ext"
-export type ServInfo = { id: string; ip: string; port: number; path: string }
+export type ServInfo = { id: string; ip: string; port: number; path?: string | null }
 export type TabItem = { full_path: string; dir: boolean }
 export type TabJson = { items: TabItem[] }
 

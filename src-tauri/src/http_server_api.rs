@@ -24,17 +24,19 @@ use tokio::fs::File;
 use tokio::io::AsyncSeekExt;
 use tokio_util::io::ReaderStream;
 
-use tauri::{Emitter, State};
+use tauri::{Emitter, Manager, State};
 
 use crate::AppState;
 use crate::err::{ApiError, ApiResult};
-use crate::utils::get_resource_path;
 
 
 #[tauri::command]
 #[specta::specta]
-pub async fn run_http_server(state: State<'_, Arc<RwLock<AppState>>>, serv_info: ServInfo) -> ApiResult<ServInfo> {
+pub async fn run_http_server(state: State<'_, Arc<RwLock<AppState>>>, app_handle: tauri::AppHandle, mut serv_info: ServInfo) -> ApiResult<ServInfo> {
+    let app_data_dir = app_handle.path().app_data_dir()?;
+    serv_info.path = Some(app_data_dir.to_string_lossy().to_string());
     let app_state = state.read().await;
+
     let new_serv_info = match app_state.http_server_api.clone() {
         Some(http_server_api) => {
             let mut server_guard = http_server_api.write().await;
@@ -122,7 +124,7 @@ pub struct ServInfo {
     pub id: String,
     pub ip: String,
     pub port: u16,
-    pub path: String,
+    pub path: Option<String>,
 }
 
 
@@ -164,8 +166,8 @@ impl HttpServer {
 
     pub async fn run(&mut self, app_state: &Option<Arc<RwLock<AppState>>>) -> ApiResult<ServInfo> {
         println!("run: {:?}", &self.serv_info);
-        let resource = get_resource_path()?;
-        self.serv_info.path = resource.to_string_lossy().to_string();
+        // let resource = get_resource_path()?;
+        // self.serv_info.path = resource.to_string_lossy().to_string();
         let (tx, rx) = oneshot::channel();
         let (shutdown_tx, shutdown_rx) = oneshot::channel();
 
@@ -175,19 +177,19 @@ impl HttpServer {
 
         tokio::spawn(async move {
 
-            let serv_path = absolute(serv_info.path.clone()).unwrap();
+            let serv_path = absolute(serv_info.path.clone().unwrap()).unwrap();
             println!("serv_path: {}", &serv_path.to_string_lossy().to_string());
             let abs = serv_path.to_string_lossy().to_string();
             let resource = abs.clone();
             let index_path = format!("{}/index.html", &abs);
             println!("index_path: {}", &index_path);
+            let serv_dir = ServeDir::new(resource);
 
             let cors = CorsLayer::new()
                 .allow_origin(Any)
                 .allow_headers(Any)
                 .allow_methods(Any);
 
-            let serv_dir = ServeDir::new(resource);
 
             let app = match app_state {
                 Some(state) => {
@@ -212,7 +214,7 @@ impl HttpServer {
 
             let listener = tokio::net::TcpListener::bind(format!("{}:{}", serv_info.ip.clone(), serv_info.port.clone())).await.unwrap();
             let addr = listener.local_addr().unwrap();
-            let new_serv_info = ServInfo { id: serv_info.id.clone(), ip: addr.ip().to_string(), port: addr.port(), path: abs.clone() };
+            let new_serv_info = ServInfo { id: serv_info.id.clone(), ip: addr.ip().to_string(), port: addr.port(), path: serv_info.path.clone() };
             let _ = tx.send(new_serv_info.clone());
             axum::serve(listener, app)
                 .with_graceful_shutdown(async move {
