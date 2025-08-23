@@ -95,7 +95,6 @@ impl HttpServerApi {
 
     pub async fn run(&mut self, serv_info: ServInfo) -> ApiResult<ServInfo> {
         let id = serv_info.id.clone();
-        let new_serv_info = serv_info.clone();
         let mut serv = HttpServer::new(serv_info);
         let new_serv_info = serv.run(&self.app_state).await?;
 

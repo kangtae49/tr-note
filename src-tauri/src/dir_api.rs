@@ -4,15 +4,12 @@ use std::collections::{BTreeSet, HashMap};
 use std::ffi::OsStr;
 use std::io::Write;
 use std::os::windows::ffi::OsStrExt;
-use std::path::{absolute, Path, PathBuf};
+use std::path::{Path, PathBuf};
 use std::path::Component::{Prefix, RootDir};
 use std::sync::Arc;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tokio;
-use tokio::io::AsyncReadExt;
 use mime_guess::{from_path};
-use encoding_rs::Encoding;
-use chardetng::EncodingDetector;
 use moka::future::Cache;
 use dirs_next;
 use filetime::FileTime;
@@ -24,8 +21,8 @@ use sysinfo::Disks;
 use tauri::State;
 use tokio::sync::RwLock;
 use windows::core::PCWSTR;
-use windows::Win32::Foundation::{FILETIME, HANDLE, INVALID_HANDLE_VALUE};
-use windows::Win32::Storage::FileSystem::{FindClose, FindExInfoStandard, FindExSearchNameMatch, FindFirstFileExW, FindFirstFileW, FindNextFileW, FILE_ATTRIBUTE_DIRECTORY, FIND_FIRST_EX_LARGE_FETCH, WIN32_FIND_DATAW};
+use windows::Win32::Foundation::{FILETIME, HANDLE};
+use windows::Win32::Storage::FileSystem::{FindClose, FindExInfoStandard, FindExSearchNameMatch, FindFirstFileExW, FindNextFileW, FILE_ATTRIBUTE_DIRECTORY, FIND_FIRST_EX_LARGE_FETCH, WIN32_FIND_DATAW};
 
 use crate::AppState;
 use crate::err::{ApiError, ApiResult};
@@ -155,21 +152,6 @@ pub struct CacheKey {
 }
 
 
-#[derive(Clone, Eq, PartialEq, Hash)]
-pub struct CachePathsKey {
-    pub nm: String,
-    pub path: String,
-    pub tm: SystemTime,
-}
-
-
-#[derive(Clone, Eq, PartialEq, Hash)]
-pub struct CacheFileKey {
-    pub nm: String,
-    pub path: String,
-    pub tm: SystemTime,
-}
-
 #[derive(Clone)]
 pub struct CacheVal {
     pub items: Vec<Item>,
@@ -256,14 +238,12 @@ impl Default for Params {
 
 pub struct DirApi {
     cache_folder: Cache<CacheKey, CacheVal>,
-    state: Cache<String, String>,
 }
 
 impl Default for DirApi {
     fn default() -> Self {
         DirApi {
             cache_folder: Cache::new(100),
-            state: Cache::new(100),
         }
     }
 }
@@ -273,8 +253,6 @@ impl DirApi {
     pub fn new() -> Self {
         DirApi {
             cache_folder: Cache::new(100),
-            // cache_paths: Cache::new(100),
-            state: Cache::new(100),
         }
     }
 
@@ -427,90 +405,6 @@ impl DirApi {
         Ok(folder)
     }
 
-    pub async fn set_state(&self, key: String, opt_val: Option<String>) -> Result<Option<String>, ApiError> {
-        match opt_val.clone() {
-            None => {
-                self.state.remove(&key).await;
-            },
-            Some(val) => {
-                self.state.insert(key.clone(), val.clone()).await;
-            },
-        };
-        Ok(opt_val)
-    }
-
-    pub async fn get_state(&self, key: &String, default_val: Option<String>) -> Result<Option<String>, ApiError> {
-        let opt_val = self.state.get(key).await;
-        match (opt_val.clone(), default_val.clone()) {
-            (None, Some(val)) => {
-                self.state.insert(key.clone(), val.clone()).await;
-                Ok(default_val)
-            }
-            (opt_val, _) => {
-                Ok(opt_val)
-            }
-        }
-    }
-
-    pub async fn read_txt(&self, path_str: &str) -> Result<TextContent, ApiError> {
-        let path = PathBuf::from(path_str);
-
-        let mut file = tokio::fs::File::open(&path).await?;
-        let mut reader = tokio::io::BufReader::new(file);
-
-        let mut sample = vec![0u8; 16 * 1024];
-        let n = reader.read(&mut sample).await?;
-        sample.truncate(n);
-
-        let mime_type = match infer::get(&sample) {
-            Some(infer_type) => infer_type.mime_type().to_string(),
-            None => from_path(path_str).first_or_octet_stream().to_string()
-        };
-
-        // let mut mime_type = from_path(path_str).first_or_octet_stream().to_string();
-        // if mime_type == "application/octet-stream" {
-        //     if let Some(infer_type) = infer::get(&sample) {
-        //         mime_type = infer_type.mime_type().to_string()
-        //     }
-        // }
-
-        println!("mime_type: {}", mime_type);
-
-        let sz = path.metadata()?.len();
-
-        if sz > 5 * 1024 * 1024 {
-            // return Err(ApiError::Folder(String::from("Err MimeType")))
-            Ok(TextContent {
-                path: path_str.to_string(),
-                mimetype: mime_type,
-                enc: None,
-                text: None
-            })
-        } else {
-            file = tokio::fs::File::open(&path).await?;
-            let mut buffer = Vec::new();
-            file.read_to_end(&mut buffer).await?;
-
-            let mut detector = EncodingDetector::new();
-            detector.feed(&buffer, true);
-            let encoding: &Encoding = detector.guess(None, true);
-
-            let (text, _, had_errors) = encoding.decode(&buffer);
-            let opt_text = if had_errors {
-                None
-            } else {
-                Some(text.into_owned())
-            };
-
-            Ok(TextContent {
-                path: path_str.to_string(),
-                mimetype: mime_type,
-                enc: Some(encoding.name().to_string()),
-                text: opt_text
-            })
-        }
-    }
-
     pub async fn get_home_dir(&self) -> Result<HashMap<HomeType, String>, ApiError> {
         Ok([
             (HomeType::RootDir, Some(std::path::absolute(PathBuf::from("/"))?)),
@@ -547,9 +441,7 @@ impl DirApi {
         Ok(ret)
     }
     
-    pub async fn get_arg_path(&self) -> Result<Option<String>, ApiError> {
-        Ok(get_arg_path())
-    }
+
 }
 
 
@@ -761,20 +653,7 @@ pub fn sort_items(items: &mut Vec<Item>, ordering: &Vec<OrdItem>) {
     });
 }
 
-pub fn get_arg_path() -> Option<String> {
-    let args: Vec<String> = std::env::args().collect();
-    if args.len() > 1 {
-        match absolute(&args[1]) {
-            Ok(path) => Some(path.to_string_lossy().to_string()),
-            Err(e) => {
-                println!("{:?}", e);
-                None
-            },
-        }
-    } else {
-        None
-    }
-}
+
 
 
 pub trait PathExt {
@@ -916,14 +795,7 @@ mod tests {
         //     },
         // };
     }
-    #[tokio::test]
-    async fn test_state() {
-        let api = DirApi::default();
-        let s = api.set_state(String::from("a"), Some(String::from("1"))).await;
-        println!("{:?}", s);
-        let s = api.get_state(&String::from("a"), None).await;
-        println!("{:?}", s);
-    }
+
 
     #[tokio::test]
     async fn test_get_disks() {
