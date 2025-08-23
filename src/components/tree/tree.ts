@@ -123,7 +123,7 @@ export function getNth(
   }
   for (let idxItem = 0; idxItem < treeItems.length; idxItem++) {
     curIdx++
-    if (treeItems[idxItem] == item) {
+    if (treeItems[idxItem].full_path == item.full_path) {
       findTreeItem = treeItems[idxItem]
       break
     }

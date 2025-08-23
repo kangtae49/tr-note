@@ -5,6 +5,8 @@ import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeIte
 
 import {getMonacoLanguage} from "@/components/content.ts";
 import {useSaveFile} from "@/components/utils.ts";
+import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
+import {getNth} from "@/components/tree/tree.ts";
 
 self.MonacoEnvironment = {
   getWorkerUrl(_, label) {
@@ -29,6 +31,8 @@ interface Props {
 }
 
 function MonacoView({ style }: Props): React.ReactElement {
+  const folderTree = useFolderTreeStore((state) => state.folderTree)
+  const setFolderTree = useFolderTreeStore((state) => state.setFolderTree)
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
   const setSelectedItem = useSelectedTreeItemStore((state) => state.setSelectedItem)
   const editorRef = useRef<HTMLDivElement>(null)
@@ -40,12 +44,20 @@ function MonacoView({ style }: Props): React.ReactElement {
 
   const saveHandle = async () => {
     if(selectedItem == undefined) return;
+    if(folderTree == undefined) return;
     const pos = monacoEditorRef.current?.getPosition();
     const text = monacoEditorRef.current?.getValue();
     if (text !== undefined && content !== text) {
       saveFile(text).then((item) => {
         if (item !== undefined) {
           setSelectedItem({ ...selectedItem, sz: item.sz || 0, tm: item.tm || 0});
+          const [findTreeItem] = getNth(folderTree, selectedItem);
+          if (findTreeItem !== undefined) {
+            findTreeItem.sz = item.sz || 0;
+            findTreeItem.tm = item.tm || 0;
+            console.log('setFolderTree');
+            setFolderTree([...folderTree]);
+          }
         }
         setTimeout(() => {
           if (pos) {
