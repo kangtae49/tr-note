@@ -33,9 +33,11 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
+    "resources": [
+      "resources"
+    ],
     "windows": {
       "nsis": {
-        "installerHooks": "installer_custom.nsi",
         "installMode": "both"
       }
     }
