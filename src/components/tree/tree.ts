@@ -229,11 +229,12 @@ export const fetchTreeItems = async ({
       return fromItem({ item: folderItem, parentTreeItem: treeItem })
     })
     if (appendChildItems) {
-      if (treeItem.items && treeItem.tm != folder?.item?.tm) {
-        treeItem.items = treeItems
-      } else {
-        treeItem.items = treeItems
-      }
+      treeItem.items = treeItems
+      // if (treeItem.items && treeItem.tm != folder?.item?.tm) {
+      //   treeItem.items = treeItems
+      // } else {
+      //   treeItem.items = treeItems
+      // }
     }
     return treeItems
   }
@@ -267,16 +268,19 @@ export const fetchFolderTree = async ({
       break
     }
 
-    if (!findItem.items) {
+    findItem.items = []
+
+    // if (!findItem.items) {
       const fetchItems = await fetchTreeItems({ treeItem: selectedItem })
       if (fetchItems !== undefined) {
         parentTree = fetchItems
+        findItem.items = fetchItems
       } else {
         break
       }
-    } else {
-      parentTree = findItem.items
-    }
+    // } else {
+    //   parentTree = findItem.items
+    // }
 
     curIdx++
   }

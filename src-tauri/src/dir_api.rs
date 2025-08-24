@@ -79,7 +79,9 @@ pub async fn save_file(state: State<'_, Arc<RwLock<AppState>>>, file_path: &str,
     let app_state = state.read().await;
     let dir_api = app_state.dir_api.clone().ok_or(ApiError::Error(String::from("Err DirApi")))?;
     let dir_api_guard = dir_api.read().await;
-    dir_api_guard.remove_cache(file_path);
+    if let Some(parent) = file_path_buf.parent() {
+        let _ = dir_api_guard.remove_cache(&parent.to_string_lossy()).await;
+    }
 
     Ok(item)
 }
@@ -442,7 +444,7 @@ impl DirApi {
                     cache_val.items
                 }
                 None => {
-                    self.remove_cache(&cache_key.path);
+                    let _ = self.remove_cache(&cache_key.path).await;
                     let old_keys = self.cache_folder.iter().filter(|(k, _v)| { k.path == cache_key.path });
                     for (old_key, _old_val) in old_keys {
                         let _ = self.cache_folder.remove(&old_key);
@@ -488,12 +490,17 @@ impl DirApi {
         Ok(folder)
     }
 
-    pub fn remove_cache(&self, path: &str) {
-        let old_keys = self.cache_folder.iter().filter(|(k, _v)| { k.path == path });
-        for (old_key, _old_val) in old_keys {
-            let _ = self.cache_folder.remove(&old_key);
-            println!("remove old cache key");
+    pub async fn remove_cache(&self, path: &str) -> ApiResult<()>{
+        let old_keys: Vec<_> = self.cache_folder
+            .iter()
+            .filter(|(k, _v)| k.path == path)
+            .map(|(k, _v)| k.clone())
+            .collect();
+
+        for old_key in old_keys {
+            let _ = self.cache_folder.remove(&old_key.clone()).await;
         }
+        Ok(())
     }
 
     pub async fn get_home_dir(&self) -> Result<HashMap<HomeType, String>, ApiError> {
