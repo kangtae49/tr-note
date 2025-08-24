@@ -12,6 +12,7 @@ import MonacoView from "@/components/file_views/MonacoView.tsx";
 import NoneView from "@/components/file_views/NoneView.tsx";
 import AutoSizer from "react-virtualized-auto-sizer";
 import {FileViewType, getFileTypeGroup} from "@/components/content.ts";
+import {LIST_HEAD_SIZE} from "@/components/tree/tree.ts";
 
 function FileView() {
   const fileViewTypeMap = useFileViewTypeMapStore((state) => state.fileViewTypeMap)
@@ -41,7 +42,7 @@ function FileView() {
     <div className="file-view">
       <AutoSizer>
         {({ height, width }) => (
-          <SwitchView style={{width, height: height-25}}/>
+          <SwitchView style={{width, height: height - LIST_HEAD_SIZE}}/>
         )}
       </AutoSizer>
     </div>

@@ -60,6 +60,7 @@ function ContentHeadView() {
 
   return (
     <div className="content-head">
+
       <div className="title-path">
         <div className="icon">
           <Icon icon={faStar} className={includesTabItem({full_path: selectedItem?.full_path || "", dir: selectedItem?.dir || false}, tabItems) ? "" : "inactive"} onClick={() => toggleStar(selectedItem)} />
@@ -89,7 +90,6 @@ function ContentHeadView() {
         })}
 
       </div>
-      <TabView />
     </div>
   )
 }

@@ -2,6 +2,7 @@ import ContentHeadView from "@/components/ContentHeadView.tsx";
 import ContentView from "@/components/ContentView.tsx";
 import {SplitPane} from "@rexxars/react-split-pane";
 import {useState} from "react";
+import TabView from "@/components/tab/TabView.tsx";
 
 function ContentPaneView() {
   const [isResizing, setIsResizing] = useState(false);
@@ -10,12 +11,12 @@ function ContentPaneView() {
       <SplitPane
         split="horizontal"
         // primary="first"
-        minSize={54}
-        defaultSize={80}
+        minSize={30}
+        defaultSize={54}
         onDragStarted={() => setIsResizing(true)}
         onDragFinished={() => setIsResizing(false)}
       >
-        <ContentHeadView />
+        <TabView />
         <ContentView />
       </SplitPane>
     </div>
