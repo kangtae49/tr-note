@@ -22,7 +22,8 @@ use tokio::sync::RwLock;
 use windows::core::PCWSTR;
 use windows::Win32::Foundation::{FILETIME, HANDLE};
 use windows::Win32::Storage::FileSystem::{FindClose, FindExInfoStandard, FindExSearchNameMatch, FindFirstFileExW, FindNextFileW, FILE_ATTRIBUTE_DIRECTORY, FIND_FIRST_EX_LARGE_FETCH, WIN32_FIND_DATAW};
-
+use trash;
+use uuid::Uuid;
 use crate::AppState;
 use crate::err::{ApiError, ApiResult};
 
@@ -116,6 +117,49 @@ pub fn get_file_item(path: &str, meta_types: Vec<MetaType>) -> ApiResult<Item> {
         tm,
         ..Item::default()
     })
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn delete_path(path: &str) -> ApiResult<String> {
+    let p = Path::new(path);
+    trash::delete(p)?;
+    Ok(path.to_string())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn rename_path(base_path: &str, old_name: &str, new_name: &str) -> ApiResult<String> {
+    println!("rename_path");
+    let base_path = PathBuf::from(base_path);
+    let old_path = base_path.join(old_name);
+    let new_path = base_path.join(new_name);
+    println!("rename_path old_path {:?}", &old_path);
+    println!("rename_path new_path {:?}", &new_path);
+    std::fs::rename(&old_path, &new_path)?;
+    Ok(new_path.to_string_lossy().into_owned())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn create_folder(base_path: &str) -> ApiResult<String> {
+    let uuid = Uuid::new_v4();
+    let short_id = &uuid.as_simple().to_string()[0..4];
+    let name = format!("new_folder_{}", short_id);
+    let new_path = Path::new(base_path).join(name);
+    std::fs::create_dir(&new_path)?;
+    Ok(new_path.to_string_lossy().into_owned())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn create_file(base_path: &str) -> ApiResult<String> {
+    let uuid = Uuid::new_v4();
+    let short_id = &uuid.as_simple().to_string()[0..4];
+    let name = format!("new_file_{}.txt", short_id);
+    let new_path = Path::new(base_path).join(name);
+    std::fs::File::create(&new_path)?;
+    Ok(new_path.to_string_lossy().into_owned())
 }
 
 

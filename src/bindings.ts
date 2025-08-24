@@ -29,6 +29,22 @@ async shutdownHttpServer(id: string) : Promise<Result<null, ApiError>> {
     else return { status: "error", error: e  as any };
 }
 },
+async loadTab() : Promise<Result<TabJson, ApiError>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("load_tab") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async saveTab(json: TabJson) : Promise<Result<null, ApiError>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("save_tab", { json }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async saveFile(filePath: string, text: string) : Promise<Result<Item, ApiError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("save_file", { filePath, text }) };
@@ -69,17 +85,33 @@ async getFileItem(path: string, metaTypes: MetaType[]) : Promise<Result<Item, Ap
     else return { status: "error", error: e  as any };
 }
 },
-async loadTab() : Promise<Result<TabJson, ApiError>> {
+async deletePath(path: string) : Promise<Result<string, ApiError>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("load_tab") };
+    return { status: "ok", data: await TAURI_INVOKE("delete_path", { path }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
 },
-async saveTab(json: TabJson) : Promise<Result<null, ApiError>> {
+async renamePath(basePath: string, oldName: string, newName: string) : Promise<Result<string, ApiError>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("save_tab", { json }) };
+    return { status: "ok", data: await TAURI_INVOKE("rename_path", { basePath, oldName, newName }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async createFolder(basePath: string) : Promise<Result<string, ApiError>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("create_folder", { basePath }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async createFile(basePath: string) : Promise<Result<string, ApiError>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("create_file", { basePath }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -97,7 +129,7 @@ async saveTab(json: TabJson) : Promise<Result<null, ApiError>> {
 
 /** user-defined types **/
 
-export type ApiError = { Error: string } | { TauriError: string } | { Io: string } | { JsonError: string } | { TokioError: string } | { GlobError: string } | { WindowsError: string }
+export type ApiError = { Error: string } | { TauriError: string } | { IoError: string } | { JsonError: string } | { TokioError: string } | { GlobError: string } | { WindowsError: string }
 export type DiskInfo = { path: string }
 export type Folder = { item: Item; path_param: string; base_nm: string; tot?: number | null; cnt?: number | null; skip_n?: number | null; take_n?: number | null; ordering?: OrdItem[] | null }
 export type HomeType = "RootDir" | "HomeDir" | "DownloadDir" | "VideoDir" | "DocumentDir" | "DesktopDir" | "PictureDir" | "AudioDir" | "ConfigDir" | "DataDir" | "DataLocalDir" | "CacheDir" | "FontDir" | "PublicDir" | "ExecutableDir" | "RuntimeDir" | "TemplateDir"

@@ -12,7 +12,7 @@ pub enum ApiError {
     TauriError(String),
 
     #[error("IO error: {0}")]
-    Io(String),
+    IoError(String),
 
     #[error("JSON error: {0}")]
     JsonError(String),
@@ -36,7 +36,7 @@ impl From<tauri::Error> for ApiError {
 
 impl From<std::io::Error> for ApiError {
     fn from(e: std::io::Error) -> Self {
-        ApiError::Io(e.to_string())
+        ApiError::IoError(e.to_string())
     }
 }
 
@@ -48,7 +48,7 @@ impl From<serde_json::error::Error> for ApiError {
 
 impl From<std::string::FromUtf8Error> for ApiError {
     fn from(e: std::string::FromUtf8Error) -> Self {
-        ApiError::Io(e.to_string())
+        ApiError::IoError(e.to_string())
     }
 }
 
@@ -63,9 +63,11 @@ impl From<windows::core::Error> for ApiError {
         ApiError::WindowsError(e.to_string())
     }
 }
-// impl From<glob::PatternError> for ApiError {
-//     fn from(e: glob::PatternError) -> Self {
-//         ApiError::GlobError(e.to_string())
-//     }
-// }
+
+impl From<trash::Error> for ApiError {
+    fn from(e: trash::Error) -> Self {
+        ApiError::IoError(e.to_string())
+    }
+}
+
 

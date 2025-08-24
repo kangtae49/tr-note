@@ -26,13 +26,17 @@ pub fn run() {
         utils::get_app_dir,
         http_server_api::run_http_server,
         http_server_api::shutdown_http_server,
+        tab_api::load_tab,
+        tab_api::save_tab,
         dir_api::save_file,
         dir_api::read_folder,
         dir_api::get_home_dir,
         dir_api::get_disks,
         dir_api::get_file_item,
-        tab_api::load_tab,
-        tab_api::save_tab,
+        dir_api::delete_path,
+        dir_api::rename_path,
+        dir_api::create_folder,
+        dir_api::create_file
     ]);
 
     #[cfg(debug_assertions)]
