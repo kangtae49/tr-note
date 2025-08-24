@@ -41,7 +41,9 @@ function ContentHeadView() {
         selectedItem
       })
     }
+
   }
+
   let pathList: string[] = []
   let fullPathList: string[] = []
 

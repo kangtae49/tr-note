@@ -309,7 +309,7 @@ export const renderTreeFromPath = async ({
             new_disk.push(disk);
           } else {
             new_disk.push(findItem);
-            setSelectedItem(findItem);
+            setSelectedItem({...findItem});
           }
         }
         setFolderTree(new_disk);
@@ -327,7 +327,7 @@ export const renderTreeFromPath = async ({
           });
         }
         setFolderTree([...newFolderTree])
-        setSelectedItem(newSelectedItem)
+        setSelectedItem({...newSelectedItem})
         scrollToItem({ selectedItem: newSelectedItem, folderTree: newFolderTree, folderTreeRef })
       }
       // const totalCount = getCountOfTreeItems(newFolderTree)
