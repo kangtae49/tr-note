@@ -12,7 +12,6 @@ use tokio;
 use mime_guess::{from_path};
 use moka::future::Cache;
 use dirs_next;
-use filetime::FileTime;
 use natord::compare;
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, skip_serializing_none};
@@ -67,7 +66,7 @@ pub async fn get_disks(state: State<'_, Arc<RwLock<AppState>>>) -> ApiResult<Vec
 
 #[tauri::command]
 #[specta::specta]
-pub async fn save_file(file_path: &str, text: &str) -> ApiResult<Item> {
+pub async fn save_file(state: State<'_, Arc<RwLock<AppState>>>, file_path: &str, text: &str) -> ApiResult<Item> {
     let file_path_buf = PathBuf::from(file_path);
     let mut file = std::fs::File::create(&file_path_buf)?;
     file.write_all(text.as_bytes())?;
@@ -75,13 +74,12 @@ pub async fn save_file(file_path: &str, text: &str) -> ApiResult<Item> {
     println!("save_file file_path {:?}", file_path);
     let item = get_file_item(file_path, vec![MetaType::Sz, MetaType::Tm, MetaType::Mt, MetaType::Ext])?;
     println!("{:?}", item);
-    if let Some(parent) = file_path_buf.parent() {
-        let now = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap();
-        let ft = FileTime::from_unix_time(now.as_secs() as i64, now.subsec_nanos());
-        filetime::set_file_mtime(parent, ft)?;
-    }
+
+    let app_state = state.read().await;
+    let dir_api = app_state.dir_api.clone().ok_or(ApiError::Error(String::from("Err DirApi")))?;
+    let dir_api_guard = dir_api.read().await;
+    dir_api_guard.remove_cache(file_path);
+
     Ok(item)
 }
 
@@ -400,6 +398,12 @@ impl DirApi {
                     cache_val.items
                 }
                 None => {
+                    self.remove_cache(&cache_key.path);
+                    let old_keys = self.cache_folder.iter().filter(|(k, _v)| { k.path == cache_key.path });
+                    for (old_key, _old_val) in old_keys {
+                        let _ = self.cache_folder.remove(&old_key);
+                        println!("remove old cache key");
+                    }
                     println!("read folder");
                     let mut items_new = get_items_win32(abs.to_string_lossy().as_ref(), &meta_types).unwrap_or(vec![]);
                     update_items(&mut items_new, &meta_types);
@@ -438,6 +442,14 @@ impl DirApi {
         // folder.item.has = if meta_types.contains(&MetaType::Has) { Some(len_items > 0) } else { None };
 
         Ok(folder)
+    }
+
+    pub fn remove_cache(&self, path: &str) {
+        let old_keys = self.cache_folder.iter().filter(|(k, _v)| { k.path == path });
+        for (old_key, _old_val) in old_keys {
+            let _ = self.cache_folder.remove(&old_key);
+            println!("remove old cache key");
+        }
     }
 
     pub async fn get_home_dir(&self) -> Result<HashMap<HomeType, String>, ApiError> {
