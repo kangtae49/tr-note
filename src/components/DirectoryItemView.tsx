@@ -53,7 +53,7 @@ function DirectoryItemView({ treeItem, style, clickCreateFolder, clickCreateFile
         })
         toast.success(`success ${res.data}`);
       } else {
-        toast.error(`fail ${res.error}`);
+        toast.error(`fail ${Object.values(res.error)[0]}`);
       }
     }).catch((err) => {
       toast.error(`fail ${err}`);
@@ -80,7 +80,7 @@ function DirectoryItemView({ treeItem, style, clickCreateFolder, clickCreateFile
           toast.success(`success ${res.data}`);
 
         } else {
-          toast.error(`fail ${res.error}`);
+          toast.error(`fail ${Object.values(res.error)[0]}`);
         }
       }).catch((err) => {
         toast.error(`fail ${err}`);

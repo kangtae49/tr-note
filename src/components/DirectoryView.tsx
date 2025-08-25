@@ -47,9 +47,10 @@ function DirectoryView() {
         toast.success(`success ${res.data}`);
         setCreatePath(res.data);
       } else {
-        toast.error(`fail ${res.error}`);
+        toast.error(`fail ${Object.values(res.error)[0]}`);
       }
     }).catch((err) => {
+      console.log('fail', err);
       toast.error(`fail ${err}`);
     });
   }
@@ -70,7 +71,7 @@ function DirectoryView() {
         toast.success(`success ${res.data}`);
         setCreatePath(res.data);
       } else {
-        toast.error(`fail ${res.error}`);
+        toast.error(`fail ${Object.values(res.error)[0]}`);
       }
     }).catch((err) => {
       toast.error(`fail ${err}`);
@@ -92,7 +93,7 @@ function DirectoryView() {
         toast.success(`success ${res.data}`);
         setCreatePath(res.data);
       } else {
-        toast.error(`fail ${res.error}`);
+        toast.error(`fail ${Object.values(res.error)[0]}`);
       }
     }).catch((err) => {
       toast.error(`fail ${err}`);
