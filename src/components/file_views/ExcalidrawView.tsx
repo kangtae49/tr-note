@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useState} from "react";
 import {Excalidraw} from "@excalidraw/excalidraw";
-import {OrderedExcalidrawElement, AppState, BinaryFiles} from "@excalidraw/excalidraw/element/types";
+import {type OrderedExcalidrawElement} from "@excalidraw/excalidraw/element/types";
 import "@excalidraw/excalidraw/index.css";
 import { getAllWindows } from '@tauri-apps/api/window';
 
@@ -16,11 +16,11 @@ function ExcalidrawView({ style }: Props) {
   const http = useHttp();
   const {saveFile} = useSaveFile();
   const [initialData, setInitialData] = useState<any>(undefined);
-  const [elements, setElements] = useState<OrderedExcalidrawElement[]>([]);
-  const [appState, setAppState] = useState<AppState>({});
-  const [files, setFiles] = useState<BinaryFiles>({});
+  const [elements, setElements] = useState<readonly OrderedExcalidrawElement[]>([]);
+  const [appState, setAppState] = useState<any>({});
+  const [files, setFiles] = useState<any>({});
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [newStyle, setNewStyle] = useState<React.CSSProperties>(style);
+  const [newStyle, setNewStyle] = useState<React.CSSProperties | undefined>(style);
 
   useEffect(() => {
     if (http == undefined) return;

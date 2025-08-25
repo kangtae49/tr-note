@@ -38,7 +38,7 @@ function MonacoView({ style }: Props): React.ReactElement {
   const http = useHttp();
   const [content, setContent] = useState<string | undefined>(undefined);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [newStyle, setNewStyle] = useState<React.CSSProperties>(style);
+  const [newStyle, setNewStyle] = useState<React.CSSProperties | undefined>(style);
 
   const {saveFile} = useSaveFile();
 
