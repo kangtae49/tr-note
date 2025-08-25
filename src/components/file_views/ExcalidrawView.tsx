@@ -2,6 +2,7 @@ import React, {useCallback, useEffect, useState} from "react";
 import {Excalidraw} from "@excalidraw/excalidraw";
 import {OrderedExcalidrawElement, AppState, BinaryFiles} from "@excalidraw/excalidraw/element/types";
 import "@excalidraw/excalidraw/index.css";
+import { getAllWindows } from '@tauri-apps/api/window';
 
 import {useSaveFile} from "@/components/utils.ts";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
@@ -12,12 +13,14 @@ interface Props {
 }
 function ExcalidrawView({ style }: Props) {
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
+  const http = useHttp();
+  const {saveFile} = useSaveFile();
   const [initialData, setInitialData] = useState<any>(undefined);
   const [elements, setElements] = useState<OrderedExcalidrawElement[]>([]);
   const [appState, setAppState] = useState<AppState>({});
   const [files, setFiles] = useState<BinaryFiles>({});
-  const http = useHttp();
-  const {saveFile} = useSaveFile();
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [newStyle, setNewStyle] = useState<React.CSSProperties>(style);
 
   useEffect(() => {
     if (http == undefined) return;
@@ -43,8 +46,26 @@ function ExcalidrawView({ style }: Props) {
     });
   }, [selectedItem])
 
+  useEffect(() => {
+    if (isFullscreen) {
+      setNewStyle({
+        ...style,
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        zIndex: 9999,
+        background: "white"
+      })
+    } else {
+      setNewStyle({
+        ...style,
+      })
+    }
+  }, [isFullscreen]);
 
-  const keyDownHandler = useCallback((e: React.KeyboardEvent) => {
+  const keyDownHandler = useCallback(async (e: React.KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.code === "KeyS") {
       e.preventDefault();
       e.stopPropagation();
@@ -56,14 +77,43 @@ function ExcalidrawView({ style }: Props) {
       saveFile(jsonString).then((_item) => {
         console.log('saveFile done');
       });
+    } else if (e.code === "F11") {
+      // setIsFullscreen(!isFullscreen);
+      const appWindows = await getAllWindows();
+      const appWindow = appWindows[0];
+      if (isFullscreen){
+        await appWindow.setFullscreen(false);
+      } else {
+        // await document.exitFullscreen();
+        await appWindow.setFullscreen(true);
+      }
+      setIsFullscreen(!isFullscreen);
     }
-  }, [selectedItem, elements, appState, files])
+  }, [selectedItem, elements, appState, files, isFullscreen])
+
+  // useEffect(() => {
+  //   if (document.fullscreenElement == null){
+  //
+  //   } else {
+  //     await document.exitFullscreen();
+  //   }
+  //   if (isFullscreen) {
+  //     appWindow.setFullScreen(true);
+  //   } else {
+  //     appWindow.setFullScreen(false);
+  //   }
+  //
+  // }, [isFullscreen]);
+
   if (initialData == undefined) {
     return <div className='excalidraw-view'></div>
   }
 
   return (
-    <div className="excalidraw-view" style={style} tabIndex={0} onKeyDownCapture={keyDownHandler}>
+    <div className="excalidraw-view"
+         style={newStyle}
+         tabIndex={0}
+         onKeyDownCapture={keyDownHandler}>
       <Excalidraw
         key={selectedItem?.full_path}
         initialData={initialData}
