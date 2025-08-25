@@ -1,12 +1,13 @@
 import {TreeItem} from "@/components/tree/tree.ts";
 import * as monaco from "monaco-editor";
-import {faFileCode, faFileLines} from "@fortawesome/free-solid-svg-icons";
+import {faFileCode, faFileLines, faImage} from "@fortawesome/free-solid-svg-icons";
 
 export type FileViewType =
   | 'Img'
   | 'Embed'
   | 'Monaco'
   | 'Md'
+  | 'Excalidraw'
   | 'Video'
   | 'Audio'
   | 'Empty'
@@ -16,6 +17,7 @@ export type FileViewTypeGroup =
   | 'Image'
   | 'Pdf'
   | 'Md'
+  | 'Excalidraw'
   | 'Audio'
   | 'Video'
   | 'UnknownEmpty'
@@ -32,11 +34,25 @@ export const fileViewTypeGroupMap: FileViewTypeGroupMap = {
   Image: ["Img"],
   Pdf: ["Embed"],
   Md: ["Monaco", "Md"],
+  Excalidraw: ["Excalidraw", "Monaco"],
   Video: ["Video"],
   Audio: ["Audio"],
   UnknownEmpty: ["Monaco"],
   UnknownSmall: ["Monaco"],
   Unknown: ["None"],
+}
+
+export const defaultFileViewTypeOfGroup: FileViewTypeMap = {
+  Binary: "None",
+  Image: "Img",
+  Pdf: "Embed",
+  Md: "Md",
+  Excalidraw: "Excalidraw",
+  Video: "Video",
+  Audio: "Audio",
+  UnknownEmpty: "Empty",
+  UnknownSmall: "Monaco",
+  Unknown: "None",
 }
 
 export function getFileTypeGroup(treeItem?: TreeItem): FileViewTypeGroup {
@@ -45,10 +61,13 @@ export function getFileTypeGroup(treeItem?: TreeItem): FileViewTypeGroup {
   }
   let fileViewTypeGroup: FileViewTypeGroup
   const sz = treeItem?.sz || 0
-  if (sz == 0) {
-    fileViewTypeGroup = 'UnknownEmpty'
-  } else if (['exe', 'com', 'msi', 'dll', 'zip'].includes(treeItem?.ext || '')) {
+  // if (sz == 0) {
+  //   fileViewTypeGroup = 'UnknownEmpty'
+  // } else
+  if (['exe', 'com', 'msi', 'dll', 'zip'].includes(treeItem?.ext || '')) {
     fileViewTypeGroup = 'Binary'
+  } else if  (treeItem?.ext === 'excalidraw') {
+    fileViewTypeGroup = 'Excalidraw'
   } else if (treeItem?.mt?.startsWith('image/')) {
     fileViewTypeGroup = 'Image'
   } else if (treeItem?.mt?.endsWith('/pdf')) {
@@ -97,6 +116,8 @@ export function getFileViewIcon(fileViewType: FileViewType) {
   switch (fileViewType) {
     case "Monaco":
       return faFileCode
+    case "Excalidraw":
+      return faImage;
     default:
       return faFileLines
   }

@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import {FileViewTypeMap} from "@/components/content.ts";
+import {defaultFileViewTypeOfGroup, FileViewTypeMap} from "@/components/content.ts";
 
 
 
@@ -9,16 +9,6 @@ export interface FileViewTypeMapStore {
 }
 
 export const useFileViewTypeMapStore = create<FileViewTypeMapStore>((set) => ({
-  fileViewTypeMap: {
-    Binary: "None",
-    Image: "Img",
-    Pdf: "Embed",
-    Md: "Md",
-    Video: "Video",
-    Audio: "Audio",
-    UnknownEmpty: "Empty",
-    UnknownSmall: "Monaco",
-    Unknown: "None",
-  },
+  fileViewTypeMap: defaultFileViewTypeOfGroup,
   setFileViewTypeMap: (fileViewTypeMap: FileViewTypeMap) => set(() => ({ fileViewTypeMap }))
 }))

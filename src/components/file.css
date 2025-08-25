@@ -18,13 +18,14 @@
 .file-view .embed-view { width: 100%; height: 100%; }
 .file-view .embed-view embed {width: 100%; height: 100%;}
 .file-view .image-view { width: 100%; height: 100%; }
-.file-view .image-view img {width: 100%; height: 100%;}
+.file-view .image-view img {width: 100%; height: 100%; object-fit: contain}
 .file-view .video-view { width: 100%; height: 100%; }
 .file-view .video-view video {width: 100%; height: 100%;}
 .file-view .audio-view { width: 100%; height: 100%; }
 .file-view .audio-view audio {width: 100%; height: 100%;}
 .file-view .md-view { width: 100%; height: 100%; }
 .file-view .monaco-view { width: 100%; height: 100%; }
+.file-view .excalidraw-view { width: 100%; height: 100%; }
 .file-view .none-view { width: 100%; height: 100%; }
 .file-view .empty-view { width: 100%; height: 100%; }
 

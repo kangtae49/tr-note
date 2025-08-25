@@ -13,6 +13,7 @@ import NoneView from "@/components/file_views/NoneView.tsx";
 import AutoSizer from "react-virtualized-auto-sizer";
 import {FileViewType, getFileTypeGroup} from "@/components/content.ts";
 import {LIST_HEAD_SIZE} from "@/components/tree/tree.ts";
+import ExcalidrawView from "@/components/file_views/ExcalidrawView.tsx";
 
 function FileView() {
   const fileViewTypeMap = useFileViewTypeMapStore((state) => state.fileViewTypeMap)
@@ -31,6 +32,7 @@ function FileView() {
       case 'Img': return ImageView;
       case 'Embed': return EmbedView;
       case 'Md': return MdView;
+      case 'Excalidraw': return ExcalidrawView;
       case 'Audio': return AudioView;
       case 'Video': return VideoView;
       case 'Monaco': return MonacoView;
