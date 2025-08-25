@@ -35,7 +35,7 @@ function NameView({ item, sliderPos }: Props) {
         <div className="icon" onClick={() => utils.shellShowItemInFolder(fullPath)}>
           <Icon icon={item?.dir ? faFolder : faFile} />
         </div>
-        <div className="label" title={fullPath} onClick={() => setSelectedItem(item)}>
+        <div className="label" title={fullPath} onDoubleClick={() => setSelectedItem(item)}>
           {nm}
         </div>
       </div>

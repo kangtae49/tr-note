@@ -23,7 +23,7 @@ function ImageView({ item, sliderPos }: Props) {
         src={http.getSrc(item?.full_path)}
         loading="lazy"
         alt={item?.full_path}
-        onClick={() => setSelectedItem(item)}
+        onDoubleClick={() => setSelectedItem(item)}
       />
     </div>
   )

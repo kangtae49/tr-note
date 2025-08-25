@@ -92,7 +92,7 @@ function DirectoryHeadView() {
         </div>
       )}
       <div className="info">
-        {total.toLocaleString()} files {formatFileSize(size)}
+        {total.toLocaleString()} files <span title={String(size)}>{formatFileSize(size)}</span>
       </div>
       <div className="nm">
         <Icon icon={iconNm} onClick={() => clickOrder('Nm')} />

@@ -49,7 +49,7 @@ function TabItemView({ item, removeItem }: Props) {
   }
 
   return (
-    <div className="tab-item"
+    <div className={`tab-item ${selectedItem?.full_path == item.full_path ? 'selected' : ''}`}
          ref={(node) => {
            sortable.setNodeRef(node);
          }}
