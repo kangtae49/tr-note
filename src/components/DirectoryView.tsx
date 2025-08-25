@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import "@/components/directory.css"
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import {faFile, faFolder, faFileImage} from "@fortawesome/free-solid-svg-icons";
@@ -16,6 +16,7 @@ import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
 import {useFolderTreeRefStore} from "@/components/tree/stores/folderTreeRefStore.ts";
 import {commands} from "@/bindings.ts";
 import toast from "react-hot-toast";
+import {useCreatePathStore} from "@/stores/createPathStore.ts";
 
 function DirectoryView() {
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
@@ -26,6 +27,10 @@ function DirectoryView() {
   const folderTree = useFolderTreeStore((state) => state.folderTree)
   const setFolderTree = useFolderTreeStore((state) => state.setFolderTree)
   const folderTreeRef = useFolderTreeRefStore((state) => state.folderTreeRef)
+  const createPath = useCreatePathStore((state) => state.createPath)
+  const setCreatePath = useCreatePathStore((state) => state.setCreatePath)
+  const listRef = useRef<List>(null)
+
 
   const clickCreateFile = () => {
     if (selectedItem == undefined) return;
@@ -40,6 +45,7 @@ function DirectoryView() {
           selectedItem
         })
         toast.success(`success ${res.data}`);
+        setCreatePath(res.data);
       } else {
         toast.error(`fail ${res.error}`);
       }
@@ -62,7 +68,7 @@ function DirectoryView() {
           selectedItem
         })
         toast.success(`success ${res.data}`);
-
+        setCreatePath(res.data);
       } else {
         toast.error(`fail ${res.error}`);
       }
@@ -84,6 +90,7 @@ function DirectoryView() {
           selectedItem
         })
         toast.success(`success ${res.data}`);
+        setCreatePath(res.data);
       } else {
         toast.error(`fail ${res.error}`);
       }
@@ -98,6 +105,16 @@ function DirectoryView() {
       (fetchItems) => setFolderList(fetchItems)
     )
   }, [folderListOrder, selectedItem, setFolderList])
+
+  useEffect(() => {
+    if (listRef.current == undefined) return;
+    const idx = folderList?.findIndex((item) => item.full_path == createPath);
+    if (idx !== undefined && idx >= 0) {
+      listRef.current.scrollToItem(idx, 'auto');
+      setCreatePath(undefined);
+    }
+  }, [folderList])
+
   if (folderList == undefined) return null;
   return (
     <div className="directory-view">
@@ -111,6 +128,7 @@ function DirectoryView() {
                 itemCount={folderList?.length || 0}
                 itemSize={LIST_ITEM_SIZE}
                 width={width}
+                ref={listRef}
               >
                 {({ index, style }) => {
                   const listItem = folderList[index]

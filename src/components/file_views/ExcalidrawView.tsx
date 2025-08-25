@@ -39,10 +39,8 @@ function ExcalidrawView({ style }: Props) {
         const elements = data.elements;
         const appState = data.appState;
         const files = data.files;
-        // const appState = {};
         setInitialData({elements, appState, files});
       }
-      // setInitialData(data);
     });
   }, [selectedItem])
 
@@ -83,32 +81,16 @@ function ExcalidrawView({ style }: Props) {
       }
     } else if (e.code === "F11") {
       e.preventDefault();
-      // setIsFullscreen(!isFullscreen);
       const appWindows = await getAllWindows();
       const appWindow = appWindows[0];
       if (isFullscreen){
         await appWindow.setFullscreen(false);
       } else {
-        // await document.exitFullscreen();
         await appWindow.setFullscreen(true);
       }
       setIsFullscreen(!isFullscreen);
     }
   }, [selectedItem, elements, appState, files, isFullscreen])
-
-  // useEffect(() => {
-  //   if (document.fullscreenElement == null){
-  //
-  //   } else {
-  //     await document.exitFullscreen();
-  //   }
-  //   if (isFullscreen) {
-  //     appWindow.setFullScreen(true);
-  //   } else {
-  //     appWindow.setFullScreen(false);
-  //   }
-  //
-  // }, [isFullscreen]);
 
   if (initialData == undefined) {
     return <div className='excalidraw-view'></div>
