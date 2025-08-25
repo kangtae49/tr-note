@@ -36,7 +36,8 @@ pub fn run() {
         dir_api::delete_path,
         dir_api::rename_path,
         dir_api::create_folder,
-        dir_api::create_file
+        dir_api::create_file,
+        dir_api::create_draw_file
     ]);
 
     #[cfg(debug_assertions)]

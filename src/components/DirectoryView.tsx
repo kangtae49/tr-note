@@ -69,6 +69,26 @@ function DirectoryView() {
     });
   }
 
+  const clickCreateDrawFile = () => {
+    if (selectedItem == undefined) return;
+    commands.createDrawFile(selectedItem.full_path).then(async (res) => {
+      if(res.status === 'ok') {
+        await renderTreeFromPath({
+          fullPath: selectedItem.full_path,
+          folderTree,
+          setFolderTree,
+          folderTreeRef,
+          setSelectedItem,
+          selectedItem
+        })
+        toast.success(`success ${res.data}`);
+      } else {
+        toast.error(`fail ${res.error}`);
+      }
+    }).catch((err) => {
+      toast.error(`fail ${err}`);
+    });
+  }
 
 
   useEffect(() => {
@@ -99,6 +119,7 @@ function DirectoryView() {
                       treeItem={listItem}
                       clickCreateFile={clickCreateFile}
                       clickCreateFolder={clickCreateFolder}
+                      clickCreateDrawFile={clickCreateDrawFile}
                     />
                   ) : null
                 }}
@@ -106,11 +127,14 @@ function DirectoryView() {
             </ContextMenu.Trigger>
             <ContextMenu.Portal>
               <ContextMenu.Content className="context-menu">
+                <ContextMenu.Item className="context-menu-item" onSelect={clickCreateFolder}>
+                  Create Folder
+                </ContextMenu.Item>
                 <ContextMenu.Item className="context-menu-item" onSelect={clickCreateFile}>
                   Create File
                 </ContextMenu.Item>
-                <ContextMenu.Item className="context-menu-item" onSelect={clickCreateFolder}>
-                  Create Folder
+                <ContextMenu.Item className="context-menu-item" onSelect={clickCreateDrawFile}>
+                  Create Draw File
                 </ContextMenu.Item>
               </ContextMenu.Content>
             </ContextMenu.Portal>

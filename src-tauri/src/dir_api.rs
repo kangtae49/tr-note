@@ -164,6 +164,17 @@ pub async fn create_file(base_path: &str) -> ApiResult<String> {
     Ok(new_path.to_string_lossy().into_owned())
 }
 
+#[tauri::command]
+#[specta::specta]
+pub async fn create_draw_file(base_path: &str) -> ApiResult<String> {
+    let uuid = Uuid::new_v4();
+    let short_id = &uuid.as_simple().to_string()[0..4];
+    let name = format!("new_draw_{}.excalidraw", short_id);
+    let new_path = Path::new(base_path).join(name);
+    std::fs::File::create(&new_path)?;
+    Ok(new_path.to_string_lossy().into_owned())
+}
+
 
 #[derive(Type, Serialize, Deserialize, Clone, Eq, PartialEq, Hash, PartialOrd, Ord, Debug)]
 pub enum MetaType {

@@ -15,10 +15,11 @@ import toast from "react-hot-toast";
 interface Props {
   style: React.CSSProperties
   treeItem: TreeItem
-  clickCreateFile: () => void
   clickCreateFolder: () => void
+  clickCreateFile: () => void
+  clickCreateDrawFile: () => void
 }
-function DirectoryItemView({ treeItem, style, clickCreateFile, clickCreateFolder }: Props) {
+function DirectoryItemView({ treeItem, style, clickCreateFolder, clickCreateFile, clickCreateDrawFile }: Props) {
   const setSelectedItem = useSelectedTreeItemStore((state) => state.setSelectedItem)
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
   const folderTree = useFolderTreeStore((state) => state.folderTree)
@@ -59,48 +60,7 @@ function DirectoryItemView({ treeItem, style, clickCreateFile, clickCreateFolder
     });
   };
 
-  // const clickCreateFile = () => {
-  //   if (selectedItem == undefined) return;
-  //   commands.createFile(selectedItem.full_path).then(async (res) => {
-  //     if(res.status === 'ok') {
-  //       await renderTreeFromPath({
-  //         fullPath: selectedItem.full_path,
-  //         folderTree,
-  //         setFolderTree,
-  //         folderTreeRef,
-  //         setSelectedItem,
-  //         selectedItem
-  //       })
-  //       toast.success(`success ${res.data}`);
-  //
-  //     } else {
-  //       toast.error(`fail ${res.error}`);
-  //     }
-  //   }).catch((err) => {
-  //     toast.error(`fail ${err}`);
-  //   });
-  // }
-  //
-  // const clickCreateFolder = () => {
-  //   if (selectedItem == undefined) return;
-  //   commands.createFolder(selectedItem.full_path).then(async (res) => {
-  //     if(res.status === 'ok') {
-  //       await renderTreeFromPath({
-  //         fullPath: selectedItem.full_path,
-  //         folderTree,
-  //         setFolderTree,
-  //         folderTreeRef,
-  //         setSelectedItem,
-  //         selectedItem
-  //       })
-  //       toast.success(`success ${res.data}`);
-  //     } else {
-  //       toast.error(`fail ${res.error}`);
-  //     }
-  //   }).catch((err) => {
-  //     toast.error(`fail ${err}`);
-  //   });
-  // }
+
   const onBlur = useCallback(() => {
     console.log('onBlur', tempName);
     if (selectedItem == undefined) return;
@@ -189,11 +149,14 @@ function DirectoryItemView({ treeItem, style, clickCreateFile, clickCreateFolder
               <ContextMenu.Item className="context-menu-item" onSelect={clickDelete}>
                 Delete
               </ContextMenu.Item>
+              <ContextMenu.Item className="context-menu-item" onSelect={clickCreateFolder}>
+                Create Folder
+              </ContextMenu.Item>
               <ContextMenu.Item className="context-menu-item" onSelect={clickCreateFile}>
                 Create File
               </ContextMenu.Item>
-              <ContextMenu.Item className="context-menu-item" onSelect={clickCreateFolder}>
-                Create Folder
+              <ContextMenu.Item className="context-menu-item" onSelect={clickCreateDrawFile}>
+                Create Draw File
               </ContextMenu.Item>
             </ContextMenu.Content>
           </ContextMenu.Portal>
