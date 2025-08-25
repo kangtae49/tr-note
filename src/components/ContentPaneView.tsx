@@ -19,6 +19,7 @@ function ContentPaneView() {
         <TabView />
         <ContentView />
       </SplitPane>
+      {isResizing && <div className="iframe-overlay2" />}
     </div>
   )
 }

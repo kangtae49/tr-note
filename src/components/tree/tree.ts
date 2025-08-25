@@ -8,13 +8,11 @@ export const TREE_ITEM_SIZE = 18
 export const TREE_DEPT_SIZE = 13
 export const LIST_ITEM_SIZE = 18
 export const LIST_HEAD_SIZE = 52
-export const FILE_HEAD_SIZE = 25
 export const SLIDER_SIZE = 20
 export const SLIDER_STEP = 20
 
 export type HomePathMap = Record<HomeType, string>
 export type FolderTree = TreeItem[]
-export type FolderList = TreeItem[]
 export type TreeItem = {
   parent?: TreeItem
   nm: string
@@ -230,11 +228,6 @@ export const fetchTreeItems = async ({
     })
     if (appendChildItems) {
       treeItem.items = treeItems
-      // if (treeItem.items && treeItem.tm != folder?.item?.tm) {
-      //   treeItem.items = treeItems
-      // } else {
-      //   treeItem.items = treeItems
-      // }
     }
     return treeItems
   }
@@ -270,17 +263,13 @@ export const fetchFolderTree = async ({
 
     findItem.items = []
 
-    // if (!findItem.items) {
-      const fetchItems = await fetchTreeItems({ treeItem: selectedItem })
-      if (fetchItems !== undefined) {
-        parentTree = fetchItems
-        findItem.items = fetchItems
-      } else {
-        break
-      }
-    // } else {
-    //   parentTree = findItem.items
-    // }
+    const fetchItems = await fetchTreeItems({ treeItem: selectedItem })
+    if (fetchItems !== undefined) {
+      parentTree = fetchItems
+      findItem.items = fetchItems
+    } else {
+      break
+    }
 
     curIdx++
   }
@@ -334,14 +323,6 @@ export const renderTreeFromPath = async ({
         setSelectedItem({...newSelectedItem})
         scrollToItem({ selectedItem: newSelectedItem, folderTree: newFolderTree, folderTreeRef })
       }
-      // const totalCount = getCountOfTreeItems(newFolderTree)
-      // if (document.querySelector('.folder-tree')?.scrollHeight == totalCount * TREE_ITEM_SIZE) {
-      //   folderTreeRef?.current?.scrollToItem(newSelectedIndex, 'center')
-      // } else {
-      //   setTimeout(() => {
-      //     folderTreeRef?.current?.scrollToItem(newSelectedIndex, 'center')
-      //   }, 100)
-      // }
     })
   }
 }

@@ -53,9 +53,9 @@ export function getFileTypeGroup(treeItem?: TreeItem): FileViewTypeGroup {
     fileViewTypeGroup = 'Image'
   } else if (treeItem?.mt?.endsWith('/pdf')) {
     fileViewTypeGroup = 'Pdf'
-  } else if (treeItem?.mt?.endsWith('/html')) {
+  } else if (treeItem?.mt?.endsWith('/html') && sz < 2 * 1024 * 1024) {
     fileViewTypeGroup = 'Md'
-  } else if (treeItem?.mt?.endsWith('/markdown')) {
+  } else if (treeItem?.mt?.endsWith('/markdown') && sz < 2 * 1024 * 1024) {
     fileViewTypeGroup = 'Md'
   } else if (treeItem?.mt?.startsWith('audio/') && sz > 1024 * 500) {
     fileViewTypeGroup = 'Audio'

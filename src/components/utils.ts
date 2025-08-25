@@ -87,17 +87,6 @@ export function useSaveFile() {
           selectedItem
         })
 
-        // selectedItem.sz = item.sz ?? undefined;
-        // selectedItem.tm = item.tm ?? undefined;
-        //
-        // setSelectedItem({ ...selectedItem, sz: item.sz || 0, tm: item.tm || 0});
-        // const [findTreeItem] = getNth(folderTree, selectedItem);
-        // if (findTreeItem !== undefined) {
-        //   findTreeItem.sz = item.sz || 0;
-        //   findTreeItem.tm = item.tm || 0;
-        //   setFolderTree([...folderTree]);
-        // }
-
         toast.success('Success saved', { duration });
         return selectedItem;
       } else {
