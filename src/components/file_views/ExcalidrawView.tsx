@@ -20,7 +20,7 @@ function ExcalidrawView({ style }: Props) {
   const [appState, setAppState] = useState<any>({});
   const [files, setFiles] = useState<any>({});
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [newStyle, setNewStyle] = useState<React.CSSProperties | undefined>(style);
+  const [newStyle, setNewStyle] = useState<React.CSSProperties | undefined>({});
 
   useEffect(() => {
     if (http == undefined) return;
@@ -57,10 +57,6 @@ function ExcalidrawView({ style }: Props) {
         height: "100vh",
         zIndex: 9999,
         background: "white"
-      })
-    } else {
-      setNewStyle({
-        ...style,
       })
     }
   }, [isFullscreen]);
@@ -120,7 +116,7 @@ function ExcalidrawView({ style }: Props) {
 
   return (
     <div className="excalidraw-view"
-         style={newStyle}
+         style={isFullscreen ? newStyle :style}
          tabIndex={0}
          onKeyDownCapture={keyDownHandler}>
       <Excalidraw

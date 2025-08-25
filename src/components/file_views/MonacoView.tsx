@@ -38,7 +38,7 @@ function MonacoView({ style }: Props): React.ReactElement {
   const http = useHttp();
   const [content, setContent] = useState<string | undefined>(undefined);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [newStyle, setNewStyle] = useState<React.CSSProperties | undefined>(style);
+  const [newStyle, setNewStyle] = useState<React.CSSProperties | undefined>({});
 
   const {saveFile} = useSaveFile();
 
@@ -93,18 +93,13 @@ function MonacoView({ style }: Props): React.ReactElement {
   useEffect(() => {
     if (isFullscreen) {
       setNewStyle({
-        ...style,
         position: "fixed",
         top: 0,
         left: 0,
-        width: "100vw",
+        width: "100%",
         height: "100vh",
         zIndex: 9999,
         background: "white"
-      })
-    } else {
-      setNewStyle({
-        ...style,
       })
     }
   }, [isFullscreen]);
@@ -134,7 +129,7 @@ function MonacoView({ style }: Props): React.ReactElement {
   return (
     <div className="monaco-view"
          ref={editorRef}
-         style={newStyle}
+         style={isFullscreen ? newStyle :style}
          onKeyDownCapture={keyDownHandler}/>
   )
 }

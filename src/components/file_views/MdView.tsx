@@ -20,7 +20,7 @@ function MdView({ style }: Props) {
   const setMdPreviewType = useMdPreviewTypeStore((state) => state.setMdPreviewType);
   const [content, setContent] = useState<string | undefined>(undefined);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [newStyle, setNewStyle] = useState<React.CSSProperties | undefined>(style);
+  const [newStyle, setNewStyle] = useState<React.CSSProperties | undefined>({});
 
 
   useEffect(() => {
@@ -42,10 +42,6 @@ function MdView({ style }: Props) {
         height: "100vh",
         zIndex: 9999,
         background: "white"
-      })
-    } else {
-      setNewStyle({
-        ...style,
       })
     }
   }, [isFullscreen]);
@@ -111,7 +107,7 @@ function MdView({ style }: Props) {
 
   return (
     <div className="md-view"
-         style={newStyle}
+         style={isFullscreen ? newStyle :style}
          tabIndex={0}
          onKeyDownCapture={keyDownHandler}>
       <MDEditor
