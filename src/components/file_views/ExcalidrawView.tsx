@@ -72,12 +72,21 @@ function ExcalidrawView({ style }: Props) {
       console.log('handleKeyDown');
       if (selectedItem == undefined) return;
 
-      const jsonString = JSON.stringify({ elements, appState, files }, null, 2);
+      const jsonString = JSON.stringify({elements, appState, files}, null, 2);
 
       saveFile(jsonString).then((_item) => {
         console.log('saveFile done');
       });
+    } else if (e.code === "Escape") {
+      e.preventDefault();
+      if (isFullscreen){
+        const appWindows = await getAllWindows();
+        const appWindow = appWindows[0];
+        await appWindow.setFullscreen(false);
+        setIsFullscreen(false);
+      }
     } else if (e.code === "F11") {
+      e.preventDefault();
       // setIsFullscreen(!isFullscreen);
       const appWindows = await getAllWindows();
       const appWindow = appWindows[0];

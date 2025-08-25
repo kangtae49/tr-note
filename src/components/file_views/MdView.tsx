@@ -5,19 +5,23 @@ import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {useSaveFile} from "@/components/utils.ts";
 import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
 import {useMdPreviewTypeStore} from "@/stores/mdPreviewTypeStore.ts";
+import {getAllWindows} from "@tauri-apps/api/window";
 
 interface Props {
   style?: React.CSSProperties
 }
 
 function MdView({ style }: Props) {
+  const http = useHttp();
+  const {saveFile} = useSaveFile();
   const folderTree = useFolderTreeStore((state) => state.folderTree)
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
   const mdPreviewType = useMdPreviewTypeStore((state) => state.mdPreviewType);
   const setMdPreviewType = useMdPreviewTypeStore((state) => state.setMdPreviewType);
   const [content, setContent] = useState<string | undefined>(undefined);
-  const http = useHttp();
-  const {saveFile} = useSaveFile();
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [newStyle, setNewStyle] = useState<React.CSSProperties>(style);
+
 
   useEffect(() => {
     if (http == undefined) return;
@@ -27,8 +31,26 @@ function MdView({ style }: Props) {
     });
   }, [selectedItem])
 
+  useEffect(() => {
+    if (isFullscreen) {
+      setNewStyle({
+        ...style,
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        zIndex: 9999,
+        background: "white"
+      })
+    } else {
+      setNewStyle({
+        ...style,
+      })
+    }
+  }, [isFullscreen]);
 
-  const keyDownHandler = useCallback((e: React.KeyboardEvent) => {
+  const keyDownHandler = useCallback(async (e: React.KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.code === "KeyS") {
       e.preventDefault();
       console.log('handleKeyDown');
@@ -38,8 +60,28 @@ function MdView({ style }: Props) {
       saveFile(content).then((_item) => {
         console.log('saveFile done');
       });
+    } else if (e.code === "Escape") {
+      e.preventDefault();
+      if (isFullscreen){
+        const appWindows = await getAllWindows();
+        const appWindow = appWindows[0];
+        await appWindow.setFullscreen(false);
+        setIsFullscreen(false);
+      }
+    } else if (e.code === "F11") {
+      e.preventDefault();
+      // setIsFullscreen(!isFullscreen);
+      const appWindows = await getAllWindows();
+      const appWindow = appWindows[0];
+      if (isFullscreen){
+        await appWindow.setFullscreen(false);
+      } else {
+        // await document.exitFullscreen();
+        await appWindow.setFullscreen(true);
+      }
+      setIsFullscreen(!isFullscreen);
     }
-  }, [selectedItem, content])
+  }, [selectedItem, content, isFullscreen])
 
   const handleEditClick = (state: any, api: any) => {
     console.log("edit clicked", state);
@@ -68,7 +110,10 @@ function MdView({ style }: Props) {
 
 
   return (
-    <div className="md-view" style={style} tabIndex={0} onKeyDownCapture={keyDownHandler}>
+    <div className="md-view"
+         style={newStyle}
+         tabIndex={0}
+         onKeyDownCapture={keyDownHandler}>
       <MDEditor
         value={content}
         preview={mdPreviewType}

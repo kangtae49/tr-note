@@ -1,6 +1,6 @@
 import {TreeItem} from "@/components/tree/tree.ts";
 import * as monaco from "monaco-editor";
-import {faFileCode, faFileLines, faImage} from "@fortawesome/free-solid-svg-icons";
+import {faFileCode, faFileLines, faFileImage} from "@fortawesome/free-solid-svg-icons";
 
 export type FileViewType =
   | 'Img'
@@ -117,7 +117,7 @@ export function getFileViewIcon(fileViewType: FileViewType) {
     case "Monaco":
       return faFileCode
     case "Excalidraw":
-      return faImage;
+      return faFileImage;
     default:
       return faFileLines
   }

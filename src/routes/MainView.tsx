@@ -10,7 +10,7 @@ function MainView() {
     <div className="main-pane">
       <SplitPane
         split="vertical"
-        minSize={100}
+        minSize={0}
         defaultSize={200}
         onDragStarted={() => setIsResizing(true)}
         onDragFinished={() => setIsResizing(false)}
