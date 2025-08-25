@@ -1,5 +1,7 @@
 import React, {useEffect} from "react";
 import "@/components/directory.css"
+import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
+import {faFile, faFolder, faFileImage} from "@fortawesome/free-solid-svg-icons";
 import {fetchTreeItems, LIST_HEAD_SIZE, LIST_ITEM_SIZE, renderTreeFromPath} from "@/components/tree/tree.ts";
 import { FixedSizeList as List } from 'react-window'
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
@@ -128,13 +130,13 @@ function DirectoryView() {
             <ContextMenu.Portal>
               <ContextMenu.Content className="context-menu">
                 <ContextMenu.Item className="context-menu-item" onSelect={clickCreateFolder}>
-                  Create Folder
+                  <Icon icon={faFolder}/> Create Folder
                 </ContextMenu.Item>
                 <ContextMenu.Item className="context-menu-item" onSelect={clickCreateFile}>
-                  Create File
+                  <Icon icon={faFile}/> Create File
                 </ContextMenu.Item>
                 <ContextMenu.Item className="context-menu-item" onSelect={clickCreateDrawFile}>
-                  Create Draw File
+                  <Icon icon={faFileImage}/> Create Draw File
                 </ContextMenu.Item>
               </ContextMenu.Content>
             </ContextMenu.Portal>

@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
-import {faFile, faFolder, faRocket} from "@fortawesome/free-solid-svg-icons";
+import {faFile, faFolder, faRocket, faFileImage} from "@fortawesome/free-solid-svg-icons";
 import {renderTreeFromPath, TreeItem} from "@/components/tree/tree.ts";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 import {useFolderListVisibleColsStore} from "@/stores/folderListVisibleColsStore.ts";
@@ -144,19 +144,19 @@ function DirectoryItemView({ treeItem, style, clickCreateFolder, clickCreateFile
           <ContextMenu.Portal>
             <ContextMenu.Content className="context-menu">
               <ContextMenu.Item className="context-menu-item" onSelect={clickRename}>
-                Rename
+                <Icon icon={treeItem.dir ? faFolder : faFile}/> Rename
               </ContextMenu.Item>
               <ContextMenu.Item className="context-menu-item" onSelect={clickDelete}>
-                Delete
+                <Icon icon={treeItem.dir ? faFolder : faFile}/> Delete
               </ContextMenu.Item>
               <ContextMenu.Item className="context-menu-item" onSelect={clickCreateFolder}>
-                Create Folder
+                <Icon icon={faFolder}/> Create Folder
               </ContextMenu.Item>
               <ContextMenu.Item className="context-menu-item" onSelect={clickCreateFile}>
-                Create File
+                <Icon icon={faFile}/> Create File
               </ContextMenu.Item>
               <ContextMenu.Item className="context-menu-item" onSelect={clickCreateDrawFile}>
-                Create Draw File
+                <Icon icon={faFileImage}/> Create Draw File
               </ContextMenu.Item>
             </ContextMenu.Content>
           </ContextMenu.Portal>
