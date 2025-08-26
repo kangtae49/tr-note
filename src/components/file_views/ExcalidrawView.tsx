@@ -27,7 +27,16 @@ function textToContent(text: string): ContentType {
     const elements = data.elements;
     const appState = data.appState;
     const files = data.files;
-    return {elements, appState, files};
+
+    let newAppState = appState;
+    if (appState.collaborators && typeof appState.collaborators === 'object' && !Array.isArray(appState.collaborators)) {
+      newAppState = {
+        ...appState,
+        collaborators: new Map(Object.entries(appState.collaborators))
+      };
+    }
+
+    return {elements, appState: newAppState, files};
   } catch (error) {
     console.error("Error parsing JSON:", error);
     return {};
