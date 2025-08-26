@@ -4,9 +4,10 @@ import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeIte
 
 interface Props {
   style?: React.CSSProperties
+  fullscreenHandler?: (e: any) => Promise<void>
 }
 
-function VideoView({ style }: Props): React.ReactElement {
+function VideoView({ style, fullscreenHandler }: Props): React.ReactElement {
   const mediaRef = useRef<HTMLVideoElement>(null)
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
   const http = useHttp();
@@ -22,7 +23,7 @@ function VideoView({ style }: Props): React.ReactElement {
     return <div className='video-view'></div>
   }
   return (
-    <div className="video-view" style={style}>
+    <div className="video-view" style={style} tabIndex={0} onKeyDownCapture={fullscreenHandler}>
       <video ref={mediaRef} controls={true} autoPlay={true}>
         <source src={http.getSrc(selectedItem?.full_path)} type={selectedItem?.mt} />
       </video>

@@ -10,8 +10,9 @@ import {useHttp} from "@/components/HttpServerProvider.tsx";
 
 interface Props {
   style?: React.CSSProperties
+  fullscreenHandler?: (e: any) => Promise<void>
 }
-function ExcalidrawView({ style }: Props) {
+function ExcalidrawView({ style, fullscreenHandler }: Props) {
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
   const http = useHttp();
   const {saveFile} = useSaveFile();
@@ -19,8 +20,6 @@ function ExcalidrawView({ style }: Props) {
   const [elements, setElements] = useState<readonly OrderedExcalidrawElement[]>([]);
   const [appState, setAppState] = useState<any>({});
   const [files, setFiles] = useState<any>({});
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [newStyle, setNewStyle] = useState<React.CSSProperties | undefined>({});
 
   useEffect(() => {
     if (http == undefined) return;
@@ -44,20 +43,7 @@ function ExcalidrawView({ style }: Props) {
     });
   }, [selectedItem])
 
-  useEffect(() => {
-    if (isFullscreen) {
-      setNewStyle({
-        ...style,
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100vw",
-        height: "100vh",
-        zIndex: 9999,
-        background: "white"
-      })
-    }
-  }, [isFullscreen]);
+
 
   const keyDownHandler = useCallback(async (e: React.KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.code === "KeyS") {
@@ -71,26 +57,11 @@ function ExcalidrawView({ style }: Props) {
       saveFile(jsonString).then((_item) => {
         console.log('saveFile done');
       });
-    } else if (e.code === "Escape") {
-      e.preventDefault();
-      if (isFullscreen){
-        const appWindows = await getAllWindows();
-        const appWindow = appWindows[0];
-        await appWindow.setFullscreen(false);
-        setIsFullscreen(false);
-      }
-    } else if (e.code === "F11") {
-      e.preventDefault();
-      const appWindows = await getAllWindows();
-      const appWindow = appWindows[0];
-      if (isFullscreen){
-        await appWindow.setFullscreen(false);
-      } else {
-        await appWindow.setFullscreen(true);
-      }
-      setIsFullscreen(!isFullscreen);
+    } else if (fullscreenHandler !== undefined) {
+      await fullscreenHandler(e);
     }
-  }, [selectedItem, elements, appState, files, isFullscreen])
+
+  }, [selectedItem, elements, appState, files, fullscreenHandler])
 
   if (initialData == undefined) {
     return <div className='excalidraw-view'></div>
@@ -98,9 +69,10 @@ function ExcalidrawView({ style }: Props) {
 
   return (
     <div className="excalidraw-view"
-         style={isFullscreen ? newStyle :style}
+         style={style}
          tabIndex={0}
-         onKeyDownCapture={keyDownHandler}>
+         onKeyDownCapture={keyDownHandler}
+    >
       <Excalidraw
         key={selectedItem?.full_path}
         initialData={initialData}

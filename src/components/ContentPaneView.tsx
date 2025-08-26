@@ -3,9 +3,12 @@ import ContentView from "@/components/ContentView.tsx";
 import {SplitPane} from "@rexxars/react-split-pane";
 import {useState} from "react";
 import TabView from "@/components/tab/TabView.tsx";
+import {useIsResizingStore} from "@/stores/isResizingStore.ts";
 
 function ContentPaneView() {
-  const [isResizing, setIsResizing] = useState(false);
+  const setIsResizing = useIsResizingStore((state) => state.setIsResizing)
+
+
   return (
     <div className="content-pane">
       <SplitPane
@@ -19,7 +22,6 @@ function ContentPaneView() {
         <TabView />
         <ContentView />
       </SplitPane>
-      {isResizing && <div className="iframe-overlay2" />}
     </div>
   )
 }

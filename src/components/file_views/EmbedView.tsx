@@ -1,20 +1,30 @@
-import React from "react";
+import React, {useEffect, useRef} from "react";
 import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 
 interface Props {
   style?: React.CSSProperties
+  fullscreenHandler?: (e: any) => Promise<void>
 }
 
-function EmbedView({ style }: Props): React.ReactElement {
+function EmbedView({ style, fullscreenHandler }: Props): React.ReactElement {
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
   const http = useHttp();
+  // const embedRef = useRef<HTMLEmbedElement | undefined>(undefined);
+  //
+  // useEffect(() => {
+  //   embedRef.current?.requestFullscreen();
+  // }, []);
+
   if (selectedItem == undefined || http == undefined) {
     return <div className='embed-view'></div>
   }
   return (
-    <div className="embed-view" style={style}>
-      <embed src={http.getSrc(selectedItem.full_path)} title={selectedItem.full_path} />
+    <div className="embed-view"
+         style={style}
+         tabIndex={0}
+         onKeyDownCapture={fullscreenHandler}>
+      <embed src={http.getSrc(selectedItem.full_path)} title={selectedItem.full_path}  />
     </div>
   )
 }

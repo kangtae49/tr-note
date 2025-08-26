@@ -1,11 +1,11 @@
 import {create} from "zustand";
 
-export interface createPathStore {
+export interface CreatePathStore {
   createPath: string | undefined
   setCreatePath: (createPath: string | undefined) => void
 }
 
-export const useCreatePathStore = create<createPathStore>((set) => ({
+export const useCreatePathStore = create<CreatePathStore>((set) => ({
   createPath: undefined,
   setCreatePath: (createPath) => set(() => ({ createPath }))
 }))

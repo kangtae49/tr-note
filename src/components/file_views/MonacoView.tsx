@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from "react";
+import React, {KeyboardEventHandler, useCallback, useEffect, useRef, useState} from "react";
 import * as monaco from 'monaco-editor'
 import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
@@ -6,7 +6,6 @@ import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeIte
 import {getMonacoLanguage} from "@/components/content.ts";
 import {useSaveFile} from "@/components/utils.ts";
 import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
-import {getAllWindows} from "@tauri-apps/api/window";
 
 self.MonacoEnvironment = {
   getWorkerUrl(_, label) {
@@ -28,17 +27,16 @@ self.MonacoEnvironment = {
 }
 interface Props {
   style?: React.CSSProperties
+  fullscreenHandler?: (e: any) => Promise<void>
 }
 
-function MonacoView({ style }: Props): React.ReactElement {
+function MonacoView({ style, fullscreenHandler }: Props): React.ReactElement {
   const folderTree = useFolderTreeStore((state) => state.folderTree)
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
   const editorRef = useRef<HTMLDivElement>(null)
   const monacoEditorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null)
   const http = useHttp();
   const [content, setContent] = useState<string | undefined>(undefined);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [newStyle, setNewStyle] = useState<React.CSSProperties | undefined>({});
 
   const {saveFile} = useSaveFile();
 
@@ -90,47 +88,14 @@ function MonacoView({ style }: Props): React.ReactElement {
     }
   }, [content, selectedItem]);
 
-  useEffect(() => {
-    if (isFullscreen) {
-      setNewStyle({
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100vh",
-        zIndex: 9999,
-        background: "white"
-      })
-    }
-  }, [isFullscreen]);
 
-  const keyDownHandler = useCallback(async (e: React.KeyboardEvent) => {
-    if (e.code === "Escape") {
-      e.preventDefault();
-      if (isFullscreen){
-        const appWindows = await getAllWindows();
-        const appWindow = appWindows[0];
-        await appWindow.setFullscreen(false);
-        setIsFullscreen(false);
-      }
-    } else if (e.code === "F11") {
-      e.preventDefault();
-      const appWindows = await getAllWindows();
-      const appWindow = appWindows[0];
-      if (isFullscreen){
-        await appWindow.setFullscreen(false);
-      } else {
-        await appWindow.setFullscreen(true);
-      }
-      setIsFullscreen(!isFullscreen);
-    }
-  }, [selectedItem, isFullscreen])
 
   return (
     <div className="monaco-view"
          ref={editorRef}
-         style={isFullscreen ? newStyle :style}
-         onKeyDownCapture={keyDownHandler}/>
+         style={style}
+         tabIndex={0}
+         onKeyDownCapture={fullscreenHandler}/>
   )
 }
 
