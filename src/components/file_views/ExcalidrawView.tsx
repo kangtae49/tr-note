@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useEffect} from "react";
 import {Excalidraw} from "@excalidraw/excalidraw";
 import {type OrderedExcalidrawElement} from "@excalidraw/excalidraw/element/types";
 import "@excalidraw/excalidraw/index.css";
@@ -24,11 +24,6 @@ interface ContentType {
 function textToContent(text: string): ContentType {
   try {
     const data = JSON.parse(text) as ContentType;
-    if (data.appState) {
-      data.appState.collaborators = Array.isArray(data.appState.collaborators)
-        ? data.appState.collaborators
-        : [];
-    }
     const elements = data.elements;
     const appState = data.appState;
     const files = data.files;
@@ -42,10 +37,6 @@ function textToContent(text: string): ContentType {
 function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
   const http = useHttp();
   const {saveFile} = useSaveFile();
-  // const [initialData, setInitialData] = useState<any>(undefined);
-  // const [elements, setElements] = useState<readonly OrderedExcalidrawElement[]>([]);
-  // const [appState, setAppState] = useState<any>({});
-  // const [files, setFiles] = useState<any>({});
 
   const {content, setContent} = useFileContent<string | undefined>(selectedItem?.full_path);
 
@@ -57,35 +48,19 @@ function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
     if (content == undefined) {
       http.getSrcText(selectedItem.full_path).then(text => {
         if (text == "") {
-          // setInitialData({})
-          setContent({})
+          setContent(JSON.stringify({elements: [], appState: {}, files: {}}, null, 2))
         } else {
-          const data = JSON.parse(text) as ContentType;
-          // if (data.appState) {
-          //   data.appState.collaborators = Array.isArray(data.appState.collaborators)
-          //     ? data.appState.collaborators
-          //     : [];
-          // }
-          const elements = data.elements;
-          const appState = data.appState;
-          const files = data.files;
           setContent(text)
-          // setInitialData({elements, appState, files});
         }
       });
     }
   }, [selectedItem])
 
   const onChangeContent = (elements: readonly OrderedExcalidrawElement[], appState: AppState, files: BinaryFiles) => {
-    // setContent({elements, appState, files})
     const jsonString = JSON.stringify({elements, appState, files}, null, 2);
     setContent(jsonString);
   }
 
-  // const onChangeContent = (value: string | undefined) => {
-  //   if (value == undefined) return;
-  //   setContent(value);
-  // }
   const keyDownHandler = useCallback(async (e: React.KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.code === "KeyS") {
       e.preventDefault();
@@ -93,11 +68,11 @@ function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
       console.log('handleKeyDown');
       if (selectedItem == undefined) return;
 
-      // const jsonString = JSON.stringify(content, null, 2);
-
-      saveFile(content).then((_item) => {
-        console.log('saveFile done');
-      });
+      if (content !== undefined) {
+        saveFile(content).then((_item) => {
+          console.log('saveFile done');
+        });
+      }
     } else if (fullscreenHandler !== undefined) {
       await fullscreenHandler(e);
     }

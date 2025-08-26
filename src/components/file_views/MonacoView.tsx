@@ -70,7 +70,7 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
         e.preventDefault();
         const text = editor.getValue();
         const pos = editor.getPosition();
-        if (text !== undefined && content !== text) {
+        if (text !== undefined) {
           saveFile(text).then((_item) => {
             console.log('saveFile done');
             setTimeout(() => {
