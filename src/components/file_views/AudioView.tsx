@@ -1,15 +1,16 @@
 import React, {useEffect, useRef} from "react";
 import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
+import {TreeItem} from "@/components/tree/tree.ts";
 
 interface Props {
   style?: React.CSSProperties
+  selectedItem?: TreeItem
   fullscreenHandler?: (e: any) => Promise<void>
 }
 
-function AudioView({ style, fullscreenHandler }: Props): React.ReactElement {
+function AudioView({ style, selectedItem, fullscreenHandler }: Props): React.ReactElement {
   const mediaRef = useRef<HTMLAudioElement>(null)
-  const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
   const http = useHttp();
 
   useEffect(() => {

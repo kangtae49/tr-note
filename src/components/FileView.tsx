@@ -22,7 +22,6 @@ function FileView() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [newStyle, setNewStyle] = useState<React.CSSProperties | undefined>({});
 
-
   const SwitchView = (() => {
     switch (fileViewType) {
       case 'Empty': return MonacoView;
@@ -95,6 +94,7 @@ function FileView() {
         {({ height, width }) => (
           <SwitchView
             style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}}
+            selectedItem={selectedItem}
             fullscreenHandler={fullscreenHandler}
           />
         )}

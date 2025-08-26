@@ -1,22 +1,23 @@
-import React, {KeyboardEventHandler, useCallback, useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef} from "react";
 import * as monaco from 'monaco-editor'
+import Editor, {OnMount} from '@monaco-editor/react';
 import {useHttp} from "@/components/HttpServerProvider.tsx";
-import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
-
 import {getMonacoLanguage} from "@/components/content.ts";
 import {useSaveFile} from "@/components/utils.ts";
-import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
+import {TreeItem} from "@/components/tree/tree.ts";
+import {useFileContent} from "@/stores/contentsStore.ts";
+
 
 self.MonacoEnvironment = {
-  getWorkerUrl(_, label) {
-    const basePath = '.'
+  getWorkerUrl(_moduleId, label) {
+    const basePath = ''
     if (label === 'json') {
       return `${basePath}/monaco-editor/esm/vs/language/json/json.worker.js`
     }
-    if (label === 'css') {
+    if (label === 'css' || label === 'scss' || label === 'less') {
       return `${basePath}/monaco-editor/esm/vs/language/css/css.worker.js`
     }
-    if (label === 'html') {
+    if (label === 'html' || label === 'handlebars') {
       return `${basePath}/monaco-editor/esm/vs/language/html/html.worker.js`
     }
     if (label === 'typescript' || label === 'javascript') {
@@ -25,77 +26,78 @@ self.MonacoEnvironment = {
     return `${basePath}/monaco-editor/esm/vs/editor/editor.worker.js`
   }
 }
+
+
 interface Props {
   style?: React.CSSProperties
+  selectedItem?: TreeItem
   fullscreenHandler?: (e: any) => Promise<void>
 }
 
-function MonacoView({ style, fullscreenHandler }: Props): React.ReactElement {
-  const folderTree = useFolderTreeStore((state) => state.folderTree)
-  const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
-  const editorRef = useRef<HTMLDivElement>(null)
+function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.ReactElement {
+  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+
   const monacoEditorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null)
   const http = useHttp();
-  const [content, setContent] = useState<string | undefined>(undefined);
+  const {content, setContent} = useFileContent<string | undefined>(selectedItem?.full_path);
 
   const {saveFile} = useSaveFile();
 
+  const onChangeContent = (value: string | undefined) => {
+    if (value == undefined) return;
+    setContent(value);
+  }
 
-  const saveHandle = async () => {
-    if(selectedItem == undefined) return;
-    if(folderTree == undefined) return;
-    const pos = monacoEditorRef.current?.getPosition();
-    const text = monacoEditorRef.current?.getValue();
-    if (text !== undefined && content !== text) {
-      saveFile(text).then((_item) => {
-        console.log('saveFile done');
-        setTimeout(() => {
-          if (pos) {
-            monacoEditorRef.current?.focus();
-            monacoEditorRef.current?.setPosition(pos);
-          }
-        }, 1000);
-      });
-    }
-  };
+  useEffect(() => {
+  }, []);
+
 
   useEffect(() => {
     if (http == undefined) return;
     if (selectedItem == undefined) return;
-    http.getSrcText(selectedItem.full_path).then(text => {
-      setContent(text);
-    });
+    if (content == undefined) {
+      http.getSrcText(selectedItem.full_path).then(text => {
+        setContent(text);
+      });
+    }
   }, [selectedItem])
 
-  useEffect(() => {
-    if (selectedItem && content !== undefined && editorRef && editorRef.current) {
-      if (monacoEditorRef?.current) {
-        monacoEditorRef.current.dispose()
+
+  const handleEditorDidMount: OnMount = (editor, _monaco) => {
+    editorRef.current = editor;
+    editor.onKeyDown((e) => {
+      if (e.code === "KeyS" && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        const text = editor.getValue();
+        const pos = editor.getPosition();
+        if (text !== undefined && content !== text) {
+          saveFile(text).then((_item) => {
+            console.log('saveFile done');
+            setTimeout(() => {
+              if (pos) {
+                monacoEditorRef.current?.focus();
+                monacoEditorRef.current?.setPosition(pos);
+              }
+            }, 1000);
+          });
+        }
       }
-      monacoEditorRef.current = monaco.editor.create(editorRef.current, {
-        // model,
-        value: content,
-        // language: 'plaintext',
-        language: getMonacoLanguage(selectedItem?.ext),
-        theme: 'vs',
-        // readOnly: true,
-        automaticLayout: true,
-        scrollBeyondLastLine: false
-      })
-
-      monacoEditorRef.current.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, saveHandle);
-
-    }
-  }, [content, selectedItem]);
-
-
+    });
+  };
 
   return (
     <div className="monaco-view"
-         ref={editorRef}
          style={style}
          tabIndex={0}
-         onKeyDownCapture={fullscreenHandler}/>
+         onKeyDownCapture={fullscreenHandler}>
+      <Editor
+              value={content}
+              defaultLanguage={getMonacoLanguage(selectedItem?.ext)}
+              theme="vs"
+              onMount={handleEditorDidMount}
+              onChange={ onChangeContent }
+      />
+    </div>
   )
 }
 
