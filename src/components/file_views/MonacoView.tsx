@@ -29,10 +29,6 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
   }
 
   useEffect(() => {
-  }, []);
-
-
-  useEffect(() => {
     if (http == undefined) return;
     if (selectedItem == undefined) return;
     if (content == undefined) {
@@ -40,7 +36,7 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
         setContent(text);
       });
     }
-  }, [])
+  }, [selectedItem])
 
 
   const handleEditorDidMount: OnMount = (editor, _monaco) => {

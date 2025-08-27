@@ -64,7 +64,7 @@ function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
         }
       });
     }
-  }, [])
+  }, [selectedItem])
 
   const onChangeContent = (elements: readonly OrderedExcalidrawElement[], appState: AppState, files: BinaryFiles) => {
     const jsonString = JSON.stringify({elements, appState, files}, null, 2);

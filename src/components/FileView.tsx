@@ -87,7 +87,6 @@ function FileView() {
       })
     }
   }, [isFullscreen]);
-
   return (
     <div className="file-view">
       <AutoSizer>

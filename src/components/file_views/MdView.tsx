@@ -32,7 +32,7 @@ function MdView({ style, selectedItem, fullscreenHandler }: Props) {
         setContent(text);
       });
     }
-  }, [])
+  }, [selectedItem])
 
   const keyDownHandler = useCallback(async (e: React.KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.code === "KeyS") {
