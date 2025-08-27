@@ -29,6 +29,22 @@ async shutdownHttpServer(id: string) : Promise<Result<null, ApiError>> {
     else return { status: "error", error: e  as any };
 }
 },
+async loadFavorite() : Promise<Result<FavoriteJson, ApiError>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("load_favorite") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async saveFavorite(json: FavoriteJson) : Promise<Result<null, ApiError>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("save_favorite", { json }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async loadTab() : Promise<Result<TabJson, ApiError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("load_tab") };
@@ -139,6 +155,8 @@ async createDrawFile(basePath: string) : Promise<Result<string, ApiError>> {
 
 export type ApiError = { Error: string } | { TauriError: string } | { IoError: string } | { JsonError: string } | { TokioError: string } | { GlobError: string } | { WindowsError: string }
 export type DiskInfo = { path: string }
+export type FavoriteItem = { full_path: string; dir: boolean }
+export type FavoriteJson = { items: FavoriteItem[] }
 export type Folder = { item: Item; path_param: string; base_nm: string; tot?: number | null; cnt?: number | null; skip_n?: number | null; take_n?: number | null; ordering?: OrdItem[] | null }
 export type HomeType = "RootDir" | "HomeDir" | "DownloadDir" | "VideoDir" | "DocumentDir" | "DesktopDir" | "PictureDir" | "AudioDir" | "ConfigDir" | "DataDir" | "DataLocalDir" | "CacheDir" | "FontDir" | "PublicDir" | "ExecutableDir" | "RuntimeDir" | "TemplateDir"
 export type Item = { nm: string; dir: boolean; ext?: string | null; mt?: string | null; sz?: number | null; tm?: number | null; items?: Item[] | null }

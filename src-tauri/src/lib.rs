@@ -10,6 +10,7 @@ mod utils;
 mod http_server_api;
 mod dir_api;
 mod tab_api;
+mod favorite_api;
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 
 
@@ -26,6 +27,8 @@ pub fn run() {
         utils::get_app_dir,
         http_server_api::run_http_server,
         http_server_api::shutdown_http_server,
+        favorite_api::load_favorite,
+        favorite_api::save_favorite,
         tab_api::load_tab,
         tab_api::save_tab,
         dir_api::save_file,

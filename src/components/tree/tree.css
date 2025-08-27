@@ -4,6 +4,9 @@
     --folder-hover-color: #bd623c;
     --file-hover-color: #2a9d8f;
 }
+.tree-split-pane {
+    top: 30px;
+}
 .tree-pane {
     display: flex;
     flex-direction: column;

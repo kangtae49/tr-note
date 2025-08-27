@@ -10,5 +10,5 @@ export interface TabItemsStore {
 
 export const useTabItemsStore = create<TabItemsStore>((set) => ({
   tabItems: undefined,
-  setTabItems: (tabItems: TabItem[] | undefined) => set(() => ({ tabItems }))
+  setTabItems: (tabItems) => set(() => ({ tabItems }))
 }))

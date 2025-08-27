@@ -6,27 +6,25 @@ import {useFolderTreeRefStore} from "@/components/tree/stores/folderTreeRefStore
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 import {renderTreeFromPath, SEP, TreeItem} from "@/components/tree/tree.ts";
 import * as utils from "@/components/utils.ts";
-import {useTabItemsStore} from "@/components/tab/stores/tabItemsStore.ts";
-import {includesTabItem} from "@/components/tab/tab.ts";
-import TabView from "@/components/tab/TabView.tsx";
+import {includesFavoriteItem} from "@/components/favorites/favorites.ts";
+import {useFavoritesStore} from "@/components/favorites/stores/favoritesStore.ts";
+
 function ContentHeadView() {
   const folderTree = useFolderTreeStore((state) => state.folderTree)
   const setFolderTree = useFolderTreeStore((state) => state.setFolderTree)
   const folderTreeRef = useFolderTreeRefStore((state) => state.folderTreeRef)
   const setSelectedItem = useSelectedTreeItemStore((state) => state.setSelectedItem)
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
-  const tabItems = useTabItemsStore((state) => state.tabItems);
-  const setTabItems = useTabItemsStore((state) => state.setTabItems);
-
+  const {favorites, setFavorites} = useFavoritesStore();
 
   const toggleStar = async (treeItem?: TreeItem): Promise<void> => {
     console.log('toggleStar', treeItem);
     if (treeItem == undefined) return;
-    if (tabItems == undefined) return;
-    if (includesTabItem({full_path: treeItem.full_path, dir: treeItem.dir || false}, tabItems)){
-      setTabItems(tabItems.filter((item) => item.full_path != treeItem.full_path))
+    if (favorites == undefined) return;
+    if (includesFavoriteItem({full_path: treeItem.full_path, dir: treeItem.dir || false}, favorites)){
+      setFavorites(favorites.filter((item) => item.full_path != treeItem.full_path))
     } else {
-      setTabItems([{full_path: treeItem.full_path, dir: treeItem.dir || false}, ...tabItems])
+      setFavorites([{full_path: treeItem.full_path, dir: treeItem.dir || false}, ...favorites])
     }
 
   }
@@ -63,7 +61,7 @@ function ContentHeadView() {
 
       <div className="title-path">
         <div className="icon">
-          <Icon icon={faStar} className={includesTabItem({full_path: selectedItem?.full_path || "", dir: selectedItem?.dir || false}, tabItems) ? "" : "inactive"} onClick={() => toggleStar(selectedItem)} />
+          <Icon icon={faStar} className={includesFavoriteItem({full_path: selectedItem?.full_path || "", dir: selectedItem?.dir || false}, favorites) ? "" : "inactive"} onClick={() => toggleStar(selectedItem)} />
         </div>
         <div className="icon">
           <Icon icon={faArrowUp} onClick={() => clickPath(selectedItem?.parent?.full_path)} />

@@ -14,7 +14,6 @@ export default function TabView() {
   const tabItems = useTabItemsStore((state) => state.tabItems);
   const setTabItems = useTabItemsStore((state) => state.setTabItems);
 
-  const selectedTreeItem = useSelectedTreeItemStore((state) => state.selectedItem);
   const removeItem = (tabItem: TabItem) => {
     if (tabItems === undefined) return;
     setTabItems(tabItems.filter((item: TabItem) => getItemId(item) !== getItemId(tabItem)));

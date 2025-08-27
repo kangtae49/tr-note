@@ -1,0 +1,60 @@
+:root {
+
+}
+
+.favorites-view {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+}
+.sortable-container {
+    width: 100%;
+    height: 100%;
+}
+
+.favorite-list {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    width: 100%;
+    height: 100%;
+    min-height: 22px;
+
+    border: 1px dotted #ccc;
+    gap: 1px;
+    margin: 0;
+    padding: 3px;
+    box-sizing: border-box;
+}
+
+.favorite-item {
+    display: flex;
+    box-sizing: border-box;
+    height: 22px;
+    max-width: 450px;
+    border: 1px solid #575555;
+    background-color: #e6eaf1;
+}
+.favorite-item.selected {
+    background-color: #bfd2e3;
+}
+
+.favorite-item .favorite-icon {flex: 0 0 18px; cursor: pointer;}
+.favorite-item .favorite-name {
+    flex: 1;  cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.favorite-item .favorite-close {flex: 0 0 18px; cursor: pointer;}
+
+
+
+
+.favorites-view .fa-folder { color: var(--folder-color); margin-right: 5px;}
+.favorites-view .fa-folder:hover { transform: var(--scale); color: var(--folder-hover-color); }
+.favorites-view .fa-file { color: var(--file-color); margin-right: 5px;}
+.favorites-view .fa-file:hover { transform: var(--scale); color: var(--file-hover-color);}
+.favorites-view .fa-circle-xmark { color: var(--folder-color); margin-right: 5px;}
+.favorites-view .fa-circle-xmark:hover { transform: var(--scale); color: var(--folder-hover-color);}

@@ -15,8 +15,13 @@ import {
   scrollToItem, toggleDirectory,
   TREE_ITEM_SIZE
 } from "@/components/tree/tree.ts";
+import FavoritesView from "@/components/favorites/FavoritesView.tsx";
+import {SplitPane} from "@rexxars/react-split-pane";
+import {useIsResizingStore} from "@/stores/isResizingStore.ts";
 
 function TreePaneView() {
+  const {setIsResizing} = useIsResizingStore();
+
   const folderTree = useFolderTreeStore((state) => state.folderTree)
   const setFolderTree = useFolderTreeStore((state) => state.setFolderTree)
   const setSelectedItem = useSelectedTreeItemStore((state) => state.setSelectedItem)
@@ -88,27 +93,38 @@ function TreePaneView() {
   return (
     <div className="tree-pane" tabIndex={0} onKeyDownCapture={keyDownHandler}>
       <TreeHeadView />
-      <div className="tree-body">
-        <AutoSizer>
-          {({ height, width }) => (
-            <List
-              className="folder-tree"
-              height={height}
-              itemCount={getCountOfTreeItems(folderTree) || 0}
-              itemSize={TREE_ITEM_SIZE}
-              width={width}
-              ref={listRef}
-            >
-              {({ index, style }) => {
-                const treeItem = getNthOfTreeItems(folderTree, index)[0]
-                return treeItem ? (
-                  <TreeItemView key={index} style={style} treeItem={treeItem} />
-                ) : null
-              }}
-            </List>
-          )}
-        </AutoSizer>
-      </div>
+      <SplitPane
+        className="tree-split-pane"
+        split="horizontal"
+        style={{top: "25px"}}
+        minSize={0}
+        defaultSize={30}
+        onDragStarted={() => setIsResizing(true)}
+        onDragFinished={() => setIsResizing(false)}
+      >
+        <FavoritesView />
+        <div className="tree-body">
+          <AutoSizer>
+            {({ height, width }) => (
+              <List
+                className="folder-tree"
+                height={height - 25}
+                itemCount={getCountOfTreeItems(folderTree) || 0}
+                itemSize={TREE_ITEM_SIZE}
+                width={width}
+                ref={listRef}
+              >
+                {({ index, style }) => {
+                  const treeItem = getNthOfTreeItems(folderTree, index)[0]
+                  return treeItem ? (
+                    <TreeItemView key={index} style={style} treeItem={treeItem} />
+                  ) : null
+                }}
+              </List>
+            )}
+          </AutoSizer>
+        </div>
+      </SplitPane>
     </div>
   )
 }
