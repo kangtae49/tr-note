@@ -32,7 +32,7 @@ function MdView({ style, selectedItem, fullscreenHandler }: Props) {
         setContent(text);
       });
     }
-  }, [selectedItem])
+  }, [])
 
   const keyDownHandler = useCallback(async (e: React.KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.code === "KeyS") {
@@ -47,7 +47,7 @@ function MdView({ style, selectedItem, fullscreenHandler }: Props) {
     } else if (fullscreenHandler !== undefined) {
       await fullscreenHandler(e);
     }
-  }, [selectedItem, content, fullscreenHandler])
+  }, [content, fullscreenHandler])
 
   const handleEditClick = (state: any, api: any) => {
     console.log("edit clicked", state);

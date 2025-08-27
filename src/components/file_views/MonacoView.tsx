@@ -40,7 +40,7 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
         setContent(text);
       });
     }
-  }, [selectedItem])
+  }, [])
 
 
   const handleEditorDidMount: OnMount = (editor, _monaco) => {

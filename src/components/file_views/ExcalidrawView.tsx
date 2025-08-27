@@ -44,6 +44,7 @@ function textToContent(text: string): ContentType {
 }
 
 function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
+  if (selectedItem?.ext != "excalidraw") return null;
   const http = useHttp();
   const {saveFile} = useSaveFile();
 
@@ -63,7 +64,7 @@ function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
         }
       });
     }
-  }, [selectedItem])
+  }, [])
 
   const onChangeContent = (elements: readonly OrderedExcalidrawElement[], appState: AppState, files: BinaryFiles) => {
     const jsonString = JSON.stringify({elements, appState, files}, null, 2);
@@ -86,7 +87,7 @@ function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
       await fullscreenHandler(e);
     }
 
-  }, [selectedItem, content, fullscreenHandler])
+  }, [content, fullscreenHandler])
 
   if (content == undefined) {
     return <div className='excalidraw-view'></div>
