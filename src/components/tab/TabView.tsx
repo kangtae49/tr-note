@@ -11,8 +11,7 @@ import {getItemId} from "@/components/tab/tab.ts";
 
 
 export default function TabView() {
-  const tabItems = useTabItemsStore((state) => state.tabItems);
-  const setTabItems = useTabItemsStore((state) => state.setTabItems);
+  const {tabItems, setTabItems} = useTabItemsStore();
 
   const removeItem = (tabItem: TabItem) => {
     if (tabItems === undefined) return;

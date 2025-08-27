@@ -17,10 +17,8 @@ interface Props {
 function MdView({ style, selectedItem, fullscreenHandler }: Props) {
   const http = useHttp();
   const {saveFile} = useSaveFile();
-  const folderTree = useFolderTreeStore((state) => state.folderTree)
-  const mdPreviewType = useMdPreviewTypeStore((state) => state.mdPreviewType);
-  const setMdPreviewType = useMdPreviewTypeStore((state) => state.setMdPreviewType);
-  // const [content, setContent] = useState<string | undefined>(undefined);
+  const {folderTree} = useFolderTreeStore()
+  const {mdPreviewType, setMdPreviewType} = useMdPreviewTypeStore();
   const {content, setContent} = useFileContent<string | undefined>(selectedItem?.full_path);
 
 

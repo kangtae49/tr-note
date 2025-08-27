@@ -11,12 +11,12 @@ import ContentHeadView from "@/components/ContentHeadView.tsx";
 type ContentType = 'FileViewType' | DirectoryViewType
 function ContentView() {
   let contentType: ContentType = 'FileViewType'
-  const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
-  const directoryViewTypeStore = useDirectoryViewTypeStore((state) => state.directoryViewType)
+  const {selectedItem} = useSelectedTreeItemStore()
+  const {directoryViewType} = useDirectoryViewTypeStore()
   if (!selectedItem?.dir) {
     contentType = 'FileViewType'
   } else if (selectedItem?.dir) {
-    contentType = directoryViewTypeStore
+    contentType = directoryViewType
   }
   if (selectedItem == undefined) return null;
   return (

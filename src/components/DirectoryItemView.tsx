@@ -20,14 +20,10 @@ interface Props {
   clickCreateDrawFile: () => void
 }
 function DirectoryItemView({ treeItem, style, clickCreateFolder, clickCreateFile, clickCreateDrawFile }: Props) {
-  const setSelectedItem = useSelectedTreeItemStore((state) => state.setSelectedItem)
-  const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
-  const folderTree = useFolderTreeStore((state) => state.folderTree)
-  const setFolderTree = useFolderTreeStore((state) => state.setFolderTree)
-  const folderTreeRef = useFolderTreeRefStore((state) => state.folderTreeRef)
-  const folderListVisibleCols = useFolderListVisibleColsStore(
-    (state) => state.folderListVisibleCols
-  )
+  const {selectedItem, setSelectedItem} = useSelectedTreeItemStore()
+  const {folderTree, setFolderTree} = useFolderTreeStore()
+  const {folderTreeRef} = useFolderTreeRefStore()
+  const {folderListVisibleCols} = useFolderListVisibleColsStore()
   const inputRef = useRef<HTMLInputElement>(null);
   const [editing, setEditing] = useState(false);
   const [tempName, setTempName] = React.useState(treeItem.nm);

@@ -11,8 +11,7 @@ import {getItemId} from "@/components/favorites/favorites.ts";
 
 
 export default function FavoritesView() {
-  const favorites = useFavoritesStore((state) => state.favorites);
-  const setFavorites = useFavoritesStore((state) => state.setFavorites);
+  const {favorites, setFavorites} = useFavoritesStore();
 
   const removeItem = (favoriteItem: FavoriteItem) => {
     if (favorites === undefined) return;

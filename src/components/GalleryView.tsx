@@ -10,12 +10,11 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import GalleryItemView from "@/components/GalleryItemView.tsx";
 
 function GalleryView() {
-  const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
-  const folderListOrder = useFolderListOrderStore((state) => state.folderListOrder)
-  const folderList = useFolderListStore((state) => state.folderList)
-  const setFolderList = useFolderListStore((state) => state.setFolderList)
-  const sliderPos = useFolderListSliderStore((state) => state.sliderPos)
-  const setSliderPos = useFolderListSliderStore((state) => state.setSliderPos)
+  const {selectedItem} = useSelectedTreeItemStore()
+  const {folderListOrder} = useFolderListOrderStore()
+  const {folderList, setFolderList} = useFolderListStore()
+  const {sliderPos, setSliderPos} = useFolderListSliderStore()
+
   const onChangeSliderX = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const maxX = Number((document.querySelector('.slider-w input') as HTMLInputElement).max)
     const maxY = Number((document.querySelector('.slider-h input') as HTMLInputElement).max)

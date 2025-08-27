@@ -5,7 +5,7 @@ const HttpContext = createContext<HttpContextType | undefined>(undefined);
 
 interface Props {
   children: React.ReactNode;
-};
+}
 
 type HttpContextType = {
   servInfo: ServInfo

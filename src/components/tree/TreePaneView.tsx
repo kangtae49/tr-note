@@ -22,12 +22,9 @@ import {useIsResizingStore} from "@/stores/isResizingStore.ts";
 function TreePaneView() {
   const {setIsResizing} = useIsResizingStore();
 
-  const folderTree = useFolderTreeStore((state) => state.folderTree)
-  const setFolderTree = useFolderTreeStore((state) => state.setFolderTree)
-  const setSelectedItem = useSelectedTreeItemStore((state) => state.setSelectedItem)
-  const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
-  const setFolderTreeRef = useFolderTreeRefStore((state) => state.setFolderTreeRef)
-  const folderTreeRef = useFolderTreeRefStore((state) => state.folderTreeRef)
+  const {folderTree, setFolderTree} = useFolderTreeStore()
+  const {selectedItem, setSelectedItem} = useSelectedTreeItemStore()
+  const {folderTreeRef, setFolderTreeRef} = useFolderTreeRefStore()
 
   const listRef = useRef<List>(null)
 

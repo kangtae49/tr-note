@@ -12,7 +12,7 @@ interface Props {
 }
 
 function AudioView({ item, sliderPos }: Props): React.ReactElement {
-  const setSelectedItem = useSelectedTreeItemStore((state) => state.setSelectedItem)
+  const {setSelectedItem} = useSelectedTreeItemStore()
   const http = useHttp();
   if (http == undefined || item == undefined) {
     return  <div className="audio-view col"></div>

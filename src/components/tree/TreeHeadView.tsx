@@ -17,11 +17,9 @@ import { useSelectedTreeItemStore } from '@/components/tree/stores/selectedTreeI
 import {commands} from "@/bindings.ts";
 
 function TreeHeadView() {
-  const setFolderTree = useFolderTreeStore((state) => state.setFolderTree)
-  const folderTree = useFolderTreeStore((state) => state.folderTree)
-  const folderTreeRef = useFolderTreeRefStore((state) => state.folderTreeRef)
-  const setSelectedItem = useSelectedTreeItemStore((state) => state.setSelectedItem)
-  const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
+  const {folderTree, setFolderTree} = useFolderTreeStore()
+  const {folderTreeRef} = useFolderTreeRefStore()
+  const {selectedItem, setSelectedItem} = useSelectedTreeItemStore()
 
   const [homeDir, setHomeDir] = useState<HomePathMap>({
     HomeDir: '',

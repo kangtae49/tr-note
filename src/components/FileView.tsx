@@ -16,9 +16,9 @@ import ExcalidrawView from "@/components/file_views/ExcalidrawView.tsx";
 import {getAllWindows} from "@tauri-apps/api/window";
 
 function FileView() {
-  const fileViewTypeMap = useFileViewTypeMapStore((state) => state.fileViewTypeMap)
+  const {fileViewTypeMap} = useFileViewTypeMapStore()
+  const {selectedItem} = useSelectedTreeItemStore()
   const [fileViewType, setFileViewType] = useState<FileViewType | undefined>(undefined)
-  const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [newStyle, setNewStyle] = useState<React.CSSProperties | undefined>({});
 

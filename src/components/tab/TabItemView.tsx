@@ -15,12 +15,9 @@ interface Props {
 }
 
 function TabItemView({ item, removeItem }: Props) {
-  const folderTree = useFolderTreeStore((state) => state.folderTree)
-  const setFolderTree = useFolderTreeStore((state) => state.setFolderTree)
-  const folderTreeRef = useFolderTreeRefStore((state) => state.folderTreeRef)
-  const setSelectedItem = useSelectedTreeItemStore((state) => state.setSelectedItem)
-  const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
-
+  const {folderTree, setFolderTree} = useFolderTreeStore()
+  const {folderTreeRef} = useFolderTreeRefStore()
+  const {selectedItem, setSelectedItem} = useSelectedTreeItemStore()
 
   const sortable = useSortable({
     id: getItemId(item),

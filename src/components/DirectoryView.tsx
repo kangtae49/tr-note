@@ -19,16 +19,12 @@ import toast from "react-hot-toast";
 import {useCreatePathStore} from "@/stores/createPathStore.ts";
 
 function DirectoryView() {
-  const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
-  const setSelectedItem = useSelectedTreeItemStore((state) => state.setSelectedItem)
-  const folderListOrder = useFolderListOrderStore((state) => state.folderListOrder)
-  const folderList = useFolderListStore((state) => state.folderList)
-  const setFolderList = useFolderListStore((state) => state.setFolderList)
-  const folderTree = useFolderTreeStore((state) => state.folderTree)
-  const setFolderTree = useFolderTreeStore((state) => state.setFolderTree)
-  const folderTreeRef = useFolderTreeRefStore((state) => state.folderTreeRef)
-  const createPath = useCreatePathStore((state) => state.createPath)
-  const setCreatePath = useCreatePathStore((state) => state.setCreatePath)
+  const {selectedItem, setSelectedItem} = useSelectedTreeItemStore()
+  const {folderListOrder} = useFolderListOrderStore()
+  const {folderList, setFolderList} = useFolderListStore()
+  const {folderTree, setFolderTree} = useFolderTreeStore()
+  const {folderTreeRef} = useFolderTreeRefStore()
+  const {createPath, setCreatePath} = useCreatePathStore()
   const listRef = useRef<List>(null)
 
 

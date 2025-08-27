@@ -13,7 +13,7 @@ function ImageView({ item, sliderPos }: Props) {
   if (http == undefined || item == undefined) {
     return  <div className="image-view col"></div>
   }
-  const setSelectedItem = useSelectedTreeItemStore((state) => state.setSelectedItem)
+  const {setSelectedItem} = useSelectedTreeItemStore()
   return (
     <div className="image-view col"
          style={{ width: sliderPos.x, height: sliderPos.y }}

@@ -6,9 +6,8 @@ import {formatFileSize, toDate} from "@/components/utils.ts";
 import {fileViewTypeGroupMap, getFileTypeGroup, getFileViewIcon} from "@/components/content.ts";
 
 function FileHeadView(): React.ReactElement {
-  const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
-  const fileViewTypeMap = useFileViewTypeMapStore((state) => state.fileViewTypeMap)
-  const setFileViewTypeMap = useFileViewTypeMapStore((state) => state.setFileViewTypeMap)
+  const {selectedItem} = useSelectedTreeItemStore()
+  const {fileViewTypeMap, setFileViewTypeMap} = useFileViewTypeMapStore()
 
   const fileViewTypeGroup = getFileTypeGroup(selectedItem)
   const sz = selectedItem?.sz || 0

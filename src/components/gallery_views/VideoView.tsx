@@ -11,7 +11,7 @@ interface Props {
   sliderPos: { x: number; y: number }
 }
 function VideoView({ item, sliderPos }: Props): React.ReactElement {
-  const setSelectedItem = useSelectedTreeItemStore((state) => state.setSelectedItem)
+  const {setSelectedItem} = useSelectedTreeItemStore()
   const http = useHttp();
   if (http == undefined || item == undefined) {
     return  <div className="video-view col"></div>

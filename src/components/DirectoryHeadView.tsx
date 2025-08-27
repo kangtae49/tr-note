@@ -15,19 +15,11 @@ import {useFolderListVisibleColsStore} from "@/stores/folderListVisibleColsStore
 import {formatFileSize} from "@/components/utils.ts";
 
 function DirectoryHeadView() {
-  const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
-  const folderList = useFolderListStore((state) => state.folderList)
-  const setFolderList = useFolderListStore((state) => state.setFolderList)
-  const folderListOrder = useFolderListOrderStore((state) => state.folderListOrder)
-  const setFolderListOrder = useFolderListOrderStore((state) => state.setFolderListOrder)
-  const directoryViewType = useDirectoryViewTypeStore((state) => state.directoryViewType)
-  const setDirectoryViewType = useDirectoryViewTypeStore((state) => state.setDirectoryViewType)
-  const folderListVisibleCols = useFolderListVisibleColsStore(
-    (state) => state.folderListVisibleCols
-  )
-  const setFolderListVisibleCols = useFolderListVisibleColsStore(
-    (state) => state.setFolderListVisibleCols
-  )
+  const {selectedItem} = useSelectedTreeItemStore()
+  const {folderList, setFolderList} = useFolderListStore()
+  const {folderListOrder, setFolderListOrder} = useFolderListOrderStore()
+  const {directoryViewType, setDirectoryViewType} = useDirectoryViewTypeStore()
+  const {folderListVisibleCols, setFolderListVisibleCols} = useFolderListVisibleColsStore()
   const clickDirectoryViewType = (viewType: DirectoryViewType): void => {
     setDirectoryViewType(viewType)
   }

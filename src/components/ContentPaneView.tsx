@@ -6,8 +6,7 @@ import TabView from "@/components/tab/TabView.tsx";
 import {useIsResizingStore} from "@/stores/isResizingStore.ts";
 
 function ContentPaneView() {
-  const setIsResizing = useIsResizingStore((state) => state.setIsResizing)
-
+  const {setIsResizing} = useIsResizingStore()
 
   return (
     <div className="content-pane">

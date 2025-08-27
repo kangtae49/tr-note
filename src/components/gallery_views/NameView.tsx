@@ -13,10 +13,9 @@ interface Props {
 }
 
 function NameView({ item, sliderPos }: Props) {
-  const setSelectedItem = useSelectedTreeItemStore((state) => state.setSelectedItem)
-  const folderListVisibleCols = useFolderListVisibleColsStore(
-    (state) => state.folderListVisibleCols
-  )
+  const {setSelectedItem} = useSelectedTreeItemStore()
+  const {folderListVisibleCols} = useFolderListVisibleColsStore()
+
   const fullPath = item?.full_path
   const nm = item?.nm
   const sz = formatFileSize(item?.sz)

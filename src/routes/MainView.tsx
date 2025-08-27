@@ -4,8 +4,7 @@ import ContentPaneView from "@/components/ContentPaneView.tsx";
 import {useIsResizingStore} from "@/stores/isResizingStore.ts";
 
 function MainView() {
-  const isResizing = useIsResizingStore((state) => state.isResizing)
-  const setIsResizing = useIsResizingStore((state) => state.setIsResizing)
+  const {isResizing, setIsResizing} = useIsResizingStore()
 
   return (
     <div className="main-pane">

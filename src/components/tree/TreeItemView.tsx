@@ -15,10 +15,8 @@ type Prop = {
 }
 
 function TreeItemView({treeItem, style}: Prop) {
-  const folderTree = useFolderTreeStore((state) => state.folderTree)
-  const setFolderTree = useFolderTreeStore((state) => state.setFolderTree)
-  const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
-  const setSelectedItem = useSelectedTreeItemStore((state) => state.setSelectedItem)
+  const {folderTree, setFolderTree} = useFolderTreeStore()
+  const {selectedItem, setSelectedItem} = useSelectedTreeItemStore()
 
   const clickIcon = async (treeItem?: TreeItem): Promise<void> => {
     console.log('click', treeItem)

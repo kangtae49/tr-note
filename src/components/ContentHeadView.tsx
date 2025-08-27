@@ -10,11 +10,9 @@ import {includesFavoriteItem} from "@/components/favorites/favorites.ts";
 import {useFavoritesStore} from "@/components/favorites/stores/favoritesStore.ts";
 
 function ContentHeadView() {
-  const folderTree = useFolderTreeStore((state) => state.folderTree)
-  const setFolderTree = useFolderTreeStore((state) => state.setFolderTree)
-  const folderTreeRef = useFolderTreeRefStore((state) => state.folderTreeRef)
-  const setSelectedItem = useSelectedTreeItemStore((state) => state.setSelectedItem)
-  const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
+  const {folderTree, setFolderTree} = useFolderTreeStore()
+  const {folderTreeRef} = useFolderTreeRefStore()
+  const {selectedItem, setSelectedItem} = useSelectedTreeItemStore()
   const {favorites, setFavorites} = useFavoritesStore();
 
   const toggleStar = async (treeItem?: TreeItem): Promise<void> => {
