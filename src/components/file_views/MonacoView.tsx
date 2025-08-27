@@ -16,28 +16,14 @@ interface Props {
 
 function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.ReactElement {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
-
-  const monacoEditorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null)
   const http = useHttp();
   const {content, setContent} = useFileContent<string | undefined>(selectedItem?.full_path);
-
   const {saveFile} = useSaveFile();
 
   const onChangeContent = (value: string | undefined) => {
     if (value == undefined) return;
     setContent(value);
   }
-
-  useEffect(() => {
-    if (http == undefined) return;
-    if (selectedItem == undefined) return;
-    if (content == undefined) {
-      http.getSrcText(selectedItem.full_path).then(text => {
-        setContent(text);
-      });
-    }
-  }, [selectedItem])
-
 
   const handleEditorDidMount: OnMount = (editor, _monaco) => {
     editorRef.current = editor;
@@ -51,8 +37,8 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
             console.log('saveFile done');
             setTimeout(() => {
               if (pos) {
-                monacoEditorRef.current?.focus();
-                monacoEditorRef.current?.setPosition(pos);
+                editorRef.current?.focus();
+                editorRef.current?.setPosition(pos);
               }
             }, 1000);
           });
@@ -60,6 +46,12 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
       }
     });
   };
+
+  if (http != undefined && selectedItem != undefined) {
+    http.getSrcText(selectedItem.full_path).then(text => {
+      setContent(text);
+    });
+  }
 
   return (
     <div className="monaco-view"

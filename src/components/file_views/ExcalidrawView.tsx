@@ -44,27 +44,10 @@ function textToContent(text: string): ContentType {
 }
 
 function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
-  if (selectedItem?.ext != "excalidraw") return null;
   const http = useHttp();
   const {saveFile} = useSaveFile();
 
   const {content, setContent} = useFileContent<string | undefined>(selectedItem?.full_path);
-
-  useEffect(() => {
-    if (http == undefined) return;
-    if (selectedItem == undefined) return;
-    if (selectedItem.ext != "excalidraw") return;
-    console.log('draw load')
-    if (content == undefined) {
-      http.getSrcText(selectedItem.full_path).then(text => {
-        if (text == "") {
-          setContent(JSON.stringify({elements: [], appState: {}, files: {}}, null, 2))
-        } else {
-          setContent(text)
-        }
-      });
-    }
-  }, [selectedItem])
 
   const onChangeContent = (elements: readonly OrderedExcalidrawElement[], appState: AppState, files: BinaryFiles) => {
     const jsonString = JSON.stringify({elements, appState, files}, null, 2);
@@ -88,6 +71,21 @@ function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
     }
 
   }, [content, fullscreenHandler])
+
+  // if (http == undefined) return;
+  // if (selectedItem == undefined) return;
+  // if (selectedItem.ext != "excalidraw") return;
+  // console.log('draw load')
+  if (http !== undefined && selectedItem !== undefined && content == undefined) {
+    http.getSrcText(selectedItem.full_path).then(text => {
+      if (text == "") {
+        setContent(JSON.stringify({elements: [], appState: {}, files: {}}, null, 2))
+      } else {
+        setContent(text)
+      }
+    });
+  }
+
 
   if (content == undefined) {
     return <div className='excalidraw-view'></div>

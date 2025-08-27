@@ -10,8 +10,7 @@ interface Props {
   fullscreenHandler?: (e: any) => Promise<void>
 }
 function EmptyView({ style, selectedItem, fullscreenHandler }: Props): React.ReactElement {
-  const http = useHttp();
-  if (selectedItem == undefined || http == undefined) {
+  if (selectedItem == undefined) {
     return <div className='empty-view' style={style}></div>
   }
   return (

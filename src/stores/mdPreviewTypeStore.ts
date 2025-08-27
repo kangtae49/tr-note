@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-export type MdPreviewType = 'live' | 'preview' | 'edit'
+export type MdPreviewType = 'live' | 'preview' | 'edit' | undefined
 
 export interface MdPreviewTypeStore {
   mdPreviewType: MdPreviewType

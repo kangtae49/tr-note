@@ -1,10 +1,9 @@
-import React, {useCallback, useEffect, useState} from "react";
-import MDEditor, {commands } from '@uiw/react-md-editor';
-import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
+import React, {useCallback, useEffect} from "react";
+import MDEditor, {commands, ExecuteState, TextAreaTextApi} from '@uiw/react-md-editor';
 import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {useSaveFile} from "@/components/utils.ts";
 import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
-import {useMdPreviewTypeStore} from "@/stores/mdPreviewTypeStore.ts";
+import {MdPreviewType, useMdPreviewTypeStore} from "@/stores/mdPreviewTypeStore.ts";
 import {TreeItem} from "@/components/tree/tree.ts";
 import {useFileContent} from "@/stores/contentsStore.ts";
 
@@ -21,17 +20,6 @@ function MdView({ style, selectedItem, fullscreenHandler }: Props) {
   const {mdPreviewType, setMdPreviewType} = useMdPreviewTypeStore();
   const {content, setContent} = useFileContent<string | undefined>(selectedItem?.full_path);
 
-
-  useEffect(() => {
-    if (http == undefined) return;
-    if (selectedItem == undefined) return;
-    if (content == undefined) {
-      http.getSrcText(selectedItem.full_path).then(text => {
-        setContent(text);
-      });
-    }
-  }, [selectedItem])
-
   const keyDownHandler = useCallback(async (e: React.KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.code === "KeyS") {
       e.preventDefault();
@@ -47,34 +35,34 @@ function MdView({ style, selectedItem, fullscreenHandler }: Props) {
     }
   }, [content, fullscreenHandler])
 
-  const handleEditClick = (state: any, api: any) => {
-    console.log("edit clicked", state);
-    setMdPreviewType(state.command.name);
+  const handlePreviewTypeClick = useCallback((state: ExecuteState, api: TextAreaTextApi) => {
+    console.log("click previewType:", state.command.name);
     if (commands.codeEdit.execute) {
       commands.codeEdit.execute(state, api);
     }
-  };
-
-  const handlePreviewClick = (state: any, api: any) => {
-    console.log("preview clicked", state);
-    setMdPreviewType(state.command.name);
-    if (commands.codePreview.execute) {
-      commands.codePreview.execute(state, api);
+    if (state.command.name !== undefined) {
+      setMdPreviewType(state.command.name as MdPreviewType);
     }
-  };
+  }, [selectedItem, mdPreviewType]);
 
-  const handleLiveClick = (state: any, api: any) => {
-    console.log("live clicked", state);
-    setMdPreviewType(state.command.name);
-    if (commands.codeLive.execute) {
-      commands.codeLive.execute(state, api);
-    }
-  };
   const onChangeContent = (value: string | undefined) => {
     if (value == undefined) return;
     setContent(value);
   }
 
+  if (http !== undefined && selectedItem !== undefined) {
+    http.getSrcText(selectedItem.full_path).then(text => {
+      setContent(text);
+    });
+  }
+
+  useEffect(() => {
+    const btn = document.querySelector(`.md-view button[data-name="${mdPreviewType}"]`) as HTMLButtonElement;
+    if (btn) {
+      console.log('click');
+      btn.click();
+    }
+  }, [])
 
   return (
     <div className="md-view"
@@ -83,12 +71,12 @@ function MdView({ style, selectedItem, fullscreenHandler }: Props) {
          onKeyDownCapture={keyDownHandler}>
       <MDEditor
         value={content}
-        preview={mdPreviewType}
+        preview={undefined}
         onChange={onChangeContent}
         extraCommands = {[
-            { ...commands.codeEdit, execute: handleEditClick },
-            { ...commands.codeLive, execute: handleLiveClick },
-            { ...commands.codePreview, execute: handlePreviewClick },
+            { ...commands.codeEdit, execute: handlePreviewTypeClick },
+            { ...commands.codeLive, execute: handlePreviewTypeClick },
+            { ...commands.codePreview, execute: handlePreviewTypeClick },
         ]}
         height="100%"
       />

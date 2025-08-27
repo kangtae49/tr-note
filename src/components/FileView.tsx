@@ -11,30 +11,22 @@ import MonacoView from "@/components/file_views/MonacoView.tsx";
 import NoneView from "@/components/file_views/NoneView.tsx";
 import AutoSizer from "react-virtualized-auto-sizer";
 import {FileViewType, getFileTypeGroup} from "@/components/content.ts";
-import {LIST_HEAD_SIZE} from "@/components/tree/tree.ts";
+import {LIST_HEAD_SIZE, TreeItem} from "@/components/tree/tree.ts";
 import ExcalidrawView from "@/components/file_views/ExcalidrawView.tsx";
 import {getAllWindows} from "@tauri-apps/api/window";
+
+
+interface Props {
+  style?: React.CSSProperties
+  selectedItem?: TreeItem
+  fullscreenHandler?: (e: any) => Promise<void>
+}
 
 function FileView() {
   const {fileViewTypeMap} = useFileViewTypeMapStore()
   const {selectedItem} = useSelectedTreeItemStore()
-  const [fileViewType, setFileViewType] = useState<FileViewType | undefined>(undefined)
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [newStyle, setNewStyle] = useState<React.CSSProperties | undefined>({});
-
-  const SwitchView = (() => {
-    switch (fileViewType) {
-      case 'Empty': return MonacoView;
-      case 'Img': return ImageView;
-      case 'Embed': return EmbedView;
-      case 'Md': return MdView;
-      case 'Excalidraw': return ExcalidrawView;
-      case 'Audio': return AudioView;
-      case 'Video': return VideoView;
-      case 'Monaco': return MonacoView;
-      default: return NoneView;
-    }
-  })();
 
   const fullscreenHandler = useCallback(async (e: React.KeyboardEvent) => {
     if (e.code === "Escape") {
@@ -68,11 +60,11 @@ function FileView() {
     }
   }, [selectedItem, isFullscreen])
 
-  useEffect(() => {
-    const fileViewTypeGroup = getFileTypeGroup(selectedItem)
-    const selectedFileViewType = fileViewTypeMap[fileViewTypeGroup]
-    setFileViewType(selectedFileViewType)
-  }, [selectedItem, fileViewTypeMap, fileViewType]);
+  const getFileViewType = (item: TreeItem | undefined) => {
+    if (item == undefined) return 'None'
+    const fileViewTypeGroup = getFileTypeGroup(item)
+    return fileViewTypeMap[fileViewTypeGroup]
+  }
 
   useEffect(() => {
     if (isFullscreen) {
@@ -87,16 +79,30 @@ function FileView() {
       })
     }
   }, [isFullscreen]);
+
+
   return (
     <div className="file-view">
       <AutoSizer>
-        {({ height, width }) => (
-          <SwitchView
-            style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}}
-            selectedItem={selectedItem}
-            fullscreenHandler={fullscreenHandler}
-          />
-        )}
+        {({ height, width }) => {
+          const props: Props = {
+            selectedItem,
+            fullscreenHandler
+          }
+          const fileViewType = getFileViewType(selectedItem);
+          return(
+          <>
+            {fileViewType === 'None' && <NoneView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewType === 'Empty' && <MonacoView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewType === 'Img' && <ImageView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewType === 'Embed' && <EmbedView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewType === 'Md' && <MdView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewType === 'Excalidraw' && <ExcalidrawView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewType === 'Audio' && <AudioView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewType === 'Video' && <VideoView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewType === 'Monaco' && <MonacoView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+          </>
+        )}}
       </AutoSizer>
     </div>
   )

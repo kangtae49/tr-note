@@ -11,11 +11,6 @@ interface Props {
 
 function EmbedView({ style, selectedItem, fullscreenHandler }: Props): React.ReactElement {
   const http = useHttp();
-  // const embedRef = useRef<HTMLEmbedElement | undefined>(undefined);
-  //
-  // useEffect(() => {
-  //   embedRef.current?.requestFullscreen();
-  // }, []);
 
   if (selectedItem == undefined || http == undefined) {
     return <div className='embed-view'></div>
