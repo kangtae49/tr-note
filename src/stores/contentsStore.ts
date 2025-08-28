@@ -25,19 +25,19 @@ export function useFileContent<T>(filepath: string | undefined) {
   const content = useContentsStore(
     (state) => {
       if (!filepath) return undefined;
-      const x = state.contents.get(filepath) as T;
-      console.log("get content", filepath, x)
-      return x;
+      return state.contents.get(filepath) as T
+      // const x = state.contents.get(filepath) as T;
+      // console.log("get content", filepath)
+      // return x;
     }
   ) as T;
-  const setContentS = useContentsStore((state) => state.setContent);
-
+  const {setContent} = useContentsStore();
   return {
     content,
     setContent: (value: T) => {
       if (filepath === undefined) return;
-      console.log("set content", filepath, value)
-      setContentS(filepath, value)
+      // console.log("set content", filepath)
+      setContent(filepath, value)
     },
   };
 }

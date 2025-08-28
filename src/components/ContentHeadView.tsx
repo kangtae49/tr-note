@@ -7,24 +7,18 @@ import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeIte
 import {renderTreeFromPath, SEP, TreeItem} from "@/components/tree/tree.ts";
 import * as utils from "@/components/utils.ts";
 import {includesFavoriteItem} from "@/components/favorites/favorites.ts";
-import {useFavoritesStore} from "@/components/favorites/stores/favoritesStore.ts";
+import {useFavorite} from "@/components/favorites/stores/favoritesStore.ts";
+import {fromTreeItem} from "@/components/tab/tab.ts";
 
 function ContentHeadView() {
   const {folderTree, setFolderTree} = useFolderTreeStore()
   const {folderTreeRef} = useFolderTreeRefStore()
   const {selectedItem, setSelectedItem} = useSelectedTreeItemStore()
-  const {favorites, setFavorites} = useFavoritesStore();
+  const {addFavorite, favorites} = useFavorite();
 
   const toggleStar = async (treeItem?: TreeItem): Promise<void> => {
     console.log('toggleStar', treeItem);
-    if (treeItem == undefined) return;
-    if (favorites == undefined) return;
-    if (includesFavoriteItem({full_path: treeItem.full_path, dir: treeItem.dir || false}, favorites)){
-      setFavorites(favorites.filter((item) => item.full_path != treeItem.full_path))
-    } else {
-      setFavorites([{full_path: treeItem.full_path, dir: treeItem.dir || false}, ...favorites])
-    }
-
+    addFavorite(fromTreeItem(treeItem))
   }
   const clickPath = async (fullPath: string | undefined): Promise<void> => {
     if (fullPath) {

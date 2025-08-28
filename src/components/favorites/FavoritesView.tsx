@@ -3,19 +3,16 @@ import SortableContainer from "@/components/tab/SortableContainer.tsx";
 import {useEffect} from "react";
 import {arrayMove, horizontalListSortingStrategy, SortableContext} from "@dnd-kit/sortable";
 import FavoriteItemView from "@/components/favorites/FavoriteItemView.tsx";
-import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
-import {useFavoritesStore} from "@/components/favorites/stores/favoritesStore.ts";
+import {useFavorite} from "@/components/favorites/stores/favoritesStore.ts";
 import "./favorites.css"
 import {commands, FavoriteItem} from "@/bindings.ts";
 import {getItemId} from "@/components/favorites/favorites.ts";
 
 
 export default function FavoritesView() {
-  const {favorites, setFavorites} = useFavoritesStore();
-
+  const {removeFavorite, favorites, setFavorites} = useFavorite();
   const removeItem = (favoriteItem: FavoriteItem) => {
-    if (favorites === undefined) return;
-    setFavorites(favorites.filter((item: FavoriteItem) => getItemId(item) !== getItemId(favoriteItem)));
+    removeFavorite(favoriteItem);
   }
 
   function handleDragStart(event: DragStartEvent) {

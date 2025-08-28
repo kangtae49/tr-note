@@ -1,5 +1,5 @@
 import {FavoriteItem} from "@/bindings.ts";
-import {SEP} from "@/components/tree/tree.ts";
+import {SEP, TreeItem} from "@/components/tree/tree.ts";
 
 export const getShortName = (fullPath: string) => {
   let name = fullPath.split(SEP).pop() || fullPath.split(SEP).pop();
@@ -22,4 +22,9 @@ export const includesFavoriteItem = (favoriteItem: FavoriteItem | undefined, fav
 
 export function getItemId (item: FavoriteItem) {
   return item.full_path;
+}
+
+export function fromTreeItem(item: TreeItem | undefined): FavoriteItem | undefined {
+  if (item === undefined) return undefined;
+  return {full_path: item.full_path, dir: item.dir || false}
 }

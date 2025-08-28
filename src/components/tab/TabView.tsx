@@ -3,19 +3,17 @@ import SortableContainer from "@/components/tab/SortableContainer.tsx";
 import {useEffect} from "react";
 import {arrayMove, horizontalListSortingStrategy, SortableContext} from "@dnd-kit/sortable";
 import TabItemView from "@/components/tab/TabItemView.tsx";
-import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
-import {useTabItemsStore} from "@/components/tab/stores/tabItemsStore.ts";
+import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
 import "./tab.css"
 import {commands, TabItem} from "@/bindings.ts";
 import {getItemId} from "@/components/tab/tab.ts";
 
 
 export default function TabView() {
-  const {tabItems, setTabItems} = useTabItemsStore();
+  const {removeTab, tabItems, setTabItems} = useTab();
 
   const removeItem = (tabItem: TabItem) => {
-    if (tabItems === undefined) return;
-    setTabItems(tabItems.filter((item: TabItem) => getItemId(item) !== getItemId(tabItem)));
+    removeTab(tabItem);
   }
 
   function handleDragStart(event: DragStartEvent) {

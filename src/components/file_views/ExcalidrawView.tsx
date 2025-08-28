@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect} from "react";
+import React, {memo, useCallback, useEffect, useState} from "react";
 import {Excalidraw} from "@excalidraw/excalidraw";
 import {type OrderedExcalidrawElement} from "@excalidraw/excalidraw/element/types";
 import "@excalidraw/excalidraw/index.css";
@@ -8,6 +8,8 @@ import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {TreeItem} from "@/components/tree/tree.ts";
 import {useFileContent} from "@/stores/contentsStore.ts";
 import {AppState, BinaryFiles} from "@excalidraw/excalidraw/types";
+import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
+import {fromTreeItem} from "@/components/tab/tab.ts";
 
 interface Props {
   style?: React.CSSProperties
@@ -21,7 +23,8 @@ interface ContentType {
   files?: any;
 }
 
-function textToContent(text: string): ContentType {
+function textToContent(text: string | undefined): ContentType | undefined {
+  if (text == undefined) return undefined;
   try {
     const data = JSON.parse(text) as ContentType;
     const elements = data.elements;
@@ -45,14 +48,9 @@ function textToContent(text: string): ContentType {
 
 function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
   const http = useHttp();
-  const {saveFile} = useSaveFile();
-
   const {content, setContent} = useFileContent<string | undefined>(selectedItem?.full_path);
-
-  const onChangeContent = (elements: readonly OrderedExcalidrawElement[], appState: AppState, files: BinaryFiles) => {
-    const jsonString = JSON.stringify({elements, appState, files}, null, 2);
-    setContent(jsonString);
-  }
+  const {saveFile} = useSaveFile();
+  const {addTab} = useTab();
 
   const keyDownHandler = useCallback(async (e: React.KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.code === "KeyS") {
@@ -72,24 +70,31 @@ function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
 
   }, [content, fullscreenHandler])
 
-  // if (http == undefined) return;
-  // if (selectedItem == undefined) return;
-  // if (selectedItem.ext != "excalidraw") return;
-  // console.log('draw load')
-  if (http !== undefined && selectedItem !== undefined && content == undefined) {
-    http.getSrcText(selectedItem.full_path).then(text => {
-      if (text == "") {
-        setContent(JSON.stringify({elements: [], appState: {}, files: {}}, null, 2))
-      } else {
-        setContent(text)
-      }
-    });
+  const onChangeContent = (elements: readonly OrderedExcalidrawElement[], appState: AppState, files: BinaryFiles) => {
+    console.log('onChange excalidraw', {elements, appState, files})
+    const jsonString = JSON.stringify({elements, appState, files}, null, 2);
+    if (jsonString !== content) {
+      setContent(jsonString);
+      addTab(fromTreeItem(selectedItem))
+    }
   }
 
+  useEffect(() => {
+    if (http !== undefined && selectedItem !== undefined && content == undefined) {
+      http.getSrcText(selectedItem.full_path).then(text => {
+        if (text == "") {
+          setContent(JSON.stringify({elements: [], appState: {}, files: {}}, null, 2))
+        } else {
+          setContent(text)
+        }
+      });
+    }
+  }, [selectedItem, http]);
 
-  if (content == undefined) {
-    return <div className='excalidraw-view'></div>
-  }
+
+  // if (content == undefined) {
+  //   return <div className='excalidraw-view'></div>
+  // }
 
   return (
     <div className="excalidraw-view"
@@ -106,4 +111,4 @@ function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
   )
 }
 
-export default ExcalidrawView;
+export default memo(ExcalidrawView);

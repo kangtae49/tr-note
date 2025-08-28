@@ -1,4 +1,5 @@
 import {TabItem} from "@/bindings.ts";
+import {TreeItem} from "@/components/tree/tree.ts";
 
 export const getShortName = (name: string) => {
   const N = 10;
@@ -17,4 +18,9 @@ export const includesTabItem = (tabItem: TabItem | undefined, tabItems: TabItem 
 
 export function getItemId (item: TabItem) {
   return item.full_path;
+}
+
+export function fromTreeItem(item: TreeItem | undefined): TabItem | undefined {
+  if (item === undefined) return undefined;
+  return {full_path: item.full_path, dir: item.dir || false}
 }

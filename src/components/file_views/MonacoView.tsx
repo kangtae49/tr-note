@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from "react";
+import React, {memo, useEffect, useRef, useState} from "react";
 import * as monaco from 'monaco-editor'
 import Editor, {OnMount} from '@monaco-editor/react';
 import {useHttp} from "@/components/HttpServerProvider.tsx";
@@ -6,6 +6,8 @@ import {getMonacoLanguage} from "@/components/content.ts";
 import {useSaveFile} from "@/components/utils.ts";
 import {TreeItem} from "@/components/tree/tree.ts";
 import {useFileContent} from "@/stores/contentsStore.ts";
+import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
+import {fromTreeItem} from "@/components/tab/tab.ts";
 
 
 interface Props {
@@ -19,7 +21,7 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
   const http = useHttp();
   const {content, setContent} = useFileContent<string | undefined>(selectedItem?.full_path);
   const {saveFile} = useSaveFile();
-
+  const {addTab} = useTab();
 
   const handleEditorDidMount: OnMount = (editor, _monaco) => {
     editorRef.current = editor;
@@ -47,6 +49,7 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
     if (value == undefined) return;
     console.log('onChange monaco')
     setContent(value);
+    addTab(fromTreeItem(selectedItem))
   }
 
   useEffect(() => {
@@ -54,7 +57,7 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
       http.getSrcText(selectedItem.full_path).then(text => {
         console.log('getSrcText monaco');
         setContent(text);
-      });
+      })
     }
   }, [selectedItem, http]);
 
@@ -74,4 +77,4 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
   )
 }
 
-export default MonacoView;
+export default memo(MonacoView);

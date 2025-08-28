@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect} from "react";
+import React, {memo, useCallback, useEffect} from "react";
 import MDEditor, {commands, ExecuteState, TextAreaTextApi} from '@uiw/react-md-editor';
 import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {useSaveFile} from "@/components/utils.ts";
@@ -6,6 +6,8 @@ import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
 import {MdPreviewType, useMdPreviewTypeStore} from "@/stores/mdPreviewTypeStore.ts";
 import {TreeItem} from "@/components/tree/tree.ts";
 import {useFileContent} from "@/stores/contentsStore.ts";
+import {fromTreeItem} from "@/components/tab/tab.ts";
+import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
 
 interface Props {
   style?: React.CSSProperties
@@ -19,6 +21,7 @@ function MdView({ style, selectedItem, fullscreenHandler }: Props) {
   const {folderTree} = useFolderTreeStore()
   const {mdPreviewType, setMdPreviewType} = useMdPreviewTypeStore();
   const {content, setContent} = useFileContent<string | undefined>(selectedItem?.full_path);
+  const {addTab} = useTab();
 
   const keyDownHandler = useCallback(async (e: React.KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.code === "KeyS") {
@@ -49,6 +52,7 @@ function MdView({ style, selectedItem, fullscreenHandler }: Props) {
     if (value == undefined) return;
     console.log('onChange md')
     setContent(value);
+    addTab(fromTreeItem(selectedItem))
   }
 
 
@@ -90,4 +94,4 @@ function MdView({ style, selectedItem, fullscreenHandler }: Props) {
   )
 }
 
-export default MdView;
+export default memo(MdView);
