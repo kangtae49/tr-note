@@ -58,18 +58,6 @@ function MdView({ style, selectedItem, fullscreenHandler }: Props) {
     addTab(getTabFromTreeItem(selectedItem))
   }
 
-
-
-  useEffect(() => {
-    if (http !== undefined && selectedItem !== undefined && content == undefined) {
-      http.getSrcText(selectedItem.full_path).then(text => {
-        console.log('getSrcText md');
-        setContent(text);
-        setSavedContent(text);
-      });
-    }
-  }, [selectedItem, http]);
-
   useEffect(() => {
     const btn = document.querySelector(`.md-view button[data-name="${mdPreviewType}"]`) as HTMLButtonElement;
     if (btn) {
@@ -77,6 +65,14 @@ function MdView({ style, selectedItem, fullscreenHandler }: Props) {
       btn.click();
     }
   }, [])
+
+  if (http !== undefined && selectedItem !== undefined && content == undefined) {
+    http.getSrcText(selectedItem.full_path).then(text => {
+      console.log('getSrcText md');
+      setContent(text);
+      setSavedContent(text);
+    });
+  }
 
   return (
     <div className="md-view"

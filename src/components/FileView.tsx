@@ -2,6 +2,7 @@ import "@/components/file.css"
 import {useFileViewTypeMapStore} from "@/stores/fileViewTypeMapStore.ts";
 import React, {useCallback, useEffect, useState} from "react";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
+
 import ImageView from "@/components/file_views/ImageView.tsx";
 import EmbedView from "@/components/file_views/EmbedView.tsx";
 import MdView from "@/components/file_views/MdView.tsx";
@@ -9,11 +10,13 @@ import AudioView from "@/components/file_views/AudioView.tsx";
 import VideoView from "@/components/file_views/VideoView.tsx";
 import MonacoView from "@/components/file_views/MonacoView.tsx";
 import NoneView from "@/components/file_views/NoneView.tsx";
-import AutoSizer from "react-virtualized-auto-sizer";
-import {FileViewType, getFileTypeGroup} from "@/components/content.ts";
-import {LIST_HEAD_SIZE, TreeItem} from "@/components/tree/tree.ts";
 import ExcalidrawView from "@/components/file_views/ExcalidrawView.tsx";
+
+import AutoSizer from "react-virtualized-auto-sizer";
+import {getFileViewTypeGroup} from "@/components/content.ts";
+import {LIST_HEAD_SIZE, TreeItem} from "@/components/tree/tree.ts";
 import {getAllWindows} from "@tauri-apps/api/window";
+import {useFileViewTypeStore} from "@/stores/fileViewTypeStore.ts";
 
 
 interface Props {
@@ -27,6 +30,7 @@ function FileView() {
   const {selectedItem} = useSelectedTreeItemStore()
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [newStyle, setNewStyle] = useState<React.CSSProperties | undefined>({});
+  const {fileViewType, setFileViewType} = useFileViewTypeStore()
 
   const fullscreenHandler = useCallback(async (e: React.KeyboardEvent) => {
     if (e.code === "Escape") {
@@ -58,13 +62,7 @@ function FileView() {
       }
       setIsFullscreen(!isFullscreen);
     }
-  }, [selectedItem, isFullscreen])
-
-  const getFileViewType = (item: TreeItem | undefined) => {
-    if (item == undefined) return 'None'
-    const fileViewTypeGroup = getFileTypeGroup(item)
-    return fileViewTypeMap[fileViewTypeGroup]
-  }
+  }, [selectedItem, fileViewType, isFullscreen])
 
   useEffect(() => {
     if (isFullscreen) {
@@ -80,7 +78,6 @@ function FileView() {
     }
   }, [isFullscreen]);
 
-
   return (
     <div className="file-view">
       <AutoSizer>
@@ -89,7 +86,8 @@ function FileView() {
             selectedItem,
             fullscreenHandler
           }
-          const fileViewType = getFileViewType(selectedItem);
+          const fileViewTypeGroup = getFileViewTypeGroup(selectedItem);
+          const fileViewType = fileViewTypeMap[fileViewTypeGroup];
           return(
           <>
             {fileViewType === 'None' && <NoneView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}

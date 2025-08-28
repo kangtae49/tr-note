@@ -54,15 +54,13 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
     addTab(getTabFromTreeItem(selectedItem))
   }
 
-  useEffect(() => {
-    if (http != undefined && selectedItem != undefined && content == undefined) {
-      http.getSrcText(selectedItem.full_path).then(text => {
-        console.log('getSrcText monaco');
-        setContent(text);
-        setSavedContent(text);
-      })
-    }
-  }, [selectedItem, http]);
+  if (http != undefined && selectedItem != undefined && content == undefined) {
+    http.getSrcText(selectedItem.full_path).then(text => {
+      console.log('getSrcText monaco');
+      setContent(text);
+      setSavedContent(text);
+    })
+  }
 
   return (
     <div className="monaco-view"

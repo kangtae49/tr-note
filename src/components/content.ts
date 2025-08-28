@@ -55,7 +55,7 @@ export const defaultFileViewTypeOfGroup: FileViewTypeMap = {
   Unknown: "None",
 }
 
-export function getFileTypeGroup(treeItem?: TreeItem): FileViewTypeGroup {
+export function getFileViewTypeGroup(treeItem?: TreeItem): FileViewTypeGroup {
   if (treeItem?.dir) {
     return 'Unknown'
   }

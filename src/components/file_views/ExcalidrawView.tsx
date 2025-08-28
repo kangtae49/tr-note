@@ -11,6 +11,8 @@ import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
 import {getTabFromTreeItem} from "@/components/tab/tab.ts";
 import {useFileContent} from "@/stores/contentsStore.ts";
 import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
+import {useFileViewTypeStore} from "@/stores/fileViewTypeStore.ts";
+import {FileViewType, fileViewTypeGroupMap} from "@/components/content.ts";
 
 interface Props {
   style?: React.CSSProperties
@@ -43,7 +45,8 @@ function textToContent(text: string | undefined): ContentType | undefined {
     return {elements, appState: newAppState, files};
   } catch (error) {
     console.error("Error parsing JSON:", error);
-    return {};
+    // return {};
+    return undefined;
   }
 }
 
@@ -53,6 +56,7 @@ function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
   const {setSavedContent} = useFileSavedContent<string | undefined>(selectedItem?.full_path);
   const {saveFile} = useSaveFile();
   const {addTab} = useTab();
+  // const {fileViewType} = useFileViewTypeStore();
 
   const keyDownHandler = useCallback(async (e: React.KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.code === "KeyS") {
@@ -74,7 +78,6 @@ function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
   }, [content, fullscreenHandler])
 
   const onChangeContent = (elements: readonly OrderedExcalidrawElement[], appState: AppState, files: BinaryFiles) => {
-    console.log('onChange excalidraw', {elements, appState, files})
     const jsonString = JSON.stringify({elements, appState, files}, null, 2);
     if (jsonString !== content) {
       setContent(jsonString);
@@ -82,19 +85,18 @@ function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
     }
   }
 
-  useEffect(() => {
-    if (http !== undefined && selectedItem !== undefined && content == undefined) {
-      http.getSrcText(selectedItem.full_path).then(text => {
-        console.log('getSrcText excalidraw:', text);
-        let content = text;
-        if (text == "") {
-          content = JSON.stringify({elements: [], appState: {}, files: {}}, null, 2)
-        }
-        setContent(content)
-        setSavedContent(content);
-      });
-    }
-  }, [selectedItem, http]);
+
+  if (http !== undefined && selectedItem !== undefined && content == undefined) {
+    http.getSrcText(selectedItem.full_path).then(text => {
+      let content = text;
+      if (text == "") {
+        content = JSON.stringify({elements: [], appState: {}, files: {}}, null, 2)
+      }
+      setContent(content)
+      setSavedContent(content);
+    });
+  }
+
 
 
   if (content == undefined) {

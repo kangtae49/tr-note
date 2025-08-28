@@ -1,33 +1,58 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {FontAwesomeIcon as Icon} from "@fortawesome/react-fontawesome";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 import {useFileViewTypeMapStore} from "@/stores/fileViewTypeMapStore.ts";
 import {formatFileSize, toDate} from "@/components/utils.ts";
-import {fileViewTypeGroupMap, getFileTypeGroup, getFileViewIcon} from "@/components/content.ts";
+import {
+  FileViewType,
+  FileViewTypeGroup,
+  fileViewTypeGroupMap,
+  getFileViewTypeGroup,
+  getFileViewIcon
+} from "@/components/content.ts";
+import {useFileViewTypeStore} from "@/stores/fileViewTypeStore.ts";
+import {useFileViewTypeGroupStore} from "@/stores/fileViewTypeGroupStore.ts";
 
 function FileHeadView(): React.ReactElement {
   const {selectedItem} = useSelectedTreeItemStore()
   const {fileViewTypeMap, setFileViewTypeMap} = useFileViewTypeMapStore()
+  const {fileViewType, setFileViewType} = useFileViewTypeStore()
 
-  const fileViewTypeGroup = getFileTypeGroup(selectedItem)
-  const sz = selectedItem?.sz || 0
-  const fileViewTypeList = fileViewTypeGroupMap[fileViewTypeGroup]
-  const selectedFileViewType = fileViewTypeMap[fileViewTypeGroup]
+  const {fileViewTypeGroup, setFileViewTypeGroup} = useFileViewTypeGroupStore();
+  const [fileViewTypeList, setFileViewTypeList] = useState<FileViewType[]>([]);
+  const [sz, setSz] = useState(0);
+  // setFileViewType(selectedFileViewType)
 
-  const clickFileViewType = (viewType: string) => {
-    setFileViewTypeMap({
-      ...fileViewTypeMap,
-      [fileViewTypeGroup]: viewType
-    })
+  const clickFileViewType = (viewType: FileViewType) => {
+    if (fileViewTypeGroup == undefined) return;
+    fileViewTypeMap[fileViewTypeGroup] = viewType;
+    setFileViewTypeMap({...fileViewTypeMap});
+    // setFileViewTypeMap({
+    //   ...fileViewTypeMap,
+    //   [fileViewTypeGroup]: viewType
+    // })
+
+    setFileViewType(viewType);
   }
+
+  useEffect(() => {
+    const fileViewTypeGroup = getFileViewTypeGroup(selectedItem);
+    setFileViewTypeGroup(fileViewTypeGroup);
+    const fileViewTypeList = fileViewTypeGroupMap[fileViewTypeGroup]
+    setFileViewTypeList(fileViewTypeList);
+    const sz = selectedItem?.sz || 0;
+    setSz(sz);
+    const fileViewType = fileViewTypeMap[fileViewTypeGroup]
+    setFileViewType(fileViewType);
+  }, [selectedItem])
 
   return (
     <div className="file-head-view">
       {(selectedItem !== undefined && selectedItem.dir == false) && (
         <div className="file-types">
           {
-            fileViewTypeList.map((fileViewType, idx) => {
-              let inactive = fileViewType == selectedFileViewType ? '' : 'inactive';
+            fileViewTypeList.map((viewType, idx) => {
+              let inactive = viewType == fileViewType ? '' : 'inactive';
               if (fileViewTypeList.length == 1) {
                 inactive = ""
               }
@@ -35,8 +60,8 @@ function FileHeadView(): React.ReactElement {
                 <Icon
                   key={idx}
                   className={inactive}
-                  icon={getFileViewIcon(fileViewType)}
-                  onClick={() => clickFileViewType(fileViewType)}
+                  icon={getFileViewIcon(viewType)}
+                  onClick={() => clickFileViewType(viewType)}
                 />
               )
             })
