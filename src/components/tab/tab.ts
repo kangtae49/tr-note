@@ -24,7 +24,7 @@ export function getItemId (item: TabItem) {
   return item.full_path;
 }
 
-export function fromTreeItem(item: TreeItem | undefined): TabItem | undefined {
+export function getTabFromTreeItem(item: TreeItem | undefined): TabItem | undefined {
   if (item === undefined) return undefined;
   return {full_path: item.full_path, dir: item.dir || false}
 }

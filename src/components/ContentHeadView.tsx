@@ -1,6 +1,6 @@
 import React from 'react'
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
-import { faStar, faFolder, faFile, faArrowUp, faRocket } from '@fortawesome/free-solid-svg-icons'
+import { faStar, faPenToSquare, faFolder, faFile, faArrowUp, faRocket } from '@fortawesome/free-solid-svg-icons'
 import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
 import {useFolderTreeRefStore} from "@/components/tree/stores/folderTreeRefStore.ts";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
@@ -8,17 +8,24 @@ import {renderTreeFromPath, SEP, TreeItem} from "@/components/tree/tree.ts";
 import * as utils from "@/components/utils.ts";
 import {includesFavoriteItem} from "@/components/favorites/favorites.ts";
 import {useFavorite} from "@/components/favorites/stores/favoritesStore.ts";
-import {fromTreeItem} from "@/components/tab/tab.ts";
+import {getTabFromTreeItem} from "@/components/tab/tab.ts";
+import {getFavoriteFromTreeItem} from "@/components/favorites/favorites.ts";
+import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
 
 function ContentHeadView() {
   const {folderTree, setFolderTree} = useFolderTreeStore()
   const {folderTreeRef} = useFolderTreeRefStore()
   const {selectedItem, setSelectedItem} = useSelectedTreeItemStore()
-  const {addFavorite, favorites} = useFavorite();
+  const {favorites, addFavorite} = useFavorite();
+  const {addTab} = useTab();
 
   const toggleStar = async (treeItem?: TreeItem): Promise<void> => {
     console.log('toggleStar', treeItem);
-    addFavorite(fromTreeItem(treeItem))
+    addFavorite(getFavoriteFromTreeItem(treeItem))
+  }
+  const clickAddTab = async (treeItem?: TreeItem): Promise<void> => {
+    console.log('clickAddTab', treeItem);
+    addTab(getTabFromTreeItem(treeItem))
   }
   const clickPath = async (fullPath: string | undefined): Promise<void> => {
     if (fullPath) {
@@ -31,7 +38,6 @@ function ContentHeadView() {
         selectedItem
       })
     }
-
   }
 
   let pathList: string[] = []
@@ -53,8 +59,13 @@ function ContentHeadView() {
 
       <div className="title-path">
         <div className="icon">
-          <Icon icon={faStar} className={includesFavoriteItem({full_path: selectedItem?.full_path || "", dir: selectedItem?.dir || false}, favorites) ? "" : "inactive"} onClick={() => toggleStar(selectedItem)} />
+          <Icon icon={faStar} className={includesFavoriteItem(getFavoriteFromTreeItem(selectedItem), favorites) ? "" : "inactive"} onClick={() => toggleStar(selectedItem)} />
         </div>
+        {!selectedItem?.dir && (
+          <div className="icon">
+            <Icon icon={faPenToSquare} onClick={() => clickAddTab(selectedItem)} />
+          </div>
+        )}
         <div className="icon">
           <Icon icon={faArrowUp} onClick={() => clickPath(selectedItem?.parent?.full_path)} />
         </div>

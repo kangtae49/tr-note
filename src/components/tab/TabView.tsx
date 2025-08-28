@@ -9,6 +9,7 @@ import {commands, TabItem} from "@/bindings.ts";
 import {getItemId} from "@/components/tab/tab.ts";
 
 
+
 export default function TabView() {
   const {removeTab, tabItems, setTabItems} = useTab();
 

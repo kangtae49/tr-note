@@ -42,5 +42,3 @@ pnpm add -D @types/react-window
 ```
 cargo tauri icon ./public/tr-note.svg
 ```
-
-TODO: rename, delete => delete contents

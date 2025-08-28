@@ -6,10 +6,11 @@ import "@excalidraw/excalidraw/index.css";
 import {useSaveFile} from "@/components/utils.ts";
 import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {TreeItem} from "@/components/tree/tree.ts";
-import {useFileContent} from "@/stores/contentsStore.ts";
 import {AppState, BinaryFiles} from "@excalidraw/excalidraw/types";
 import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
-import {fromTreeItem} from "@/components/tab/tab.ts";
+import {getTabFromTreeItem} from "@/components/tab/tab.ts";
+import {useFileContent} from "@/stores/contentsStore.ts";
+import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
 
 interface Props {
   style?: React.CSSProperties
@@ -49,9 +50,9 @@ function textToContent(text: string | undefined): ContentType | undefined {
 function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
   const http = useHttp();
   const {content, setContent} = useFileContent<string | undefined>(selectedItem?.full_path);
+  const {setSavedContent} = useFileSavedContent<string | undefined>(selectedItem?.full_path);
   const {saveFile} = useSaveFile();
   const {addTab} = useTab();
-  const excalidrawRef = useRef<any>(null);
 
   const keyDownHandler = useCallback(async (e: React.KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.code === "KeyS") {
@@ -63,6 +64,7 @@ function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
       if (content !== undefined) {
         saveFile(content).then((_item) => {
           console.log('saveFile done');
+          setSavedContent(content);
         });
       }
     } else if (fullscreenHandler !== undefined) {
@@ -76,7 +78,7 @@ function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
     const jsonString = JSON.stringify({elements, appState, files}, null, 2);
     if (jsonString !== content) {
       setContent(jsonString);
-      addTab(fromTreeItem(selectedItem))
+      addTab(getTabFromTreeItem(selectedItem))
     }
   }
 
@@ -89,6 +91,7 @@ function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
           content = JSON.stringify({elements: [], appState: {}, files: {}}, null, 2)
         }
         setContent(content)
+        setSavedContent(content);
       });
     }
   }, [selectedItem, http]);

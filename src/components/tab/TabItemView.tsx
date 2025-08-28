@@ -3,11 +3,16 @@ import {faUpDownLeftRight, faFile, faFolder, faCircleXmark} from "@fortawesome/f
 import {useSortable} from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities";
 import {getItemId, getShortName} from "@/components/tab/tab.ts";
-import {TabItem} from "@/bindings.ts";
+import {commands, TabItem} from "@/bindings.ts";
 import {renderTreeFromPath} from "@/components/tree/tree.ts";
 import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
 import {useFolderTreeRefStore} from "@/components/tree/stores/folderTreeRefStore.ts";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
+import React, {useContext, useState} from "react";
+import {useFileContent} from "@/stores/contentsStore.ts";
+import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
 
 interface Props {
   item: TabItem
@@ -18,6 +23,11 @@ function TabItemView({ item, removeItem }: Props) {
   const {folderTree, setFolderTree} = useFolderTreeStore()
   const {folderTreeRef} = useFolderTreeRefStore()
   const {selectedItem, setSelectedItem} = useSelectedTreeItemStore()
+  const {content, setContent} = useFileContent<string | undefined>(item?.full_path);
+  const {savedContent, setSavedContent} = useFileSavedContent<string | undefined>(item?.full_path);
+  const [openMenu, setOpenMenu] = useState(false);
+  const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const {removeTab} = useTab();
 
   const sortable = useSortable({
     id: getItemId(item),
@@ -41,8 +51,36 @@ function TabItemView({ item, removeItem }: Props) {
       setSelectedItem,
       selectedItem
     })
+  }
 
+  const clickCloseTab = async (e: React.MouseEvent) => {
+    console.log('clickCloseTab', item);
+    e.preventDefault();
+    setPosition({ x: e.clientX, y: e.clientY });
+    if (content == savedContent) {
+      removeItem(item);
+    } else {
+      setOpenMenu(true);
+    }
+  }
 
+  const clickSaveAndClose = () => {
+    console.log('clickSaveAndClose', item);
+    if (savedContent !== undefined) {
+      commands.saveFile(item.full_path, savedContent).then((res) => {
+        if (res.status === 'ok') {
+          removeTab(item);
+        }
+      })
+    }
+  }
+  const clickNotSaveAndClose = () => {
+    console.log('clickNotSaveAndClose', item);
+    setContent(savedContent);
+    removeTab(item);
+  }
+  const clickCancel = () => {
+    console.log('clickCancel', item);
   }
 
   return (
@@ -67,9 +105,26 @@ function TabItemView({ item, removeItem }: Props) {
       >
         {getShortName(item.full_path)}
       </div>
-      <div className="tab-close" onClick={() => removeItem(item)}>
+      <div className="tab-close" onClick={clickCloseTab}>
         <Icon icon={faCircleXmark} />
       </div>
+      <DropdownMenu.Root open={openMenu} onOpenChange={setOpenMenu}>
+        <DropdownMenu.Content className="context-menu" style={{
+          position: 'fixed',
+          top: position.y,
+          left: position.x - 150,
+        }}>
+          <DropdownMenu.Item className="context-menu-item" onSelect={() => clickSaveAndClose()}>
+            <Icon icon={item.dir ? faFolder : faFile}/> Save And Close
+          </DropdownMenu.Item>
+          <DropdownMenu.Item className="context-menu-item" onSelect={() => clickNotSaveAndClose()}>
+            <Icon icon={item.dir ? faFolder : faFile}/> Don't Save And Close
+          </DropdownMenu.Item>
+          <DropdownMenu.Item className="context-menu-item" onSelect={() => clickCancel()}>
+            <Icon icon={item.dir ? faFolder : faFile}/> Cancel
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
     </div>
   )
 }

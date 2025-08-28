@@ -31,6 +31,14 @@ export function useFileContent<T>(filepath: string | undefined) {
       // return x;
     }
   ) as T;
+  const removeContent = () => {
+    if (filepath === undefined) return;
+    useContentsStore.setState((state) => {
+      const newMap = new Map(state.contents);
+      newMap.delete(filepath);
+      return { contents: newMap };
+    });
+  }
   const {setContent} = useContentsStore();
   return {
     content,
@@ -39,6 +47,7 @@ export function useFileContent<T>(filepath: string | undefined) {
       // console.log("set content", filepath)
       setContent(filepath, value)
     },
+    removeContent
   };
 }
 

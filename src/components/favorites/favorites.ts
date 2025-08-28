@@ -24,7 +24,7 @@ export function getItemId (item: FavoriteItem) {
   return item.full_path;
 }
 
-export function fromTreeItem(item: TreeItem | undefined): FavoriteItem | undefined {
+export function getFavoriteFromTreeItem(item: TreeItem | undefined): FavoriteItem | undefined {
   if (item === undefined) return undefined;
   return {full_path: item.full_path, dir: item.dir || false}
 }

@@ -3,12 +3,12 @@ import * as monaco from 'monaco-editor'
 import Editor, {OnMount} from '@monaco-editor/react';
 import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {getMonacoLanguage} from "@/components/content.ts";
-import {useSaveFile} from "@/components/utils.ts";
 import {TreeItem} from "@/components/tree/tree.ts";
 import {useFileContent} from "@/stores/contentsStore.ts";
 import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
-import {fromTreeItem} from "@/components/tab/tab.ts";
-
+import {getTabFromTreeItem} from "@/components/tab/tab.ts";
+import {useSaveFile} from "@/components/utils.ts";
+import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
 
 interface Props {
   style?: React.CSSProperties
@@ -20,6 +20,7 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const http = useHttp();
   const {content, setContent} = useFileContent<string | undefined>(selectedItem?.full_path);
+  const {setSavedContent} = useFileSavedContent<string | undefined>(selectedItem?.full_path);
   const {saveFile} = useSaveFile();
   const {addTab} = useTab();
 
@@ -33,6 +34,7 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
         if (text !== undefined) {
           saveFile(text).then((_item) => {
             console.log('saveFile done');
+            setSavedContent(text);
             setTimeout(() => {
               if (pos) {
                 editorRef.current?.focus();
@@ -49,7 +51,7 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
     if (value == undefined) return;
     console.log('onChange monaco')
     setContent(value);
-    addTab(fromTreeItem(selectedItem))
+    addTab(getTabFromTreeItem(selectedItem))
   }
 
   useEffect(() => {
@@ -57,6 +59,7 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
       http.getSrcText(selectedItem.full_path).then(text => {
         console.log('getSrcText monaco');
         setContent(text);
+        setSavedContent(text);
       })
     }
   }, [selectedItem, http]);

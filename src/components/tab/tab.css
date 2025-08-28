@@ -58,3 +58,4 @@
 .tab-view .fa-file:hover { transform: var(--scale); color: var(--file-hover-color);}
 .tab-view .fa-circle-xmark { color: var(--folder-color); margin-right: 5px;}
 .tab-view .fa-circle-xmark:hover { transform: var(--scale); color: var(--folder-hover-color);}
+

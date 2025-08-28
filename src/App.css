@@ -123,6 +123,9 @@ html, body, #root, .container {
 .fa-folder:hover {transform: var(--scale); color: var(--folder-hover-color)}
 .fa-up-down-left-right {color: var(--folder-color); margin-right: 5px;}
 .fa-up-down-left-right:hover {transform: var(--scale); color: var(--folder-hover-color)}
+.fa-pen-to-square {color: var(--folder-color); margin-right: 5px;}
+.fa-pen-to-square:hover {transform: var(--scale); color: var(--folder-hover-color)}
+
 
 .fa-star { color: var(--folder-color); margin-right: 5px;}
 .fa-star.inactive { color: var(--inactive-color); margin-right: 5px;}

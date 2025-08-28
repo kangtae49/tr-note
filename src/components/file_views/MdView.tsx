@@ -6,8 +6,9 @@ import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
 import {MdPreviewType, useMdPreviewTypeStore} from "@/stores/mdPreviewTypeStore.ts";
 import {TreeItem} from "@/components/tree/tree.ts";
 import {useFileContent} from "@/stores/contentsStore.ts";
-import {fromTreeItem} from "@/components/tab/tab.ts";
 import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
+import {getTabFromTreeItem} from "@/components/tab/tab.ts";
+import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
 
 interface Props {
   style?: React.CSSProperties
@@ -21,6 +22,7 @@ function MdView({ style, selectedItem, fullscreenHandler }: Props) {
   const {folderTree} = useFolderTreeStore()
   const {mdPreviewType, setMdPreviewType} = useMdPreviewTypeStore();
   const {content, setContent} = useFileContent<string | undefined>(selectedItem?.full_path);
+  const {setSavedContent} = useFileSavedContent<string | undefined>(selectedItem?.full_path);
   const {addTab} = useTab();
 
   const keyDownHandler = useCallback(async (e: React.KeyboardEvent) => {
@@ -32,6 +34,7 @@ function MdView({ style, selectedItem, fullscreenHandler }: Props) {
       if (content == undefined) return;
       saveFile(content).then((_item) => {
         console.log('saveFile done');
+        setSavedContent(content);
       });
     } else if (fullscreenHandler !== undefined) {
       await fullscreenHandler(e);
@@ -52,7 +55,7 @@ function MdView({ style, selectedItem, fullscreenHandler }: Props) {
     if (value == undefined) return;
     console.log('onChange md')
     setContent(value);
-    addTab(fromTreeItem(selectedItem))
+    addTab(getTabFromTreeItem(selectedItem))
   }
 
 
@@ -62,6 +65,7 @@ function MdView({ style, selectedItem, fullscreenHandler }: Props) {
       http.getSrcText(selectedItem.full_path).then(text => {
         console.log('getSrcText md');
         setContent(text);
+        setSavedContent(text);
       });
     }
   }, [selectedItem, http]);
