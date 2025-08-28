@@ -47,14 +47,20 @@ function MdView({ style, selectedItem, fullscreenHandler }: Props) {
 
   const onChangeContent = (value: string | undefined) => {
     if (value == undefined) return;
+    console.log('onChange md')
     setContent(value);
   }
 
-  if (http !== undefined && selectedItem !== undefined) {
-    http.getSrcText(selectedItem.full_path).then(text => {
-      setContent(text);
-    });
-  }
+
+
+  useEffect(() => {
+    if (http !== undefined && selectedItem !== undefined && content == undefined) {
+      http.getSrcText(selectedItem.full_path).then(text => {
+        console.log('getSrcText md');
+        setContent(text);
+      });
+    }
+  }, [selectedItem, http]);
 
   useEffect(() => {
     const btn = document.querySelector(`.md-view button[data-name="${mdPreviewType}"]`) as HTMLButtonElement;

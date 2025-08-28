@@ -20,10 +20,6 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
   const {content, setContent} = useFileContent<string | undefined>(selectedItem?.full_path);
   const {saveFile} = useSaveFile();
 
-  const onChangeContent = (value: string | undefined) => {
-    if (value == undefined) return;
-    setContent(value);
-  }
 
   const handleEditorDidMount: OnMount = (editor, _monaco) => {
     editorRef.current = editor;
@@ -47,11 +43,20 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
     });
   };
 
-  if (http != undefined && selectedItem != undefined) {
-    http.getSrcText(selectedItem.full_path).then(text => {
-      setContent(text);
-    });
+  const onChangeContent = (value: string | undefined) => {
+    if (value == undefined) return;
+    console.log('onChange monaco')
+    setContent(value);
   }
+
+  useEffect(() => {
+    if (http != undefined && selectedItem != undefined && content == undefined) {
+      http.getSrcText(selectedItem.full_path).then(text => {
+        console.log('getSrcText monaco');
+        setContent(text);
+      });
+    }
+  }, [selectedItem, http]);
 
   return (
     <div className="monaco-view"
