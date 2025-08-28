@@ -24,6 +24,8 @@ use windows::Win32::Foundation::{FILETIME, HANDLE};
 use windows::Win32::Storage::FileSystem::{FindClose, FindExInfoStandard, FindExSearchNameMatch, FindFirstFileExW, FindNextFileW, FILE_ATTRIBUTE_DIRECTORY, FIND_FIRST_EX_LARGE_FETCH, WIN32_FIND_DATAW};
 use trash;
 use uuid::Uuid;
+use rand::Rng;
+
 use crate::AppState;
 use crate::err::{ApiError, ApiResult};
 
@@ -156,9 +158,11 @@ pub async fn create_folder(base_path: &str) -> ApiResult<String> {
 #[tauri::command]
 #[specta::specta]
 pub async fn create_file(base_path: &str) -> ApiResult<String> {
-    let uuid = Uuid::new_v4();
-    let short_id = &uuid.as_simple().to_string()[0..4];
-    let name = format!("new_file_{}.txt", short_id);
+    let imoji_str: String = get_imoji();
+    // let uuid = Uuid::new_v4();
+    // let short_id = &uuid.as_simple().to_string()[0..4];
+    // let name = format!("new_file_{}.txt", short_id);
+    let name = format!("{}_new_file.txt", &imoji_str);
     let new_path = Path::new(base_path).join(name);
     std::fs::File::create(&new_path)?;
     Ok(new_path.to_string_lossy().into_owned())
@@ -167,14 +171,46 @@ pub async fn create_file(base_path: &str) -> ApiResult<String> {
 #[tauri::command]
 #[specta::specta]
 pub async fn create_draw_file(base_path: &str) -> ApiResult<String> {
-    let uuid = Uuid::new_v4();
-    let short_id = &uuid.as_simple().to_string()[0..4];
-    let name = format!("new_draw_{}.excalidraw", short_id);
+    let imoji_str: String = get_imoji();
+
+    // let uuid = Uuid::new_v4();
+    // let short_id = &uuid.as_simple().to_string()[0..4];
+    // let name = format!("new_file_{}.excalidraw", short_id);
+    let name = format!("{}_new_file.excalidraw", &imoji_str);
     let new_path = Path::new(base_path).join(name);
     std::fs::File::create(&new_path)?;
     Ok(new_path.to_string_lossy().into_owned())
 }
 
+fn get_imoji() -> String {
+    let mut rng = rand::thread_rng();
+    let imoji_str: String = (0..5)
+        .filter_map(|_| {
+            let ranges = [
+                (0x1F600, 0x1F64F), // Emoticons
+                (0x1F680, 0x1F6C5), // Transport & Map Symbols
+                (0x02700, 0x027BF), // Dingbats
+                (0x02600, 0x026FF), // Misc Symbols
+                // (0x024C2, 0x1F1FF), // Misc Symbols
+
+                // (0x1F300, 0x1F5FF), // Miscellaneous Symbols & Pictographs
+                // (0x1F900, 0x1F9FF), // Supplemental Symbols & Pictographs
+                // (0x1FA70, 0x1FAFF), // Symbols & Pictographs Extended-A
+                // (0x1F100, 0x1F1FF), // Enclosed Alphanumeric Supplement
+                // (0x1F200, 0x1F2FF), // Enclosed Ideographic Supplement
+
+                // ('😀' as u32, '🙃' as u32),  // Emoticons
+                // ('🚀' as u32, '🛅' as u32),
+                // ('☀' as u32, '⛿' as u32),   // Misc Symbols
+                // ('✂' as u32, '✿' as u32),   // Dingbats
+            ];
+            let (start, end) = ranges[rng.gen_range(0..ranges.len())];
+            let codepoint = rng.gen_range(start..=end);
+            char::from_u32(codepoint)
+        })
+        .collect();
+    return imoji_str
+}
 
 #[derive(Type, Serialize, Deserialize, Clone, Eq, PartialEq, Hash, PartialOrd, Ord, Debug)]
 pub enum MetaType {

@@ -1,7 +1,11 @@
 import {TabItem} from "@/bindings.ts";
-import {TreeItem} from "@/components/tree/tree.ts";
+import {SEP, TreeItem} from "@/components/tree/tree.ts";
 
-export const getShortName = (name: string) => {
+export const getShortName = (fullPath: string) => {
+  let name = fullPath.split(SEP).pop() || fullPath.split(SEP).pop();
+  if (name == undefined || name == ""){
+    name = fullPath;
+  }
   const N = 10;
   if (name.length <= (N*3 + 3)) {
     return name;

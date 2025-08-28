@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useEffect, useState} from "react";
+import React, {memo, useCallback, useEffect, useRef} from "react";
 import {Excalidraw} from "@excalidraw/excalidraw";
 import {type OrderedExcalidrawElement} from "@excalidraw/excalidraw/element/types";
 import "@excalidraw/excalidraw/index.css";
@@ -51,6 +51,7 @@ function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
   const {content, setContent} = useFileContent<string | undefined>(selectedItem?.full_path);
   const {saveFile} = useSaveFile();
   const {addTab} = useTab();
+  const excalidrawRef = useRef<any>(null);
 
   const keyDownHandler = useCallback(async (e: React.KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.code === "KeyS") {
@@ -82,19 +83,20 @@ function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
   useEffect(() => {
     if (http !== undefined && selectedItem !== undefined && content == undefined) {
       http.getSrcText(selectedItem.full_path).then(text => {
+        console.log('getSrcText excalidraw:', text);
+        let content = text;
         if (text == "") {
-          setContent(JSON.stringify({elements: [], appState: {}, files: {}}, null, 2))
-        } else {
-          setContent(text)
+          content = JSON.stringify({elements: [], appState: {}, files: {}}, null, 2)
         }
+        setContent(content)
       });
     }
   }, [selectedItem, http]);
 
 
-  // if (content == undefined) {
-  //   return <div className='excalidraw-view'></div>
-  // }
+  if (content == undefined) {
+    return <div className='excalidraw-view'></div>
+  }
 
   return (
     <div className="excalidraw-view"

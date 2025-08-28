@@ -41,4 +41,5 @@ moka = {version = "0.12.10", features = ["future"] }
 dirs-next = "2.0.0"
 trash = "5.2.3"
 uuid = { version = "1.18.0", features = ["v4"] }
+rand = "0.8.5"
 
