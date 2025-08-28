@@ -18,7 +18,7 @@ function MainView() {
         <TreePaneView />
         <ContentPaneView />
       </SplitPane>
-      {isResizing && <div className="iframe-overlay" />}
+      {isResizing && <div className="iframe-overlay" onClick={() => setIsResizing(false)} />}
     </div>
   )
 }
