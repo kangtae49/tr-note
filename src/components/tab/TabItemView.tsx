@@ -8,7 +8,7 @@ import {renderTreeFromPath} from "@/components/tree/tree.ts";
 import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
 import {useFolderTreeRefStore} from "@/components/tree/stores/folderTreeRefStore.ts";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
-import React, {useContext, useState} from "react";
+import React, {useState} from "react";
 import {useFileContent} from "@/stores/contentsStore.ts";
 import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";

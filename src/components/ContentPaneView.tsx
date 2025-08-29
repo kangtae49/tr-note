@@ -13,7 +13,7 @@ function ContentPaneView() {
       <SplitPane
         split="horizontal"
         // primary="first"
-        minSize={30}
+        minSize={0}
         defaultSize={54}
         onDragStarted={() => setIsResizing(true)}
         onDragFinished={() => setIsResizing(false)}

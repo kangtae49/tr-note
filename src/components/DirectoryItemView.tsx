@@ -7,14 +7,16 @@ import {useFolderListVisibleColsStore} from "@/stores/folderListVisibleColsStore
 import {formatFileSize, toDate} from "@/components/utils.ts";
 import * as utils from "@/components/utils.ts";
 import * as ContextMenu from "@radix-ui/react-context-menu";
+import * as Tooltip from "@radix-ui/react-tooltip";
 import {commands} from "@/bindings.ts";
 import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
 import {useFolderTreeRefStore} from "@/components/tree/stores/folderTreeRefStore.ts";
 import toast from "react-hot-toast";
-import {useTab, useTabItemsStore} from "@/components/tab/stores/tabItemsStore.ts";
+import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
 import {getTabFromTreeItem} from "@/components/tab/tab.ts";
 import {useFileContent} from "@/stores/contentsStore.ts";
 import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
+import {useHttp} from "@/components/HttpServerProvider.tsx";
 
 interface Props {
   style: React.CSSProperties
@@ -34,6 +36,7 @@ function DirectoryItemView({ treeItem, style, clickCreateFolder, clickCreateFile
   const {removeTab} = useTab();
   const {removeContent} = useFileContent(treeItem.full_path);
   const {removeSavedContent} = useFileSavedContent(treeItem.full_path)
+  const http = useHttp();
 
   const clickRename = useCallback(() => {
     setTempName(treeItem.nm);
@@ -131,43 +134,57 @@ function DirectoryItemView({ treeItem, style, clickCreateFolder, clickCreateFile
         <div className="icon" onClick={() => utils.shellShowItemInFolder(fullPath)}>
           <Icon icon={treeItem.dir ? faFolder : faFile} />
         </div>
-        <ContextMenu.Root>
-          <ContextMenu.Trigger>
-            {editing ? (
-              <div className="label">
-                <input ref={inputRef} type="text" value={tempName}
-                       onChange={(e) => setTempName(e.target.value)}
-                       onKeyDown={handleKeyDown}
-                       onBlur={onBlur}
-                />
+        <Tooltip.Provider>
+          <Tooltip.Root>
+          <ContextMenu.Root>
+            <Tooltip.Trigger asChild>
+            <ContextMenu.Trigger>
+              {editing ? (
+                <div className="label">
+                  <input ref={inputRef} type="text" value={tempName}
+                         onChange={(e) => setTempName(e.target.value)}
+                         onKeyDown={handleKeyDown}
+                         onBlur={onBlur}
+                  />
+                </div>
+              ):(
+                <div className="label"
+                     onDoubleClick={() => setSelectedItem(treeItem)}>
+                  {nm}
+                </div>
+              )}
+            </ContextMenu.Trigger>
+            </Tooltip.Trigger>
+            { (http !== undefined && treeItem.mt?.startsWith('image/')) && (
+            <Tooltip.Content side="right" className="tooltip-content">
+              <div className="tooltip-image">
+                <img src={http.getSrc(treeItem.full_path)} />
               </div>
-            ):(
-              <div className="label" title={fullPath}
-                   onDoubleClick={() => setSelectedItem(treeItem)}>
-                {nm}
-              </div>
+            </Tooltip.Content>
             )}
-          </ContextMenu.Trigger>
-          <ContextMenu.Portal>
-            <ContextMenu.Content className="context-menu">
-              <ContextMenu.Item className="context-menu-item" onSelect={clickRename}>
-                <Icon icon={treeItem.dir ? faFolder : faFile}/> Rename
-              </ContextMenu.Item>
-              <ContextMenu.Item className="context-menu-item" onSelect={clickDelete}>
-                <Icon icon={treeItem.dir ? faFolder : faFile}/> Delete
-              </ContextMenu.Item>
-              <ContextMenu.Item className="context-menu-item" onSelect={clickCreateFolder}>
-                <Icon icon={faFolder}/> Create Folder
-              </ContextMenu.Item>
-              <ContextMenu.Item className="context-menu-item" onSelect={clickCreateFile}>
-                <Icon icon={faFile}/> Create File
-              </ContextMenu.Item>
-              <ContextMenu.Item className="context-menu-item" onSelect={clickCreateDrawFile}>
-                <Icon icon={faFileImage}/> Create Draw File
-              </ContextMenu.Item>
-            </ContextMenu.Content>
-          </ContextMenu.Portal>
-        </ContextMenu.Root>
+
+            <ContextMenu.Portal>
+              <ContextMenu.Content className="context-menu">
+                <ContextMenu.Item className="context-menu-item" onSelect={clickRename}>
+                  <Icon icon={treeItem.dir ? faFolder : faFile}/> Rename
+                </ContextMenu.Item>
+                <ContextMenu.Item className="context-menu-item" onSelect={clickDelete}>
+                  <Icon icon={treeItem.dir ? faFolder : faFile}/> Delete
+                </ContextMenu.Item>
+                <ContextMenu.Item className="context-menu-item" onSelect={clickCreateFolder}>
+                  <Icon icon={faFolder}/> Create Folder
+                </ContextMenu.Item>
+                <ContextMenu.Item className="context-menu-item" onSelect={clickCreateFile}>
+                  <Icon icon={faFile}/> Create File
+                </ContextMenu.Item>
+                <ContextMenu.Item className="context-menu-item" onSelect={clickCreateDrawFile}>
+                  <Icon icon={faFileImage}/> Create Draw File
+                </ContextMenu.Item>
+              </ContextMenu.Content>
+            </ContextMenu.Portal>
+          </ContextMenu.Root>
+          </Tooltip.Root>
+        </Tooltip.Provider>
       </div>
       {folderListVisibleCols.includes('Sz') && <div className="sz" title={`${treeItem.sz || 0}`}>{sz}</div>}
       {folderListVisibleCols.includes('Ext') && <div className="ext" title={treeItem?.ext || ''}>{ext}</div>}
