@@ -17,6 +17,7 @@ import {FileViewType, getFileViewTypeGroup} from "@/components/content.ts";
 import {LIST_HEAD_SIZE, TreeItem} from "@/components/tree/tree.ts";
 import {getAllWindows} from "@tauri-apps/api/window";
 import {useFileViewTypeStore} from "@/stores/fileViewTypeStore.ts";
+import {ErrorBoundary} from "react-error-boundary";
 
 
 interface Props {

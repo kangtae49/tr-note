@@ -13,6 +13,7 @@ import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
 import {useFileViewTypeGroupStore} from "@/stores/fileViewTypeGroupStore.ts";
 import {useEditorPos} from "@/stores/editorPosStore.ts";
 import ScrollType = editor.ScrollType;
+import {ErrorBoundary} from "react-error-boundary";
 
 interface Props {
   style?: React.CSSProperties
@@ -88,14 +89,16 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
          style={style}
          tabIndex={0}
          onKeyDownCapture={fullscreenHandler}>
-      <Editor
-              value={content}
-              defaultLanguage={getMonacoLanguage(selectedItem?.ext)}
-              theme="vs"
-              options={{ readOnly: readonly }}
-              onMount={handleEditorDidMount}
-              onChange={ onChangeContent }
-      />
+      <ErrorBoundary fallback={<div>Error</div>}>
+        <Editor
+                value={content}
+                defaultLanguage={getMonacoLanguage(selectedItem?.ext)}
+                theme="vs"
+                options={{ readOnly: readonly }}
+                onMount={handleEditorDidMount}
+                onChange={ onChangeContent }
+        />
+      </ErrorBoundary>
     </div>
   )
 }

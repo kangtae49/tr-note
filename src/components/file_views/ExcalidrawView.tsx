@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useEffect, useRef} from "react";
+import React, {useCallback} from "react";
 import {Excalidraw} from "@excalidraw/excalidraw";
 import {type OrderedExcalidrawElement} from "@excalidraw/excalidraw/element/types";
 import "@excalidraw/excalidraw/index.css";
@@ -11,8 +11,7 @@ import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
 import {getTabFromTreeItem} from "@/components/tab/tab.ts";
 import {useFileContent} from "@/stores/contentsStore.ts";
 import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
-import {useFileViewTypeStore} from "@/stores/fileViewTypeStore.ts";
-import {FileViewType, fileViewTypeGroupMap} from "@/components/content.ts";
+import {ErrorBoundary} from "react-error-boundary";
 
 interface Props {
   style?: React.CSSProperties
@@ -109,11 +108,13 @@ function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
          tabIndex={0}
          onKeyDownCapture={keyDownHandler}
     >
-      <Excalidraw
-        key={selectedItem?.full_path}
-        initialData={textToContent(content)}
-        onChange={onChangeContent}
-      />
+      <ErrorBoundary fallback={<div>Error</div>}>
+        <Excalidraw
+          key={selectedItem?.full_path}
+          initialData={textToContent(content)}
+          onChange={onChangeContent}
+        />
+      </ErrorBoundary>
     </div>
   )
 }

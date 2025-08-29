@@ -9,7 +9,7 @@ import {useFileContent} from "@/stores/contentsStore.ts";
 import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
 import {getTabFromTreeItem} from "@/components/tab/tab.ts";
 import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
-import { ErrorBoundary } from "react-error-boundary";
+import {ErrorBoundary} from "react-error-boundary";
 
 interface Props {
   style?: React.CSSProperties
