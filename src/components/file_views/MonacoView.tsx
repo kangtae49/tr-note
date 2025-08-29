@@ -1,8 +1,9 @@
-import React, {memo, useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef} from "react";
 import * as monaco from 'monaco-editor'
+import {editor} from 'monaco-editor'
 import Editor, {OnMount} from '@monaco-editor/react';
 import {useHttp} from "@/components/HttpServerProvider.tsx";
-import {getFileViewTypeGroup, getMonacoLanguage} from "@/components/content.ts";
+import {getMonacoLanguage} from "@/components/content.ts";
 import {TreeItem} from "@/components/tree/tree.ts";
 import {useFileContent} from "@/stores/contentsStore.ts";
 import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
@@ -10,6 +11,8 @@ import {getTabFromTreeItem} from "@/components/tab/tab.ts";
 import {useSaveFile} from "@/components/utils.ts";
 import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
 import {useFileViewTypeGroupStore} from "@/stores/fileViewTypeGroupStore.ts";
+import {useEditorPos} from "@/stores/editorPosStore.ts";
+import ScrollType = editor.ScrollType;
 
 interface Props {
   style?: React.CSSProperties
@@ -25,11 +28,17 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
   const {saveFile} = useSaveFile();
   const {addTab} = useTab();
   const {fileViewTypeGroup} = useFileViewTypeGroupStore();
-
+  const {editorPos, setEditorPos} = useEditorPos(selectedItem?.full_path);
   const readonly = fileViewTypeGroup === 'GroupBinarySmall' || fileViewTypeGroup === 'GroupBinary';
 
   const handleEditorDidMount: OnMount = (editor, _monaco) => {
     editorRef.current = editor;
+    const position = {column: editorPos?.column || 0, lineNumber: editorPos?.lineNumber || 0};
+    editorRef.current?.revealPositionInCenter(position, ScrollType.Smooth);
+    editorRef.current?.setPosition(position)
+    editorRef.current?.focus();
+
+
     editor.onKeyDown((e) => {
       if (e.code === "KeyS" && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
@@ -49,9 +58,16 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
         }
       }
     });
+
+    editor.onDidChangeCursorPosition((e) => {
+      const position = e.position;
+      console.log('onDidChangeCursorPosition', position);
+      setEditorPos({column: position.column, lineNumber: position.lineNumber})
+    });
+
   };
 
-  const onChangeContent = (value: string | undefined) => {
+  const onChangeContent = (value: string | undefined, _ev: monaco.editor.IModelContentChangedEvent) => {
     if (readonly) return;
     if (value == undefined) return;
     console.log('onChange monaco')
@@ -66,7 +82,7 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
       setSavedContent(text);
     })
   }
-  console.log('readonly:', readonly);
+
   return (
     <div className="monaco-view"
          style={style}

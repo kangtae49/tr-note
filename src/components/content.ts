@@ -73,21 +73,12 @@ export const getFileViewTypeGroup = async (treeItem?: TreeItem): Promise<FileVie
   let inferMimeType = treeItem.mt;
   if (res.status === 'ok') {
     inferMimeType = res.data;
-    // if (!treeItem.mt.startsWith('image/')) {
-    // }
-    console.log('mimeType', inferMimeType);
   }
 
   let fileViewTypeGroup: FileViewTypeGroup
   const sz = treeItem?.sz || 0;
   const ext = treeItem?.ext;
   const mimeType = treeItem?.mt || '';
-  // if (sz == 0) {
-  //   fileViewTypeGroup = 'UnknownEmpty'
-  // } else
-  // if (['exe', 'com', 'msi', 'dll', 'zip'].includes(treeItem?.ext || '')) {
-  //   fileViewTypeGroup = 'Binary'
-  // } else
   const binaryMimeTypes = [
     'application/vnd.microsoft.portable-executable',
     'application/zip',

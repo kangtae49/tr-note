@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useEffect} from "react";
+import React, {useCallback, useEffect} from "react";
 import MDEditor, {commands, ExecuteState, TextAreaTextApi} from '@uiw/react-md-editor';
 import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {useSaveFile} from "@/components/utils.ts";
@@ -9,6 +9,7 @@ import {useFileContent} from "@/stores/contentsStore.ts";
 import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
 import {getTabFromTreeItem} from "@/components/tab/tab.ts";
 import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
+import { ErrorBoundary } from "react-error-boundary";
 
 interface Props {
   style?: React.CSSProperties
@@ -79,17 +80,19 @@ function MdView({ style, selectedItem, fullscreenHandler }: Props) {
          style={style}
          tabIndex={0}
          onKeyDownCapture={keyDownHandler}>
-      <MDEditor
-        value={content}
-        preview={undefined}
-        onChange={onChangeContent}
-        extraCommands = {[
-            { ...commands.codeEdit, execute: handlePreviewTypeClick },
-            { ...commands.codeLive, execute: handlePreviewTypeClick },
-            { ...commands.codePreview, execute: handlePreviewTypeClick },
-        ]}
-        height="100%"
-      />
+      <ErrorBoundary fallback={<div>Error</div>}>
+        <MDEditor
+          value={content}
+          preview={undefined}
+          onChange={onChangeContent}
+          extraCommands = {[
+              { ...commands.codeEdit, execute: handlePreviewTypeClick },
+              { ...commands.codeLive, execute: handlePreviewTypeClick },
+              { ...commands.codePreview, execute: handlePreviewTypeClick },
+          ]}
+          height="100%"
+        />
+      </ErrorBoundary>
     </div>
   )
 }
