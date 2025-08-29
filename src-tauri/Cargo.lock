@@ -4498,6 +4498,7 @@ dependencies = [
  "dirs-next",
  "http",
  "http-body-util",
+ "infer",
  "mime_guess",
  "moka",
  "natord",

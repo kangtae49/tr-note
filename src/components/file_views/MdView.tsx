@@ -94,4 +94,4 @@ function MdView({ style, selectedItem, fullscreenHandler }: Props) {
   )
 }
 
-export default memo(MdView);
+export default MdView;

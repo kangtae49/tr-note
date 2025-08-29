@@ -2,13 +2,14 @@ import React, {memo, useEffect, useRef, useState} from "react";
 import * as monaco from 'monaco-editor'
 import Editor, {OnMount} from '@monaco-editor/react';
 import {useHttp} from "@/components/HttpServerProvider.tsx";
-import {getMonacoLanguage} from "@/components/content.ts";
+import {getFileViewTypeGroup, getMonacoLanguage} from "@/components/content.ts";
 import {TreeItem} from "@/components/tree/tree.ts";
 import {useFileContent} from "@/stores/contentsStore.ts";
 import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
 import {getTabFromTreeItem} from "@/components/tab/tab.ts";
 import {useSaveFile} from "@/components/utils.ts";
 import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
+import {useFileViewTypeGroupStore} from "@/stores/fileViewTypeGroupStore.ts";
 
 interface Props {
   style?: React.CSSProperties
@@ -23,6 +24,9 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
   const {setSavedContent} = useFileSavedContent<string | undefined>(selectedItem?.full_path);
   const {saveFile} = useSaveFile();
   const {addTab} = useTab();
+  const {fileViewTypeGroup} = useFileViewTypeGroupStore();
+
+  const readonly = fileViewTypeGroup === 'GroupBinarySmall' || fileViewTypeGroup === 'GroupBinary';
 
   const handleEditorDidMount: OnMount = (editor, _monaco) => {
     editorRef.current = editor;
@@ -48,6 +52,7 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
   };
 
   const onChangeContent = (value: string | undefined) => {
+    if (readonly) return;
     if (value == undefined) return;
     console.log('onChange monaco')
     setContent(value);
@@ -61,7 +66,7 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
       setSavedContent(text);
     })
   }
-
+  console.log('readonly:', readonly);
   return (
     <div className="monaco-view"
          style={style}
@@ -71,6 +76,7 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
               value={content}
               defaultLanguage={getMonacoLanguage(selectedItem?.ext)}
               theme="vs"
+              options={{ readOnly: readonly }}
               onMount={handleEditorDidMount}
               onChange={ onChangeContent }
       />
@@ -78,4 +84,4 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.Re
   )
 }
 
-export default memo(MonacoView);
+export default MonacoView;

@@ -25,7 +25,7 @@ use windows::Win32::Storage::FileSystem::{FindClose, FindExInfoStandard, FindExS
 use trash;
 use uuid::Uuid;
 use rand::Rng;
-
+use tokio::io::AsyncReadExt;
 use crate::AppState;
 use crate::err::{ApiError, ApiResult};
 
@@ -86,6 +86,15 @@ pub async fn save_file(state: State<'_, Arc<RwLock<AppState>>>, file_path: &str,
     }
 
     Ok(item)
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn get_infer_mime_type(state: State<'_, Arc<RwLock<AppState>>>, file_path: &str) -> ApiResult<String> {
+    let app_state = state.read().await;
+    let dir_api = app_state.dir_api.clone().ok_or(ApiError::Error(String::from("Err DirApi")))?;
+    let dir_api_guard = dir_api.read().await;
+    dir_api_guard.get_infer_mime_type(file_path).await
 }
 
 #[tauri::command]
@@ -585,8 +594,25 @@ impl DirApi {
         }
         Ok(ret)
     }
-    
 
+    pub async fn get_infer_mime_type(&self, path_str: &str) -> ApiResult<String> {
+        let path = PathBuf::from(path_str);
+        if path.is_dir() {
+            return Err(ApiError::Error(String::from("Err IsDir")));
+        }
+        let file = tokio::fs::File::open(&path).await?;
+        let mut reader = tokio::io::BufReader::new(file);
+
+        let mut sample = vec![0u8; 16 * 1024];
+        let n = reader.read(&mut sample).await?;
+        sample.truncate(n);
+
+        let mime_type = match infer::get(&sample) {
+            Some(infer_type) => infer_type.mime_type().to_string(),
+            None => from_path(path_str).first_or_octet_stream().to_string()
+        };
+        Ok(mime_type)
+    }
 }
 
 

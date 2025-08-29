@@ -36,14 +36,15 @@ function FileHeadView(): React.ReactElement {
   }
 
   useEffect(() => {
-    const fileViewTypeGroup = getFileViewTypeGroup(selectedItem);
-    setFileViewTypeGroup(fileViewTypeGroup);
-    const fileViewTypeList = fileViewTypeGroupMap[fileViewTypeGroup]
-    setFileViewTypeList(fileViewTypeList);
-    const sz = selectedItem?.sz || 0;
-    setSz(sz);
-    const fileViewType = fileViewTypeMap[fileViewTypeGroup]
-    setFileViewType(fileViewType);
+    getFileViewTypeGroup(selectedItem).then((fileViewTypeGroup) => {
+      setFileViewTypeGroup(fileViewTypeGroup);
+      const fileViewTypeList = fileViewTypeGroupMap[fileViewTypeGroup]
+      setFileViewTypeList(fileViewTypeList);
+      const sz = selectedItem?.sz || 0;
+      setSz(sz);
+      const fileViewType = fileViewTypeMap[fileViewTypeGroup]
+      setFileViewType(fileViewType);
+    })
   }, [selectedItem])
 
   return (

@@ -118,4 +118,4 @@ function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
   )
 }
 
-export default memo(ExcalidrawView);
+export default ExcalidrawView;

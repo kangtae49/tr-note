@@ -8,6 +8,6 @@ export interface FileViewTypeGroupStore {
 }
 
 export const useFileViewTypeGroupStore = create<FileViewTypeGroupStore>((set) => ({
-  fileViewTypeGroup: 'None',
+  fileViewTypeGroup: 'GroupUnknown',
   setFileViewTypeGroup: (fileViewTypeGroup) => set(() => ({ fileViewTypeGroup }))
 }))

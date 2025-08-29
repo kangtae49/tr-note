@@ -140,6 +140,14 @@ async createDrawFile(basePath: string) : Promise<Result<string, ApiError>> {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+async getInferMimeType(filePath: string) : Promise<Result<string, ApiError>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("get_infer_mime_type", { filePath }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
 }
 }
 

@@ -1,6 +1,7 @@
 import {TreeItem} from "@/components/tree/tree.ts";
 import * as monaco from "monaco-editor";
 import {faFileCode, faFileLines, faFileImage} from "@fortawesome/free-solid-svg-icons";
+import {commands} from "@/bindings.ts";
 
 export type FileViewType =
   | 'Img'
@@ -12,17 +13,21 @@ export type FileViewType =
   | 'Audio'
   | 'Empty'
   | 'None'
+
 export type FileViewTypeGroup =
-  | 'Binary'
-  | 'Image'
-  | 'Pdf'
-  | 'Md'
-  | 'Excalidraw'
-  | 'Audio'
-  | 'Video'
-  | 'UnknownEmpty'
-  | 'UnknownSmall'
-  | 'Unknown'
+  | 'GroupBinary'
+  | 'GroupBinarySmall'
+  | 'GroupImage'
+  | 'GroupImageText'
+  | 'GroupPdf'
+  | 'GroupMd'
+  | 'GroupExcalidraw'
+  | 'GroupAudio'
+  | 'GroupVideo'
+  | 'GroupUnknownEmpty'
+  | 'GroupUnknownSmall'
+  | 'GroupUnknown'
+
 export type FileViewTypeGroupMap = {
   [key in FileViewTypeGroup]: FileViewType[];
 }
@@ -30,60 +35,91 @@ export type FileViewTypeMap = {
   [key in FileViewTypeGroup]: FileViewType;
 }
 export const fileViewTypeGroupMap: FileViewTypeGroupMap = {
-  Binary: ["None"],
-  Image: ["Img"],
-  Pdf: ["Embed"],
-  Md: ["Monaco", "Md"],
-  Excalidraw: ["Excalidraw", "Monaco"],
-  Video: ["Video"],
-  Audio: ["Audio"],
-  UnknownEmpty: ["Monaco"],
-  UnknownSmall: ["Monaco"],
-  Unknown: ["None"],
+  GroupBinary: ["None"],
+  GroupBinarySmall: ["Monaco"],
+  GroupImage: ["Img"],
+  GroupImageText: ["Img", "Monaco"],
+  GroupPdf: ["Embed"],
+  GroupMd: ["Monaco", "Md"],
+  GroupExcalidraw: ["Excalidraw", "Monaco"],
+  GroupVideo: ["Video"],
+  GroupAudio: ["Audio"],
+  GroupUnknownEmpty: ["Monaco"],
+  GroupUnknownSmall: ["Monaco"],
+  GroupUnknown: ["None"],
 }
 
 export const defaultFileViewTypeOfGroup: FileViewTypeMap = {
-  Binary: "None",
-  Image: "Img",
-  Pdf: "Embed",
-  Md: "Md",
-  Excalidraw: "Excalidraw",
-  Video: "Video",
-  Audio: "Audio",
-  UnknownEmpty: "Empty",
-  UnknownSmall: "Monaco",
-  Unknown: "None",
+  GroupBinary: "None",
+  GroupBinarySmall: "Monaco",
+  GroupImage: "Img",
+  GroupImageText: "Img",
+  GroupPdf: "Embed",
+  GroupMd: "Md",
+  GroupExcalidraw: "Excalidraw",
+  GroupVideo: "Video",
+  GroupAudio: "Audio",
+  GroupUnknownEmpty: "Empty",
+  GroupUnknownSmall: "Monaco",
+  GroupUnknown: "None",
 }
 
-export function getFileViewTypeGroup(treeItem?: TreeItem): FileViewTypeGroup {
-  if (treeItem?.dir) {
-    return 'Unknown'
+export const getFileViewTypeGroup = async (treeItem?: TreeItem): Promise<FileViewTypeGroup> => {
+
+  if (treeItem == undefined ||  treeItem?.dir) {
+    return 'GroupUnknown'
   }
+  let res = await commands.getInferMimeType(treeItem?.full_path);
+  let inferMimeType = treeItem.mt;
+  if (res.status === 'ok') {
+    inferMimeType = res.data;
+    // if (!treeItem.mt.startsWith('image/')) {
+    // }
+    console.log('mimeType', inferMimeType);
+  }
+
   let fileViewTypeGroup: FileViewTypeGroup
-  const sz = treeItem?.sz || 0
+  const sz = treeItem?.sz || 0;
+  const ext = treeItem?.ext;
+  const mimeType = treeItem?.mt || '';
   // if (sz == 0) {
   //   fileViewTypeGroup = 'UnknownEmpty'
   // } else
-  if (['exe', 'com', 'msi', 'dll', 'zip'].includes(treeItem?.ext || '')) {
-    fileViewTypeGroup = 'Binary'
-  } else if  (treeItem?.ext === 'excalidraw') {
-    fileViewTypeGroup = 'Excalidraw'
-  } else if (treeItem?.mt?.startsWith('image/')) {
-    fileViewTypeGroup = 'Image'
-  } else if (treeItem?.mt?.endsWith('/pdf')) {
-    fileViewTypeGroup = 'Pdf'
-  } else if (treeItem?.mt?.endsWith('/html') && sz < 2 * 1024 * 1024) {
-    fileViewTypeGroup = 'Md'
-  } else if (treeItem?.mt?.endsWith('/markdown') && sz < 2 * 1024 * 1024) {
-    fileViewTypeGroup = 'Md'
-  } else if (treeItem?.mt?.startsWith('audio/') && sz > 1024 * 500) {
-    fileViewTypeGroup = 'Audio'
-  } else if (treeItem?.mt?.startsWith('video/') && sz > 1024 * 500) {
-    fileViewTypeGroup = 'Video'
+  // if (['exe', 'com', 'msi', 'dll', 'zip'].includes(treeItem?.ext || '')) {
+  //   fileViewTypeGroup = 'Binary'
+  // } else
+  const binaryMimeTypes = [
+    'application/vnd.microsoft.portable-executable',
+    'application/zip',
+    'application/x-msdownload',
+    'application/x-ole-storage',
+    'application/octet-stream',
+  ]
+
+  if (ext === 'excalidraw') {
+    fileViewTypeGroup = 'GroupExcalidraw'
+  } else if (mimeType.startsWith('image/') && inferMimeType?.startsWith('text')) {
+    fileViewTypeGroup = 'GroupImageText'
+  } else if (mimeType.startsWith('image/')) {
+    fileViewTypeGroup = 'GroupImage'
+  } else if (mimeType.endsWith('/pdf')) {
+    fileViewTypeGroup = 'GroupPdf'
+  } else if (mimeType.endsWith('/html') && sz < 2 * 1024 * 1024) {
+    fileViewTypeGroup = 'GroupMd'
+  } else if (mimeType.endsWith('/markdown') && sz < 2 * 1024 * 1024) {
+    fileViewTypeGroup = 'GroupMd'
+  } else if (mimeType.startsWith('audio/') && sz > 1024 * 500) {
+    fileViewTypeGroup = 'GroupAudio'
+  } else if (mimeType.startsWith('video/') && sz > 1024 * 500) {
+    fileViewTypeGroup = 'GroupVideo'
+  } else if (binaryMimeTypes.includes(inferMimeType || '') && sz < 2 * 1024 * 1024) {
+    fileViewTypeGroup = 'GroupBinarySmall'
+  } else if (binaryMimeTypes.includes(inferMimeType || '')) {
+    fileViewTypeGroup = 'GroupBinary'
   } else if (sz <= 5 * 1024 * 1024) {
-    fileViewTypeGroup = 'UnknownSmall'
+    fileViewTypeGroup = 'GroupUnknownSmall'
   } else {
-    fileViewTypeGroup = 'Unknown'
+    fileViewTypeGroup = 'GroupUnknown'
   }
   return fileViewTypeGroup
 
@@ -103,14 +139,14 @@ export function getMonacoLanguage(ext?: string): string {
   return language
 }
 
-export function isMonacoFile(ext?: string): boolean {
-  if (!ext) {
-    return false
-  }
-  const languages = monaco.languages.getLanguages()
-  const lang = languages.find((lang) => lang.extensions?.includes(`.${ext}`))
-  return !!lang
-}
+// export function isMonacoFile(ext?: string): boolean {
+//   if (!ext) {
+//     return false
+//   }
+//   const languages = monaco.languages.getLanguages()
+//   const lang = languages.find((lang) => lang.extensions?.includes(`.${ext}`))
+//   return !!lang
+// }
 
 export function getFileViewIcon(fileViewType: FileViewType) {
   switch (fileViewType) {
