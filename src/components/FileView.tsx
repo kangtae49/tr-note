@@ -18,6 +18,7 @@ import {LIST_HEAD_SIZE, TreeItem} from "@/components/tree/tree.ts";
 import {getAllWindows} from "@tauri-apps/api/window";
 import {useFileViewTypeStore} from "@/stores/fileViewTypeStore.ts";
 import {ErrorBoundary} from "react-error-boundary";
+import {useFileViewItemStore} from "@/stores/fileViewItemStore.ts";
 
 
 interface Props {
@@ -26,10 +27,7 @@ interface Props {
   fullscreenHandler?: (e: any) => Promise<void>
 }
 
-interface PairFileItem {
-  fileViewType: FileViewType
-  selectedItem: TreeItem
-}
+
 
 function FileView() {
   const {fileViewTypeMap} = useFileViewTypeMapStore()
@@ -37,7 +35,7 @@ function FileView() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [newStyle, setNewStyle] = useState<React.CSSProperties | undefined>({});
   const {fileViewType} = useFileViewTypeStore()
-  const [pairFileItem, setPairFileItem] = useState<PairFileItem | undefined>(undefined);
+  const {fileViewItem} = useFileViewItemStore()
 
   const fullscreenHandler = useCallback(async (e: React.KeyboardEvent) => {
     if (e.code === "Escape") {
@@ -72,16 +70,16 @@ function FileView() {
   }, [selectedItem, fileViewType, isFullscreen])
 
 
-  useEffect(() =>{
-    getFileViewTypeGroup(selectedItem).then((fileViewTypeGroup) => {
-      const fileViewType = fileViewTypeMap[fileViewTypeGroup];
-      if (selectedItem !== undefined) {
-        setPairFileItem({fileViewType, selectedItem});
-      } else {
-        setPairFileItem(undefined);
-      }
-    })
-  }, [selectedItem, fileViewType])
+  // useEffect(() =>{
+  //   getFileViewTypeGroup(selectedItem).then((fileViewTypeGroup) => {
+  //     const fileViewType = fileViewTypeMap[fileViewTypeGroup];
+  //     if (selectedItem !== undefined) {
+  //       setPairFileItem({fileViewType, selectedItem});
+  //     } else {
+  //       setPairFileItem(undefined);
+  //     }
+  //   })
+  // }, [selectedItem, fileViewType])
 
   useEffect(() => {
     if (isFullscreen) {
@@ -97,26 +95,26 @@ function FileView() {
     }
   }, [isFullscreen]);
 
-  if (pairFileItem === undefined) return null;
+  if (fileViewItem === undefined) return null;
   return (
     <div className="file-view">
       <AutoSizer>
         {({ height, width }) => {
           const props: Props = {
-            selectedItem: pairFileItem.selectedItem,
+            selectedItem: fileViewItem.selectedItem,
             fullscreenHandler
           }
           return(
           <>
-            {pairFileItem.fileViewType === 'None' && <NoneView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
-            {pairFileItem.fileViewType === 'Empty' && <MonacoView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
-            {pairFileItem.fileViewType === 'Img' && <ImageView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
-            {pairFileItem.fileViewType === 'Embed' && <EmbedView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
-            {pairFileItem.fileViewType === 'Md' && <MdView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
-            {pairFileItem.fileViewType === 'Excalidraw' && <ExcalidrawView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
-            {pairFileItem.fileViewType === 'Audio' && <AudioView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
-            {pairFileItem.fileViewType === 'Video' && <VideoView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
-            {pairFileItem.fileViewType === 'Monaco' && <MonacoView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewItem.fileViewType === 'None' && <NoneView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewItem.fileViewType === 'Empty' && <MonacoView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewItem.fileViewType === 'Img' && <ImageView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewItem.fileViewType === 'Embed' && <EmbedView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewItem.fileViewType === 'Md' && <MdView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewItem.fileViewType === 'Excalidraw' && <ExcalidrawView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewItem.fileViewType === 'Audio' && <AudioView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewItem.fileViewType === 'Video' && <VideoView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewItem.fileViewType === 'Monaco' && <MonacoView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
           </>
         )}}
       </AutoSizer>

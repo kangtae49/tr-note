@@ -5,23 +5,23 @@ import {useFileViewTypeMapStore} from "@/stores/fileViewTypeMapStore.ts";
 import {formatFileSize, toDate} from "@/components/utils.ts";
 import {
   FileViewType,
-  FileViewTypeGroup,
   fileViewTypeGroupMap,
   getFileViewTypeGroup,
   getFileViewIcon
 } from "@/components/content.ts";
 import {useFileViewTypeStore} from "@/stores/fileViewTypeStore.ts";
 import {useFileViewTypeGroupStore} from "@/stores/fileViewTypeGroupStore.ts";
+import {useFileViewItemStore} from "@/stores/fileViewItemStore.ts";
 
 function FileHeadView(): React.ReactElement {
   const {selectedItem} = useSelectedTreeItemStore()
   const {fileViewTypeMap, setFileViewTypeMap} = useFileViewTypeMapStore()
   const {fileViewType, setFileViewType} = useFileViewTypeStore()
-
   const {fileViewTypeGroup, setFileViewTypeGroup} = useFileViewTypeGroupStore();
+  const {setFileViewItem} = useFileViewItemStore()
   const [fileViewTypeList, setFileViewTypeList] = useState<FileViewType[]>([]);
+
   const [sz, setSz] = useState(0);
-  // setFileViewType(selectedFileViewType)
 
   const clickFileViewType = (viewType: FileViewType) => {
     if (fileViewTypeGroup == undefined) return;
@@ -44,6 +44,13 @@ function FileHeadView(): React.ReactElement {
       setSz(sz);
       const fileViewType = fileViewTypeMap[fileViewTypeGroup]
       setFileViewType(fileViewType);
+
+      if (selectedItem !== undefined) {
+        setFileViewItem({fileViewType, selectedItem});
+      } else {
+        setFileViewItem(undefined);
+      }
+
     })
   }, [selectedItem])
 

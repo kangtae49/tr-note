@@ -1,5 +1,8 @@
 import { create } from 'zustand'
 import {FileViewType} from "@/components/content.ts";
+import {TreeItem} from "@/components/tree/tree.ts";
+
+
 
 
 export interface FileViewTypeStore {
