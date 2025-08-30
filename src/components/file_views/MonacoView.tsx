@@ -6,7 +6,7 @@ import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {getMonacoLanguage} from "@/components/content.ts";
 import {useFileContent} from "@/stores/contentsStore.ts";
 import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
-import {getTabFromTreeItem} from "@/components/tab/tab.ts";
+import {getTabFromFileItem} from "@/components/tab/tab.ts";
 import {useSaveFile} from "@/components/utils.ts";
 import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
 import {useFileViewTypeGroupStore} from "@/stores/fileViewTypeGroupStore.ts";
@@ -16,15 +16,15 @@ import {ErrorBoundary} from "react-error-boundary";
 import {FileViewProps} from "@/components/FileView.tsx";
 
 
-function MonacoView({ style, selectedItem, fullscreenHandler }: FileViewProps): React.ReactElement {
+function MonacoView({ style, fileItem, fullscreenHandler }: FileViewProps): React.ReactElement {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const http = useHttp();
-  const {content, setContent} = useFileContent<string | undefined>(selectedItem?.full_path);
-  const {setSavedContent} = useFileSavedContent<string | undefined>(selectedItem?.full_path);
+  const {content, setContent} = useFileContent<string | undefined>(fileItem?.full_path);
+  const {setSavedContent} = useFileSavedContent<string | undefined>(fileItem?.full_path);
   const {saveFile} = useSaveFile();
   const {addTab} = useTab();
   const {fileViewTypeGroup} = useFileViewTypeGroupStore();
-  const {editorPos, setEditorPos} = useEditorPos(selectedItem?.full_path);
+  const {editorPos, setEditorPos} = useEditorPos(fileItem?.full_path);
   const readonly = fileViewTypeGroup === 'GroupBinarySmall' || fileViewTypeGroup === 'GroupBinary';
 
   const handleEditorDidMount: OnMount = (editor, _monaco) => {
@@ -68,11 +68,11 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: FileViewProps): 
     if (value == undefined) return;
     console.log('onChange monaco')
     setContent(value);
-    addTab(getTabFromTreeItem(selectedItem))
+    addTab(getTabFromFileItem(fileItem))
   }
 
-  if (http != undefined && selectedItem != undefined && content == undefined) {
-    http.getSrcText(selectedItem.full_path).then(text => {
+  if (http != undefined && fileItem != undefined && content == undefined) {
+    http.getSrcText(fileItem.full_path).then(text => {
       console.log('getSrcText monaco');
       setContent(text);
       setSavedContent(text);
@@ -87,7 +87,7 @@ function MonacoView({ style, selectedItem, fullscreenHandler }: FileViewProps): 
       <ErrorBoundary fallback={<div>Error</div>}>
         <Editor
                 value={content}
-                defaultLanguage={getMonacoLanguage(selectedItem?.ext)}
+                defaultLanguage={getMonacoLanguage(fileItem?.ext ?? '')}
                 theme="vs"
                 options={{ readOnly: readonly }}
                 onMount={handleEditorDidMount}

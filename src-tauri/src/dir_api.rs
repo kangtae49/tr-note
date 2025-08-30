@@ -69,13 +69,13 @@ pub async fn get_disks(state: State<'_, Arc<RwLock<AppState>>>) -> ApiResult<Vec
 
 #[tauri::command]
 #[specta::specta]
-pub async fn save_file(state: State<'_, Arc<RwLock<AppState>>>, file_path: &str, text: &str) -> ApiResult<Item> {
+pub async fn save_file(state: State<'_, Arc<RwLock<AppState>>>, file_path: &str, text: &str) -> ApiResult<FileItem> {
     let file_path_buf = PathBuf::from(file_path);
     let mut file = std::fs::File::create(&file_path_buf)?;
     file.write_all(text.as_bytes())?;
     file.flush()?;
     println!("save_file file_path {:?}", file_path);
-    let item = get_file_item(file_path, vec![MetaType::Sz, MetaType::Tm, MetaType::Mt, MetaType::Ext])?;
+    let item = get_file_item(file_path, vec![MetaType::Sz, MetaType::Tm, MetaType::Mt, MetaType::Ext]).await?;
     println!("{:?}", item);
 
     let app_state = state.read().await;
@@ -99,14 +99,15 @@ pub async fn get_infer_mime_type(state: State<'_, Arc<RwLock<AppState>>>, file_p
 
 #[tauri::command]
 #[specta::specta]
-pub fn get_file_item(path: &str, meta_types: Vec<MetaType>) -> ApiResult<Item> {
-    let path = PathBuf::from(path);
+pub async fn get_file_item(path_str: &str, meta_types: Vec<MetaType>) -> ApiResult<FileItem> {
+    let path = PathBuf::from(path_str);
     let nm_os = path.file_name().ok_or(ApiError::Error(String::from("Err FileName")))?;
     let nm = nm_os.to_string_lossy().to_string();
     let mut ext = None;
     let mut sz = None;
     let mut tm = None;
     let mut mt = None;
+    let mt_infer = None;
     let dir = path.is_dir();
     if meta_types.contains(&MetaType::Ext) {
         ext = get_extension(&nm).map(|x| x.to_string());
@@ -120,15 +121,17 @@ pub fn get_file_item(path: &str, meta_types: Vec<MetaType>) -> ApiResult<Item> {
     }
     if meta_types.contains(&MetaType::Mt) {
         mt = get_mime_type(&nm);
+        // mt_infer = infer_mime_type(path_str).await.ok();
     }
-    Ok(Item {
+    Ok(FileItem {
+        full_path: path_str.to_string(),
         nm,
         dir,
         ext,
         mt,
+        mt_infer,
         sz,
         tm,
-        ..Item::default()
     })
 }
 
@@ -315,10 +318,26 @@ pub struct Item {
     pub dir: bool,
     pub ext: Option<String>,
     pub mt: Option<String>,
+    pub mt_infer: Option<String>,
     pub sz: Option<u64>,  // u64
     pub tm: Option<u64>,  // u64
     pub items: Option<Vec<Item>>
 }
+
+#[skip_serializing_none]
+#[serde_as]
+#[derive(Type, Serialize, Deserialize, Clone, Debug, Default)]
+pub struct FileItem {
+    pub full_path: String,
+    pub nm: String,
+    pub dir: bool,
+    pub ext: Option<String>,
+    pub mt: Option<String>,
+    pub mt_infer: Option<String>,
+    pub sz: Option<u64>,  // u64
+    pub tm: Option<u64>,  // u64
+}
+
 
 #[skip_serializing_none]
 #[serde_as]
@@ -596,22 +615,23 @@ impl DirApi {
     }
 
     pub async fn get_infer_mime_type(&self, path_str: &str) -> ApiResult<String> {
-        let path = PathBuf::from(path_str);
-        if path.is_dir() {
-            return Err(ApiError::Error(String::from("Err IsDir")));
-        }
-        let file = tokio::fs::File::open(&path).await?;
-        let mut reader = tokio::io::BufReader::new(file);
-
-        let mut sample = vec![0u8; 16 * 1024];
-        let n = reader.read(&mut sample).await?;
-        sample.truncate(n);
-
-        let mime_type = match infer::get(&sample) {
-            Some(infer_type) => infer_type.mime_type().to_string(),
-            None => from_path(path_str).first_or_octet_stream().to_string()
-        };
-        Ok(mime_type)
+        infer_mime_type(path_str).await
+        // let path = PathBuf::from(path_str);
+        // if path.is_dir() {
+        //     return Err(ApiError::Error(String::from("Err IsDir")));
+        // }
+        // let file = tokio::fs::File::open(&path).await?;
+        // let mut reader = tokio::io::BufReader::new(file);
+        //
+        // let mut sample = vec![0u8; 16 * 1024];
+        // let n = reader.read(&mut sample).await?;
+        // sample.truncate(n);
+        //
+        // let mime_type = match infer::get(&sample) {
+        //     Some(infer_type) => infer_type.mime_type().to_string(),
+        //     None => from_path(path_str).first_or_octet_stream().to_string()
+        // };
+        // Ok(mime_type)
     }
 }
 
@@ -625,6 +645,27 @@ impl Drop for FindHandle {
         }
     }
 }
+
+pub async fn infer_mime_type(path_str: &str) -> ApiResult<String> {
+    let path = PathBuf::from(path_str);
+    if path.is_dir() {
+        return Err(ApiError::Error(String::from("Err IsDir")));
+    }
+    let file = tokio::fs::File::open(&path).await?;
+    let mut reader = tokio::io::BufReader::new(file);
+
+    let mut sample = vec![0u8; 16 * 1024];
+    let n = reader.read(&mut sample).await?;
+    sample.truncate(n);
+
+    let mime_type = match infer::get(&sample) {
+        Some(infer_type) => infer_type.mime_type().to_string(),
+        None => from_path(path_str).first_or_octet_stream().to_string()
+    };
+    Ok(mime_type)
+}
+
+
 pub fn get_items_win32(p: &str, meta_types: &Vec<MetaType>) -> ApiResult<Vec<Item>> {
     let mut result = Vec::new();
     // let pattern = format!("{}/*", p);

@@ -5,9 +5,8 @@ import {useFileViewTypeMapStore} from "@/stores/fileViewTypeMapStore.ts";
 import {formatFileSize, toDate} from "@/components/utils.ts";
 import {
   FileViewType,
-  fileViewTypeGroupMap,
-  getFileViewTypeGroup,
-  getFileViewIcon
+  fileViewTypeGroupMap, getFileItem,
+  getFileViewIcon, getFileViewInfo
 } from "@/components/content.ts";
 import {useFileViewTypeStore} from "@/stores/fileViewTypeStore.ts";
 import {useFileViewTypeGroupStore} from "@/stores/fileViewTypeGroupStore.ts";
@@ -22,6 +21,7 @@ function FileHeadView(): React.ReactElement {
   const [fileViewTypeList, setFileViewTypeList] = useState<FileViewType[]>([]);
 
   const [sz, setSz] = useState(0);
+  const [fileItem, setFileItem] = useState<any>();
 
   const clickFileViewType = (viewType: FileViewType) => {
     if (fileViewTypeGroup == undefined) return;
@@ -36,31 +36,38 @@ function FileHeadView(): React.ReactElement {
   }
 
   useEffect(() => {
-    getFileViewTypeGroup(selectedItem).then((fileViewTypeGroup) => {
+    getFileItem(selectedItem).then((fileItem) => {
+      setFileItem(fileItem);
+    });
+  }, [selectedItem])
+
+  useEffect(() => {
+    getFileViewInfo(fileItem).then((fileViewTypeGroup) => {
       setFileViewTypeGroup(fileViewTypeGroup);
       const fileViewTypeList = fileViewTypeGroupMap[fileViewTypeGroup]
       setFileViewTypeList(fileViewTypeList);
-      const sz = selectedItem?.sz || 0;
+      const sz = fileItem?.sz || 0;
       setSz(sz);
       const fileViewType = fileViewTypeMap[fileViewTypeGroup]
       setFileViewType(fileViewType);
 
       if (selectedItem !== undefined) {
-        setFileViewItem({fileViewType, selectedItem});
+        setFileViewItem({fileViewType, fileItem});
       } else {
         setFileViewItem(undefined);
       }
     }).catch((e) => {
       console.error(e);
       if (selectedItem !== undefined) {
-        setFileViewItem({fileViewType: 'Error', selectedItem, error: e})
+        setFileViewItem({fileViewType: 'Error', fileItem, error: e})
       }
     })
-  }, [selectedItem])
+
+  }, [fileItem, fileViewType])
 
   return (
     <div className="file-head-view">
-      {(selectedItem !== undefined && selectedItem.dir == false) && (
+      {(fileItem !== undefined && fileItem.dir == false) && (
         <div className="file-types">
           {
             fileViewTypeList.map((viewType, idx) => {
@@ -81,9 +88,9 @@ function FileHeadView(): React.ReactElement {
         </div>
       )}
       <div className="info">
-        <div className="nm">{selectedItem?.nm}</div>
+        <div className="nm">{fileItem?.nm}</div>
         <div className="sz" title={`${sz}`}>{formatFileSize(sz)}</div>
-        <div className="tm">{toDate(selectedItem?.tm)}</div>
+        <div className="tm">{toDate(fileItem?.tm)}</div>
       </div>
 
     </div>

@@ -7,7 +7,7 @@ import {useSaveFile} from "@/components/utils.ts";
 import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {AppState, BinaryFiles} from "@excalidraw/excalidraw/types";
 import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
-import {getTabFromTreeItem} from "@/components/tab/tab.ts";
+import {getTabFromFileItem} from "@/components/tab/tab.ts";
 import {useFileContent} from "@/stores/contentsStore.ts";
 import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
 import {ErrorBoundary} from "react-error-boundary";
@@ -44,10 +44,10 @@ function textToContent(text: string | undefined): ContentType | undefined {
   }
 }
 
-function ExcalidrawView({ style, selectedItem, fullscreenHandler }: FileViewProps) {
+function ExcalidrawView({ style, fileItem, fullscreenHandler }: FileViewProps) {
   const http = useHttp();
-  const {content, setContent} = useFileContent<string | undefined>(selectedItem?.full_path);
-  const {setSavedContent} = useFileSavedContent<string | undefined>(selectedItem?.full_path);
+  const {content, setContent} = useFileContent<string | undefined>(fileItem?.full_path);
+  const {setSavedContent} = useFileSavedContent<string | undefined>(fileItem?.full_path);
   const {saveFile} = useSaveFile();
   const {addTab} = useTab();
   // const {fileViewType} = useFileViewTypeStore();
@@ -57,7 +57,7 @@ function ExcalidrawView({ style, selectedItem, fullscreenHandler }: FileViewProp
       e.preventDefault();
       e.stopPropagation();
       console.log('handleKeyDown');
-      if (selectedItem == undefined) return;
+      if (fileItem == undefined) return;
 
       if (content !== undefined) {
         saveFile(content).then((_item) => {
@@ -75,13 +75,13 @@ function ExcalidrawView({ style, selectedItem, fullscreenHandler }: FileViewProp
     const jsonString = JSON.stringify({elements, appState, files}, null, 2);
     if (jsonString !== content) {
       setContent(jsonString);
-      addTab(getTabFromTreeItem(selectedItem))
+      addTab(getTabFromFileItem(fileItem))
     }
   }
 
 
-  if (http !== undefined && selectedItem !== undefined && content == undefined) {
-    http.getSrcText(selectedItem.full_path).then(text => {
+  if (http !== undefined && fileItem !== undefined && content == undefined) {
+    http.getSrcText(fileItem.full_path).then(text => {
       let content = text;
       if (text == "") {
         content = JSON.stringify({elements: [], appState: {}, files: {}}, null, 2)
@@ -105,7 +105,7 @@ function ExcalidrawView({ style, selectedItem, fullscreenHandler }: FileViewProp
     >
       <ErrorBoundary fallback={<div>Error</div>}>
         <Excalidraw
-          key={selectedItem?.full_path}
+          key={fileItem?.full_path}
           initialData={textToContent(content)}
           onChange={onChangeContent}
         />

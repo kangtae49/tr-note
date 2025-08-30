@@ -6,26 +6,26 @@ import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
 import {MdPreviewType, useMdPreviewTypeStore} from "@/stores/mdPreviewTypeStore.ts";
 import {useFileContent} from "@/stores/contentsStore.ts";
 import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
-import {getTabFromTreeItem} from "@/components/tab/tab.ts";
+import {getTabFromFileItem} from "@/components/tab/tab.ts";
 import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
 import {ErrorBoundary} from "react-error-boundary";
 import {FileViewProps} from "@/components/FileView.tsx";
 
 
-function MdView({ style, selectedItem, fullscreenHandler }: FileViewProps) {
+function MdView({ style, fileItem, fullscreenHandler }: FileViewProps) {
   const http = useHttp();
   const {saveFile} = useSaveFile();
   const {folderTree} = useFolderTreeStore()
   const {mdPreviewType, setMdPreviewType} = useMdPreviewTypeStore();
-  const {content, setContent} = useFileContent<string | undefined>(selectedItem?.full_path);
-  const {setSavedContent} = useFileSavedContent<string | undefined>(selectedItem?.full_path);
+  const {content, setContent} = useFileContent<string | undefined>(fileItem?.full_path);
+  const {setSavedContent} = useFileSavedContent<string | undefined>(fileItem?.full_path);
   const {addTab} = useTab();
 
   const keyDownHandler = useCallback(async (e: React.KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.code === "KeyS") {
       e.preventDefault();
       console.log('handleKeyDown');
-      if (selectedItem == undefined) return;
+      if (fileItem == undefined) return;
       if(folderTree == undefined) return;
       if (content == undefined) return;
       saveFile(content).then((_item) => {
@@ -45,13 +45,13 @@ function MdView({ style, selectedItem, fullscreenHandler }: FileViewProps) {
     if (state.command.name !== undefined) {
       setMdPreviewType(state.command.name as MdPreviewType);
     }
-  }, [selectedItem, mdPreviewType]);
+  }, [fileItem, mdPreviewType]);
 
   const onChangeContent = (value: string | undefined) => {
     if (value == undefined) return;
     console.log('onChange md')
     setContent(value);
-    addTab(getTabFromTreeItem(selectedItem))
+    addTab(getTabFromFileItem(fileItem))
   }
 
   useEffect(() => {
@@ -62,8 +62,8 @@ function MdView({ style, selectedItem, fullscreenHandler }: FileViewProps) {
     }
   }, [])
 
-  if (http !== undefined && selectedItem !== undefined && content == undefined) {
-    http.getSrcText(selectedItem.full_path).then(text => {
+  if (http !== undefined && fileItem !== undefined && content == undefined) {
+    http.getSrcText(fileItem.full_path).then(text => {
       console.log('getSrcText md');
       setContent(text);
       setSavedContent(text);

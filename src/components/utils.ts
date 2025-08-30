@@ -1,11 +1,10 @@
 import {openPath, openUrl, revealItemInDir} from "@tauri-apps/plugin-opener";
-import {renderTreeFromPath, SEP} from "@/components/tree/tree.ts";
+import {useRenderTreeFromPath, SEP} from "@/components/tree/tree.ts";
 import {commands} from "@/bindings.ts";
 import toast from "react-hot-toast";
 import {useCallback} from "react";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
-import {useFolderTreeRefStore} from "@/components/tree/stores/folderTreeRefStore.ts";
 
 export const shellOpenPath = async (path?: string): Promise<void> => {
   if (!path) return
@@ -63,10 +62,8 @@ export const formatFileSize = (bytes: number | undefined): string => {
 export function useSaveFile() {
   const duration = 1000;
   const folderTree = useFolderTreeStore((state) => state.folderTree)
-  const setFolderTree = useFolderTreeStore((state) => state.setFolderTree)
   const selectedItem = useSelectedTreeItemStore((state) => state.selectedItem)
-  const setSelectedItem = useSelectedTreeItemStore((state) => state.setSelectedItem)
-  const folderTreeRef = useFolderTreeRefStore((state) => state.folderTreeRef)
+  const {renderTreeFromPath} = useRenderTreeFromPath();
 
   const saveFile = useCallback(async (content: string) => {
     if (selectedItem == undefined) return;
@@ -78,14 +75,7 @@ export function useSaveFile() {
       if (res.status == "ok") {
         const item = res.data;
         console.log("save & renderTreeFromPath")
-        await renderTreeFromPath({
-          fullPath: selectedItem.full_path,
-          folderTree,
-          setFolderTree,
-          folderTreeRef,
-          setSelectedItem,
-          selectedItem
-        })
+        await renderTreeFromPath(selectedItem.full_path)
 
         toast.success('Success saved', { duration });
         return selectedItem;

@@ -61,7 +61,7 @@ async saveTab(json: TabJson) : Promise<Result<null, ApiError>> {
     else return { status: "error", error: e  as any };
 }
 },
-async saveFile(filePath: string, text: string) : Promise<Result<Item, ApiError>> {
+async saveFile(filePath: string, text: string) : Promise<Result<FileItem, ApiError>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("save_file", { filePath, text }) };
 } catch (e) {
@@ -93,9 +93,9 @@ async getDisks() : Promise<Result<DiskInfo[], ApiError>> {
     else return { status: "error", error: e  as any };
 }
 },
-async getFileItem(path: string, metaTypes: MetaType[]) : Promise<Result<Item, ApiError>> {
+async getFileItem(pathStr: string, metaTypes: MetaType[]) : Promise<Result<FileItem, ApiError>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("get_file_item", { path, metaTypes }) };
+    return { status: "ok", data: await TAURI_INVOKE("get_file_item", { pathStr, metaTypes }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -165,9 +165,10 @@ export type ApiError = { Error: string } | { TauriError: string } | { IoError: s
 export type DiskInfo = { path: string }
 export type FavoriteItem = { full_path: string; dir: boolean }
 export type FavoriteJson = { items: FavoriteItem[] }
+export type FileItem = { full_path: string; nm: string; dir: boolean; ext?: string | null; mt?: string | null; mt_infer?: string | null; sz?: number | null; tm?: number | null }
 export type Folder = { item: Item; path_param: string; base_nm: string; tot?: number | null; cnt?: number | null; skip_n?: number | null; take_n?: number | null; ordering?: OrdItem[] | null }
 export type HomeType = "RootDir" | "HomeDir" | "DownloadDir" | "VideoDir" | "DocumentDir" | "DesktopDir" | "PictureDir" | "AudioDir" | "ConfigDir" | "DataDir" | "DataLocalDir" | "CacheDir" | "FontDir" | "PublicDir" | "ExecutableDir" | "RuntimeDir" | "TemplateDir"
-export type Item = { nm: string; dir: boolean; ext?: string | null; mt?: string | null; sz?: number | null; tm?: number | null; items?: Item[] | null }
+export type Item = { nm: string; dir: boolean; ext?: string | null; mt?: string | null; mt_infer?: string | null; sz?: number | null; tm?: number | null; items?: Item[] | null }
 export type MetaType = "Sz" | "Tm" | "Mt" | "Ext"
 export type OptParams = { path_str?: string | null; meta_types?: MetaType[] | null; ordering?: OrdItem[] | null; skip_n?: number | null; take_n?: number | null; is_pretty?: boolean | null; cache_nm?: string | null }
 export type OrdItem = { nm: OrderBy; asc: OrderAsc }

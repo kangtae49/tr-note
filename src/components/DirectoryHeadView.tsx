@@ -6,7 +6,13 @@ import {
   faCircleHalfStroke,
   faCircleMinus, faList, faTableCells
 } from "@fortawesome/free-solid-svg-icons";
-import {DirectoryViewType, fetchTreeItems, FolderListOrderKey, FolderListOrderVal} from "@/components/tree/tree.ts";
+import {
+  DirectoryViewType,
+  fetchTreeItems,
+  FolderListOrderKey,
+  FolderListOrderVal,
+  listParams
+} from "@/components/tree/tree.ts";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 import {useFolderListStore} from "@/stores/folderListStore.ts";
 import {useFolderListOrderStore} from "@/stores/folderListOrderStore.ts";
@@ -60,7 +66,7 @@ function DirectoryHeadView() {
     iconTm = folderListOrder.val == 'Asc' ? faCircleChevronUp : faCircleChevronDown
   }
   useEffect(() => {
-    fetchTreeItems({ treeItem: selectedItem, appendChildItems: false, folderListOrder }).then(
+    fetchTreeItems({ treeItem: selectedItem, appendChildItems: false, folderListOrder, optParams: listParams }).then(
       (fetchItems) => setFolderList(fetchItems)
     )
   }, [folderListOrder, selectedItem, setFolderList])

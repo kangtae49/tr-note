@@ -1,7 +1,5 @@
 import "@/components/file.css"
-import {useFileViewTypeMapStore} from "@/stores/fileViewTypeMapStore.ts";
 import React, {useCallback, useEffect, useState} from "react";
-import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 
 import ImageView from "@/components/file_views/ImageView.tsx";
 import EmbedView from "@/components/file_views/EmbedView.tsx";
@@ -13,18 +11,17 @@ import NoneView from "@/components/file_views/NoneView.tsx";
 import ExcalidrawView from "@/components/file_views/ExcalidrawView.tsx";
 
 import AutoSizer from "react-virtualized-auto-sizer";
-import {FileViewType, getFileViewTypeGroup} from "@/components/content.ts";
-import {LIST_HEAD_SIZE, TreeItem} from "@/components/tree/tree.ts";
+import {LIST_HEAD_SIZE} from "@/components/tree/tree.ts";
 import {getAllWindows} from "@tauri-apps/api/window";
 import {useFileViewTypeStore} from "@/stores/fileViewTypeStore.ts";
-import {ErrorBoundary} from "react-error-boundary";
 import {useFileViewItemStore} from "@/stores/fileViewItemStore.ts";
 import ErrorView from "@/components/file_views/ErrorView.tsx";
+import {FileItem} from "@/bindings.ts";
 
 
 export interface FileViewProps {
   style?: React.CSSProperties
-  selectedItem?: TreeItem
+  fileItem?: FileItem
   fullscreenHandler?: (e: any) => Promise<void>
   error?: any
 }
@@ -32,8 +29,8 @@ export interface FileViewProps {
 
 
 function FileView() {
-  const {fileViewTypeMap} = useFileViewTypeMapStore()
-  const {selectedItem} = useSelectedTreeItemStore()
+  // const {fileViewTypeMap} = useFileViewTypeMapStore()
+  // const {selectedItem} = useSelectedTreeItemStore()
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [newStyle, setNewStyle] = useState<React.CSSProperties | undefined>({});
   const {fileViewType} = useFileViewTypeStore()
@@ -69,7 +66,7 @@ function FileView() {
       }
       setIsFullscreen(!isFullscreen);
     }
-  }, [selectedItem, fileViewType, isFullscreen])
+  }, [fileViewItem, fileViewType, isFullscreen])
 
 
   // useEffect(() =>{
@@ -103,7 +100,7 @@ function FileView() {
       <AutoSizer>
         {({ height, width }) => {
           const props: FileViewProps = {
-            selectedItem: fileViewItem.selectedItem,
+            fileItem: fileViewItem?.fileItem,
             fullscreenHandler,
             error: fileViewItem.error
           }

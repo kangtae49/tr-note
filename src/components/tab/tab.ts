@@ -1,5 +1,5 @@
-import {TabItem} from "@/bindings.ts";
-import {SEP, TreeItem} from "@/components/tree/tree.ts";
+import {FileItem, TabItem} from "@/bindings.ts";
+import {SEP} from "@/components/tree/tree.ts";
 
 export const getShortName = (fullPath: string) => {
   let name = fullPath.split(SEP).pop() || fullPath.split(SEP).pop();
@@ -24,7 +24,7 @@ export function getItemId (item: TabItem) {
   return item.full_path;
 }
 
-export function getTabFromTreeItem(item: TreeItem | undefined): TabItem | undefined {
+export function getTabFromFileItem(item: FileItem | undefined): TabItem | undefined {
   if (item === undefined) return undefined;
   return {full_path: item.full_path, dir: item.dir || false}
 }

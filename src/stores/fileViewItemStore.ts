@@ -1,11 +1,11 @@
 import { create } from 'zustand'
 import {FileViewType} from "@/components/content.ts";
-import {TreeItem} from "@/components/tree/tree.ts";
+import {FileItem} from "@/bindings.ts";
 
 
 export interface FileViewItem {
   fileViewType: FileViewType
-  selectedItem: TreeItem
+  fileItem: FileItem
   error?: any
 }
 

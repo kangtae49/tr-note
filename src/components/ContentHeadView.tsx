@@ -1,23 +1,21 @@
 import React from 'react'
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import { faStar, faPenToSquare, faFolder, faFile, faArrowUp, faRocket } from '@fortawesome/free-solid-svg-icons'
-import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
-import {useFolderTreeRefStore} from "@/components/tree/stores/folderTreeRefStore.ts";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
-import {renderTreeFromPath, SEP, TreeItem} from "@/components/tree/tree.ts";
+import {SEP, TreeItem, useRenderTreeFromPath} from "@/components/tree/tree.ts";
 import * as utils from "@/components/utils.ts";
 import {includesFavoriteItem} from "@/components/favorites/favorites.ts";
 import {useFavorite} from "@/components/favorites/stores/favoritesStore.ts";
-import {getTabFromTreeItem} from "@/components/tab/tab.ts";
+import {getTabFromFileItem} from "@/components/tab/tab.ts";
 import {getFavoriteFromTreeItem} from "@/components/favorites/favorites.ts";
 import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
+import {FileItem} from "@/bindings.ts";
 
 function ContentHeadView() {
-  const {folderTree, setFolderTree} = useFolderTreeStore()
-  const {folderTreeRef} = useFolderTreeRefStore()
-  const {selectedItem, setSelectedItem} = useSelectedTreeItemStore()
+  const {selectedItem} = useSelectedTreeItemStore()
   const {favorites, addFavorite} = useFavorite();
   const {addTab} = useTab();
+  const {renderTreeFromPath} = useRenderTreeFromPath();
 
   const toggleStar = async (treeItem?: TreeItem): Promise<void> => {
     console.log('toggleStar', treeItem);
@@ -25,18 +23,11 @@ function ContentHeadView() {
   }
   const clickAddTab = async (treeItem?: TreeItem): Promise<void> => {
     console.log('clickAddTab', treeItem);
-    addTab(getTabFromTreeItem(treeItem))
+    addTab(getTabFromFileItem(selectedItem as FileItem))
   }
   const clickPath = async (fullPath: string | undefined): Promise<void> => {
     if (fullPath) {
-      await renderTreeFromPath({
-        fullPath,
-        folderTree,
-        setFolderTree,
-        folderTreeRef,
-        setSelectedItem,
-        selectedItem
-      })
+      await renderTreeFromPath(fullPath)
     }
   }
 

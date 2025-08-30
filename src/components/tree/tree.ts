@@ -1,7 +1,7 @@
 import {commands, DiskInfo, HomeType, Item, OptParams} from "@/bindings.ts";
-import {FolderTreeStore} from '@/components/tree/stores/folderTreeStore.ts'
-import {FolderTreeRefStore} from '@/components/tree/stores/folderTreeRefStore.ts'
-import {SelectedTreeItemStore} from '@/components/tree/stores/selectedTreeItemStore.ts'
+import {FolderTreeStore, useFolderTreeStore} from '@/components/tree/stores/folderTreeStore.ts'
+import {FolderTreeRefStore, useFolderTreeRefStore} from '@/components/tree/stores/folderTreeRefStore.ts'
+import {useSelectedTreeItemStore} from '@/components/tree/stores/selectedTreeItemStore.ts'
 
 export const SEP = '\\'
 export const TREE_ITEM_SIZE = 18
@@ -34,8 +34,17 @@ export type FolderListOrderKey = 'Nm' | 'Ext' | 'Tm' | 'Sz'
 export type FolderListOrderVal = 'Asc' | 'Desc'
 
 
-const treeParams: OptParams = {
+export const treeParams: OptParams = {
   cache_nm: 'folder-tree',
+  meta_types: [], //['Ext', 'Mt', 'Sz', 'Tm'],
+  ordering: [
+    { nm: 'Dir', asc: 'Asc' },
+    { nm: 'Nm', asc: 'Asc' }
+  ]
+}
+
+export const listParams: OptParams = {
+  cache_nm: 'folder-list',
   meta_types: ['Ext', 'Mt', 'Sz', 'Tm'],
   ordering: [
     { nm: 'Dir', asc: 'Asc' },
@@ -162,17 +171,19 @@ export const fetchDisks = async (): Promise<FolderTree> => {
 export const fetchTreeItems = async ({
                                        treeItem,
                                        appendChildItems = true,
-                                       folderListOrder
+                                       folderListOrder,
+                                       optParams = treeParams,
                                      }: {
   treeItem?: TreeItem
   appendChildItems?: boolean
   folderListOrder?: FolderListOrder
+  optParams?: OptParams
 }): Promise<TreeItem[] | undefined> => {
   if (!treeItem) {
     return undefined
   }
   let params: OptParams = {
-    ...treeParams,
+    ...optParams,
     path_str: treeItem.full_path
   }
   if (folderListOrder) {
@@ -276,56 +287,55 @@ export const fetchFolderTree = async ({
   return [folderTree, selectedItem, curIdx]
 }
 
-export const renderTreeFromPath = async ({
-    fullPath,
-    folderTree,
-    setFolderTree,
-    folderTreeRef,
-    setSelectedItem
-       }: {
-  fullPath: string
-  folderTree: FolderTreeStore['folderTree']
-  setFolderTree: FolderTreeStore['setFolderTree']
-  folderTreeRef: FolderTreeRefStore['folderTreeRef']
-  setSelectedItem: SelectedTreeItemStore['setSelectedItem']
-  selectedItem: SelectedTreeItemStore['selectedItem']
-}): Promise<void> => {
-  if (fullPath == '/' || fullPath.endsWith(SEP)) {
-    fetchDisks().then((disks) => {
-      if (folderTree === undefined) {
-        setFolderTree(disks)
-      } else {
-        let new_disk = [];
-        for (const disk of disks) {
-          const findItem = folderTree.find((item) => item.full_path === disk.full_path);
-          if (findItem == undefined) {
-            new_disk.push(disk);
-          } else {
-            new_disk.push(findItem);
-            setSelectedItem({...findItem});
-          }
-        }
-        setFolderTree(new_disk);
-      }
-    })
-  } else {
-    fetchFolderTree({ fullPath, folderTree }).then(([newFolderTree, newSelectedItem]) => {
-      if (newFolderTree && newSelectedItem) {
-        if (newSelectedItem.dir) {
-          console.log('newSelectedItem:', newSelectedItem);
-          foldDirectory({treeItem: newSelectedItem}).then(()=> {
-            if (folderTree !== undefined) {
-              setFolderTree([...folderTree]);
+export function useRenderTreeFromPath() {
+  const {folderTree, setFolderTree} = useFolderTreeStore()
+  const {folderTreeRef} = useFolderTreeRefStore()
+  const {setSelectedItem} = useSelectedTreeItemStore()
+
+  const renderTreeFromPath = async (fullPath: string): Promise<void> => {
+    if (fullPath == '/' || fullPath.endsWith(SEP)) {
+      fetchDisks().then((disks) => {
+        if (folderTree === undefined) {
+          setFolderTree(disks)
+        } else {
+          let new_disk = [];
+          for (const disk of disks) {
+            const findItem = folderTree.find((item) => item.full_path === disk.full_path);
+            if (findItem == undefined) {
+              new_disk.push(disk);
+            } else {
+              new_disk.push(findItem);
+              setSelectedItem({...findItem});
             }
-          });
+          }
+          setFolderTree(new_disk);
         }
-        setFolderTree([...newFolderTree])
-        setSelectedItem({...newSelectedItem})
-        scrollToItem({ selectedItem: newSelectedItem, folderTree: newFolderTree, folderTreeRef })
-      }
-    })
+      })
+    } else {
+      fetchFolderTree({ fullPath, folderTree }).then(([newFolderTree, newSelectedItem]) => {
+        if (newFolderTree && newSelectedItem) {
+          if (newSelectedItem.dir) {
+            console.log('newSelectedItem:', newSelectedItem);
+            foldDirectory({treeItem: newSelectedItem}).then(()=> {
+              if (folderTree !== undefined) {
+                setFolderTree([...folderTree]);
+              }
+            });
+          }
+          setFolderTree([...newFolderTree])
+          setSelectedItem({...newSelectedItem})
+          scrollToItem({ selectedItem: newSelectedItem, folderTree: newFolderTree, folderTreeRef })
+        }
+      })
+    }
   }
+  return {
+    renderTreeFromPath
+  }
+
 }
+
+
 
 export const toggleDirectory = async ({ treeItem }: { treeItem?: TreeItem }): Promise<void> => {
   if (treeItem?.dir) {

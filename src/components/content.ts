@@ -1,7 +1,7 @@
 import {TreeItem} from "@/components/tree/tree.ts";
 import * as monaco from "monaco-editor";
 import {faFileCode, faFileLines, faFileImage} from "@fortawesome/free-solid-svg-icons";
-import {commands} from "@/bindings.ts";
+import {commands, FileItem} from "@/bindings.ts";
 
 export type FileViewType =
   | 'Img'
@@ -65,24 +65,59 @@ export const defaultFileViewTypeOfGroup: FileViewTypeMap = {
   GroupUnknown: "None",
 }
 
-export const getFileViewTypeGroup = async (treeItem?: TreeItem): Promise<FileViewTypeGroup> => {
 
-  if (treeItem == undefined ||  treeItem?.dir) {
+export const getFileItem = async (treeItem?: TreeItem) => {
+  if (treeItem == undefined) {
+    throw new Error('Not Found')
+  }
+  return commands.getFileItem(treeItem?.full_path, ["Ext", "Mt", "Sz", "Tm"])
+    .then((res) => {
+      if (res.status == 'ok') {
+        return res.data;
+      } else {
+        throw res.error;
+      }
+    })
+  ;
+}
+
+export const getFileViewInfo = async (fileItem?: FileItem): Promise<FileViewTypeGroup> => {
+
+  if (fileItem == undefined ||  fileItem?.dir) {
     return 'GroupUnknown'
   }
-  let res = await commands.getInferMimeType(treeItem?.full_path);
-  let inferMimeType = treeItem.mt;
-  if (res.status === 'ok') {
-    inferMimeType = res.data;
+  // let inferMimeType = '';
+  // let mimeType = '';
+  // let sz = 0;
+  // let ext = '';
+  // let fileItem = {
+  //   ...treeItem
+  // } as Item;
+  // let resItem = await commands.getFileItem(treeItem?.full_path, ["Ext", "Mt", "Sz", "Tm"]);
+
+  // if (resItem.status === 'ok') {
+  //   const item = resItem.data;
+  //   fileItem = {
+  //     ...item
+  //   }
+  // }
+  let mimeType = fileItem.mt ?? '';
+  let inferMimeType
+  let sz = fileItem.sz ?? 0;
+  let ext = fileItem.ext ?? '';
+
+  let resMime = await commands.getInferMimeType(fileItem?.full_path);
+  if (resMime.status === 'ok') {
+    inferMimeType = resMime.data;
   } else {
-    console.log(`${Object.values(res.error)[0]}`)
-    throw res.error;
+    console.log(`${Object.values(resMime.error)[0]}`)
+    throw resMime.error;
   }
 
   let fileViewTypeGroup: FileViewTypeGroup
-  const sz = treeItem?.sz || 0;
-  const ext = treeItem?.ext;
-  const mimeType = treeItem?.mt || '';
+  // const sz = treeItem?.sz || 0;
+  // const ext = treeItem?.ext;
+  // const mimeType = treeItem?.mt || '';
   const binaryMimeTypes = [
     'application/vnd.microsoft.portable-executable',
     'application/zip',

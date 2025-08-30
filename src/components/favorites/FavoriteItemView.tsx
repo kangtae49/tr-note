@@ -4,9 +4,7 @@ import {useSortable} from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities";
 import {getItemId, getShortName} from "@/components/favorites/favorites.ts";
 import {FavoriteItem} from "@/bindings.ts";
-import {renderTreeFromPath} from "@/components/tree/tree.ts";
-import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
-import {useFolderTreeRefStore} from "@/components/tree/stores/folderTreeRefStore.ts";
+import {useRenderTreeFromPath} from "@/components/tree/tree.ts";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 
 interface Props {
@@ -15,9 +13,8 @@ interface Props {
 }
 
 function FavoriteItemView({ item, removeItem }: Props) {
-  const {folderTree, setFolderTree} = useFolderTreeStore()
-  const {folderTreeRef} = useFolderTreeRefStore()
-  const {selectedItem, setSelectedItem} = useSelectedTreeItemStore()
+  const {selectedItem} = useSelectedTreeItemStore()
+  const {renderTreeFromPath} = useRenderTreeFromPath();
 
   const sortable = useSortable({
     id: getItemId(item),
@@ -33,16 +30,7 @@ function FavoriteItemView({ item, removeItem }: Props) {
 
   const clickFavorite = async (item: FavoriteItem) => {
     console.log('clickFavorite', item);
-    await renderTreeFromPath({
-      fullPath: item.full_path,
-      folderTree,
-      setFolderTree,
-      folderTreeRef,
-      setSelectedItem,
-      selectedItem
-    })
-
-
+    await renderTreeFromPath(item.full_path)
   }
 
   return (

@@ -1,8 +1,14 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef} from "react";
 import "@/components/directory.css"
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import {faFile, faFolder, faFileImage} from "@fortawesome/free-solid-svg-icons";
-import {fetchTreeItems, LIST_HEAD_SIZE, LIST_ITEM_SIZE, renderTreeFromPath} from "@/components/tree/tree.ts";
+import {
+  fetchTreeItems,
+  LIST_HEAD_SIZE,
+  LIST_ITEM_SIZE,
+  listParams,
+  useRenderTreeFromPath
+} from "@/components/tree/tree.ts";
 import { FixedSizeList as List } from 'react-window'
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 import {useFolderListOrderStore} from "@/stores/folderListOrderStore.ts";
@@ -12,18 +18,15 @@ import DirectoryItemView from "@/components/DirectoryItemView.tsx";
 import * as ContextMenu from "@radix-ui/react-context-menu";
 
 import "@/components/contextmenu.css";
-import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
-import {useFolderTreeRefStore} from "@/components/tree/stores/folderTreeRefStore.ts";
 import {commands} from "@/bindings.ts";
 import toast from "react-hot-toast";
 import {useCreatePathStore} from "@/stores/createPathStore.ts";
 
 function DirectoryView() {
-  const {selectedItem, setSelectedItem} = useSelectedTreeItemStore()
+  const {selectedItem} = useSelectedTreeItemStore()
   const {folderListOrder} = useFolderListOrderStore()
   const {folderList, setFolderList} = useFolderListStore()
-  const {folderTree, setFolderTree} = useFolderTreeStore()
-  const {folderTreeRef} = useFolderTreeRefStore()
+  const {renderTreeFromPath} = useRenderTreeFromPath();
   const {createPath, setCreatePath} = useCreatePathStore()
   const listRef = useRef<List>(null)
 
@@ -32,14 +35,7 @@ function DirectoryView() {
     if (selectedItem == undefined) return;
     commands.createFile(selectedItem.full_path).then(async (res) => {
       if(res.status === 'ok') {
-        await renderTreeFromPath({
-          fullPath: selectedItem.full_path,
-          folderTree,
-          setFolderTree,
-          folderTreeRef,
-          setSelectedItem,
-          selectedItem
-        })
+        await renderTreeFromPath(selectedItem.full_path)
         toast.success(`success ${res.data}`);
         setCreatePath(res.data);
       } else {
@@ -56,14 +52,7 @@ function DirectoryView() {
     commands.createFolder(selectedItem.full_path).then(async (res) => {
       if(res.status === 'ok') {
         console.log('create folder ok', res.data);
-        await renderTreeFromPath({
-          fullPath: selectedItem.full_path,
-          folderTree,
-          setFolderTree,
-          folderTreeRef,
-          setSelectedItem,
-          selectedItem
-        })
+        await renderTreeFromPath(selectedItem.full_path)
         toast.success(`success ${res.data}`);
         setCreatePath(res.data);
       } else {
@@ -78,14 +67,7 @@ function DirectoryView() {
     if (selectedItem == undefined) return;
     commands.createDrawFile(selectedItem.full_path).then(async (res) => {
       if(res.status === 'ok') {
-        await renderTreeFromPath({
-          fullPath: selectedItem.full_path,
-          folderTree,
-          setFolderTree,
-          folderTreeRef,
-          setSelectedItem,
-          selectedItem
-        })
+        await renderTreeFromPath(selectedItem.full_path)
         toast.success(`success ${res.data}`);
         setCreatePath(res.data);
       } else {
@@ -98,7 +80,7 @@ function DirectoryView() {
 
 
   useEffect(() => {
-    fetchTreeItems({ treeItem: selectedItem, appendChildItems: false, folderListOrder }).then(
+    fetchTreeItems({ treeItem: selectedItem, appendChildItems: false, folderListOrder, optParams: listParams }).then(
       (fetchItems) => setFolderList(fetchItems)
     )
   }, [folderListOrder, selectedItem, setFolderList])

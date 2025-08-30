@@ -4,10 +4,10 @@ import {FileViewProps} from "@/components/FileView.tsx";
 
 
 
-function EmbedView({ style, selectedItem, fullscreenHandler }: FileViewProps): React.ReactElement {
+function EmbedView({ style, fileItem, fullscreenHandler }: FileViewProps): React.ReactElement {
   const http = useHttp();
 
-  if (selectedItem == undefined || http == undefined) {
+  if (fileItem == undefined || http == undefined) {
     return <div className='embed-view'></div>
   }
   return (
@@ -15,7 +15,7 @@ function EmbedView({ style, selectedItem, fullscreenHandler }: FileViewProps): R
          style={style}
          tabIndex={0}
          onKeyDownCapture={fullscreenHandler}>
-      <embed src={http.getSrc(selectedItem.full_path)} title={selectedItem.full_path}  />
+      <embed src={http.getSrc(fileItem.full_path)} title={fileItem.full_path}  />
     </div>
   )
 }

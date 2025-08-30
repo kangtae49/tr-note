@@ -10,16 +10,12 @@ import {
   faImage,
   faDesktop
 } from '@fortawesome/free-solid-svg-icons'
-import {HomePathMap, renderTreeFromPath} from "@/components/tree/tree.ts";
-import { useFolderTreeStore } from '@/components/tree/stores/folderTreeStore.ts'
-import { useFolderTreeRefStore } from '@/components/tree/stores/folderTreeRefStore.ts'
-import { useSelectedTreeItemStore } from '@/components/tree/stores/selectedTreeItemStore.ts'
+import {HomePathMap, useRenderTreeFromPath} from "@/components/tree/tree.ts";
 import {commands} from "@/bindings.ts";
 
 function TreeHeadView() {
-  const {folderTree, setFolderTree} = useFolderTreeStore()
-  const {folderTreeRef} = useFolderTreeRefStore()
-  const {selectedItem, setSelectedItem} = useSelectedTreeItemStore()
+
+  const {renderTreeFromPath} = useRenderTreeFromPath();
 
   const [homeDir, setHomeDir] = useState<HomePathMap>({
     HomeDir: '',
@@ -41,14 +37,7 @@ function TreeHeadView() {
     TemplateDir: ''
   })
   const clickHomeDir = async (fullPath: string): Promise<void> => {
-    await renderTreeFromPath({
-      fullPath,
-      folderTree,
-      setFolderTree,
-      folderTreeRef,
-      setSelectedItem,
-      selectedItem
-    })
+    await renderTreeFromPath(fullPath)
   }
 
   useEffect(() => {

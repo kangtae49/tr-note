@@ -1,7 +1,7 @@
-import {useEffect} from "react";
+import React, {useEffect} from "react";
 import "@/components/directory.css"
 import { FixedSizeList as List } from 'react-window'
-import {fetchTreeItems, LIST_HEAD_SIZE, SLIDER_SIZE, SLIDER_STEP} from "@/components/tree/tree.ts";
+import {fetchTreeItems, LIST_HEAD_SIZE, listParams, SLIDER_SIZE, SLIDER_STEP} from "@/components/tree/tree.ts";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 import {useFolderListOrderStore} from "@/stores/folderListOrderStore.ts";
 import {useFolderListStore} from "@/stores/folderListStore.ts";
@@ -60,7 +60,7 @@ function GalleryView() {
   }
 
   useEffect(() => {
-    fetchTreeItems({ treeItem: selectedItem, appendChildItems: false, folderListOrder }).then(
+    fetchTreeItems({ treeItem: selectedItem, appendChildItems: false, folderListOrder, optParams: listParams }).then(
       (fetchItems) => setFolderList(fetchItems)
     )
   }, [folderListOrder, selectedItem, setFolderList])

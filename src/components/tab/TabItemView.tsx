@@ -4,9 +4,7 @@ import {useSortable} from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities";
 import {getItemId, getShortName} from "@/components/tab/tab.ts";
 import {commands, TabItem} from "@/bindings.ts";
-import {renderTreeFromPath} from "@/components/tree/tree.ts";
-import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
-import {useFolderTreeRefStore} from "@/components/tree/stores/folderTreeRefStore.ts";
+import {useRenderTreeFromPath} from "@/components/tree/tree.ts";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 import React, {useCallback, useState} from "react";
 import {useFileContent} from "@/stores/contentsStore.ts";
@@ -20,9 +18,8 @@ interface Props {
 }
 
 function TabItemView({ item, removeItem }: Props) {
-  const {folderTree, setFolderTree} = useFolderTreeStore()
-  const {folderTreeRef} = useFolderTreeRefStore()
-  const {selectedItem, setSelectedItem} = useSelectedTreeItemStore()
+  const {selectedItem} = useSelectedTreeItemStore()
+  const {renderTreeFromPath} = useRenderTreeFromPath();
   const {content, setContent} = useFileContent<string | undefined>(item?.full_path);
   const {savedContent, setSavedContent} = useFileSavedContent<string | undefined>(item?.full_path);
   const [openMenu, setOpenMenu] = useState(false);
@@ -43,14 +40,7 @@ function TabItemView({ item, removeItem }: Props) {
 
   const clickTab = async (item: TabItem) => {
     console.log('clickTab', item);
-    await renderTreeFromPath({
-      fullPath: item.full_path,
-      folderTree,
-      setFolderTree,
-      folderTreeRef,
-      setSelectedItem,
-      selectedItem
-    })
+    await renderTreeFromPath(item.full_path)
   }
 
   const clickCloseTab = useCallback(async (e: React.MouseEvent) => {

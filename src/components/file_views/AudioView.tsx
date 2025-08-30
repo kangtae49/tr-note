@@ -3,7 +3,7 @@ import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {FileViewProps} from "@/components/FileView.tsx";
 
 
-function AudioView({ style, selectedItem, fullscreenHandler }: FileViewProps): React.ReactElement {
+function AudioView({ style, fileItem, fullscreenHandler }: FileViewProps): React.ReactElement {
   const mediaRef = useRef<HTMLAudioElement>(null)
   const http = useHttp();
 
@@ -14,13 +14,13 @@ function AudioView({ style, selectedItem, fullscreenHandler }: FileViewProps): R
     }
   }, [])
 
-  if (selectedItem == undefined || http == undefined) {
+  if (fileItem == undefined || http == undefined) {
     return <div className='audio-view'></div>
   }
   return (
     <div className="audio-view" style={style} tabIndex={0} onKeyDownCapture={fullscreenHandler}>
       <audio ref={mediaRef} controls={true} autoPlay={true}>
-        <source src={http.getSrc(selectedItem?.full_path)} type={selectedItem?.mt} />
+        <source src={http.getSrc(fileItem?.full_path)} type={fileItem?.mt ?? ''} />
       </audio>
     </div>
   )
