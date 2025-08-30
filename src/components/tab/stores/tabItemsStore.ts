@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import {TabItem} from "@/bindings.ts";
-import {getItemId, includesTabItem} from "@/components/tab/tab.ts";
+import {getItemId, includesPath} from "@/components/tree/tree.ts";
 
 
 export interface TabItemsStore {
@@ -19,7 +19,7 @@ export function useTab() {
   const addTab = (item: TabItem | undefined)=> {
     if (item == undefined) return;
     if (tabItems == undefined) return;
-    if (!includesTabItem(item, tabItems)){
+    if (!includesPath(item.full_path, tabItems)){
       // setTabItems(tabItems.filter((tab) => tab.full_path != item.full_path))
       setTabItems([item, ...tabItems])
     }

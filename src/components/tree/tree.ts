@@ -1,4 +1,4 @@
-import {commands, DiskInfo, HomeType, Item, OptParams} from "@/bindings.ts";
+import {commands, DiskInfo, FavoriteItem, FileItem, HomeType, Item, OptParams} from "@/bindings.ts";
 import {FolderTreeStore, useFolderTreeStore} from '@/components/tree/stores/folderTreeStore.ts'
 import {FolderTreeRefStore, useFolderTreeRefStore} from '@/components/tree/stores/folderTreeRefStore.ts'
 import {useSelectedTreeItemStore} from '@/components/tree/stores/selectedTreeItemStore.ts'
@@ -398,4 +398,50 @@ export const scrollToItem = async ({
       folderTreeRef?.current?.scrollToItem(nth, 'auto')
     }, 100)
   }
+}
+
+export function getParentPath(fullPath: string | undefined) {
+  if (fullPath == undefined) {
+    return undefined
+  }
+  if (fullPath.endsWith(SEP)) {
+    fullPath = fullPath.slice(0, -1)
+  }
+  const parentPath = fullPath.split(SEP).slice(0, -1).join(SEP)
+  if (parentPath == '') {
+    return undefined
+  }
+  return parentPath
+}
+
+export const getShortName = (fullPath: string) => {
+  let name = fullPath.split(SEP).pop() || fullPath.split(SEP).pop();
+  if (name == undefined || name == ""){
+    name = fullPath;
+  }
+  const N = 10;
+  if (name.length <= (N*3 + 3)) {
+    return name;
+  }
+  return name.slice(0, N)  + '...' + name.slice(-N*2);
+}
+
+export interface FullpathItem {
+  full_path: string
+  dir: boolean
+}
+export const includesPath = (fullPath: string | undefined, items: FullpathItem[] | undefined)=> {
+  if (items == undefined) return false;
+  if (fullPath == undefined) return false;
+  const find = items.find((item) => item.full_path === fullPath);
+  return find !== undefined;
+}
+
+export function getItemId (item: FullpathItem) {
+  return item.full_path;
+}
+
+export function getFullpathFromFileItem(item: FileItem | undefined): FullpathItem | undefined {
+  if (item === undefined) return undefined;
+  return {full_path: item.full_path, dir: item.dir || false}
 }

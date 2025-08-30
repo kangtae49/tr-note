@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import {faFile, faFolder, faRocket, faFileImage} from "@fortawesome/free-solid-svg-icons";
-import {useRenderTreeFromPath, TreeItem} from "@/components/tree/tree.ts";
+import {useRenderTreeFromPath, TreeItem, getFullpathFromFileItem} from "@/components/tree/tree.ts";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 import {useFolderListVisibleColsStore} from "@/stores/folderListVisibleColsStore.ts";
 import {formatFileSize, toDate} from "@/components/utils.ts";
@@ -11,7 +11,6 @@ import * as Tooltip from "@radix-ui/react-tooltip";
 import {commands, FileItem} from "@/bindings.ts";
 import toast from "react-hot-toast";
 import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
-import {getTabFromFileItem} from "@/components/tab/tab.ts";
 import {useFileContent} from "@/stores/contentsStore.ts";
 import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
 import {useHttp} from "@/components/HttpServerProvider.tsx";
@@ -46,7 +45,7 @@ function DirectoryItemView({ treeItem, style, clickCreateFolder, clickCreateFile
     console.log('todo: delete', treeItem.full_path);
     commands.deletePath(treeItem.full_path).then(async (res) => {
       if(res.status === 'ok') {
-        removeTab(getTabFromFileItem(treeItem as FileItem))
+        removeTab(getFullpathFromFileItem(treeItem as FileItem))
         removeContent();
         removeSavedContent();
         await renderTreeFromPath(selectedItem.full_path)
@@ -68,7 +67,7 @@ function DirectoryItemView({ treeItem, style, clickCreateFolder, clickCreateFile
     if (tempName !== treeItem.nm) {
       commands.renamePath(selectedItem.full_path, treeItem.nm, tempName).then(async (res) => {
         if(res.status === 'ok') {
-          removeTab(getTabFromFileItem(treeItem as FileItem))
+          removeTab(getFullpathFromFileItem(treeItem as FileItem))
           await renderTreeFromPath(selectedItem.full_path)
           toast.success(`success ${res.data}`);
 

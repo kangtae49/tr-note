@@ -6,7 +6,7 @@ import TabItemView from "@/components/tab/TabItemView.tsx";
 import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
 import "./tab.css"
 import {commands, TabItem} from "@/bindings.ts";
-import {getItemId} from "@/components/tab/tab.ts";
+import {getItemId} from "@/components/tree/tree.ts";
 
 
 

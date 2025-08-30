@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import {FavoriteItem} from "@/bindings.ts";
-import {getItemId, includesFavoriteItem} from "@/components/favorites/favorites.ts";
-
+import {getItemId, includesPath} from "@/components/tree/tree.ts";
 
 
 export interface FavoritesStore {
@@ -21,7 +20,7 @@ export function useFavorite() {
   const addFavorite = (item: FavoriteItem | undefined)=> {
     if (item == undefined) return;
     if (favorites == undefined) return;
-    if (includesFavoriteItem({full_path: item.full_path, dir: item.dir || false}, favorites)){
+    if (includesPath(item.full_path, favorites)){
       setFavorites(favorites.filter((favorite) => favorite.full_path != item.full_path))
     } else {
       setFavorites([{full_path: item.full_path, dir: item.dir || false}, ...favorites])

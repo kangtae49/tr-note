@@ -2,9 +2,8 @@ import {FontAwesomeIcon as Icon} from "@fortawesome/react-fontawesome";
 import {faUpDownLeftRight, faFile, faFolder, faCircleXmark} from "@fortawesome/free-solid-svg-icons";
 import {useSortable} from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities";
-import {getItemId, getShortName} from "@/components/favorites/favorites.ts";
 import {FavoriteItem} from "@/bindings.ts";
-import {useRenderTreeFromPath} from "@/components/tree/tree.ts";
+import {getItemId, getShortName, useRenderTreeFromPath} from "@/components/tree/tree.ts";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 
 interface Props {

@@ -7,11 +7,11 @@ import {useSaveFile} from "@/components/utils.ts";
 import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {AppState, BinaryFiles} from "@excalidraw/excalidraw/types";
 import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
-import {getTabFromFileItem} from "@/components/tab/tab.ts";
 import {useFileContent} from "@/stores/contentsStore.ts";
 import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
 import {ErrorBoundary} from "react-error-boundary";
 import {FileViewProps} from "@/components/FileView.tsx";
+import {getFullpathFromFileItem} from "@/components/tree/tree.ts";
 
 
 interface ContentType {
@@ -75,7 +75,7 @@ function ExcalidrawView({ style, fileItem, fullscreenHandler }: FileViewProps) {
     const jsonString = JSON.stringify({elements, appState, files}, null, 2);
     if (jsonString !== content) {
       setContent(jsonString);
-      addTab(getTabFromFileItem(fileItem))
+      addTab(getFullpathFromFileItem(fileItem))
     }
   }
 

@@ -6,7 +6,7 @@ import FavoriteItemView from "@/components/favorites/FavoriteItemView.tsx";
 import {useFavorite} from "@/components/favorites/stores/favoritesStore.ts";
 import "./favorites.css"
 import {commands, FavoriteItem} from "@/bindings.ts";
-import {getItemId} from "@/components/favorites/favorites.ts";
+import {getItemId} from "@/components/tree/tree.ts";
 
 
 export default function FavoritesView() {

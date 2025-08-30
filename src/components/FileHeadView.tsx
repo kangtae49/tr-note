@@ -51,7 +51,7 @@ function FileHeadView(): React.ReactElement {
       const fileViewType = fileViewTypeMap[fileViewTypeGroup]
       setFileViewType(fileViewType);
 
-      if (selectedItem !== undefined) {
+      if (selectedItem !== undefined && fileItem !== undefined) {
         setFileViewItem({fileViewType, fileItem});
       } else {
         setFileViewItem(undefined);

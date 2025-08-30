@@ -6,10 +6,10 @@ import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
 import {MdPreviewType, useMdPreviewTypeStore} from "@/stores/mdPreviewTypeStore.ts";
 import {useFileContent} from "@/stores/contentsStore.ts";
 import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
-import {getTabFromFileItem} from "@/components/tab/tab.ts";
 import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
 import {ErrorBoundary} from "react-error-boundary";
 import {FileViewProps} from "@/components/FileView.tsx";
+import {getFullpathFromFileItem} from "@/components/tree/tree.ts";
 
 
 function MdView({ style, fileItem, fullscreenHandler }: FileViewProps) {
@@ -51,7 +51,7 @@ function MdView({ style, fileItem, fullscreenHandler }: FileViewProps) {
     if (value == undefined) return;
     console.log('onChange md')
     setContent(value);
-    addTab(getTabFromFileItem(fileItem))
+    addTab(getFullpathFromFileItem(fileItem))
   }
 
   useEffect(() => {
