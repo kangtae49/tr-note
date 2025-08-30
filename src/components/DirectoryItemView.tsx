@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from "react";
+import React, {RefObject, useCallback, useEffect, useRef, useState} from "react";
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import {faFile, faFolder, faRocket, faFileImage} from "@fortawesome/free-solid-svg-icons";
 import {useRenderTreeFromPath, TreeItem, getFullpathFromFileItem} from "@/components/tree/tree.ts";
@@ -18,11 +18,12 @@ import {useHttp} from "@/components/HttpServerProvider.tsx";
 interface Props {
   style: React.CSSProperties
   treeItem: TreeItem
+  boundaryRef: RefObject<HTMLDivElement | null>;
   clickCreateFolder: () => void
   clickCreateFile: () => void
   clickCreateDrawFile: () => void
 }
-function DirectoryItemView({ treeItem, style, clickCreateFolder, clickCreateFile, clickCreateDrawFile }: Props) {
+function DirectoryItemView({ treeItem, style, boundaryRef, clickCreateFolder, clickCreateFile, clickCreateDrawFile }: Props) {
   const {selectedItem, setSelectedItem} = useSelectedTreeItemStore()
   const {folderListVisibleCols} = useFolderListVisibleColsStore()
   const inputRef = useRef<HTMLInputElement>(null);
@@ -138,11 +139,17 @@ function DirectoryItemView({ treeItem, style, clickCreateFolder, clickCreateFile
             </ContextMenu.Trigger>
             </Tooltip.Trigger>
             { (http !== undefined && treeItem.mt?.startsWith('image/')) && (
-            <Tooltip.Content side="right" className="tooltip-content">
-              <div className="tooltip-image">
-                <img src={http.getSrc(treeItem.full_path)} />
-              </div>
-            </Tooltip.Content>
+              <Tooltip.Content side="right"
+                             align="center"
+                             sideOffset={0}
+                             avoidCollisions={true}
+                               collisionPadding={30}
+                             collisionBoundary={boundaryRef.current}
+                             className="tooltip-content">
+                <div className="tooltip-image">
+                  <img src={http.getSrc(treeItem.full_path)} />
+                </div>
+              </Tooltip.Content>
             )}
 
             <ContextMenu.Portal>

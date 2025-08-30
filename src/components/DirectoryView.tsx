@@ -29,7 +29,7 @@ function DirectoryView() {
   const {renderTreeFromPath} = useRenderTreeFromPath();
   const {createPath, setCreatePath} = useCreatePathStore()
   const listRef = useRef<List>(null)
-
+  const boundaryRef = useRef<HTMLDivElement>(null);
 
   const clickCreateFile = () => {
     if (selectedItem == undefined) return;
@@ -96,7 +96,7 @@ function DirectoryView() {
 
   if (folderList == undefined) return null;
   return (
-    <div className="directory-view">
+    <div className="directory-view" ref={boundaryRef}>
       <AutoSizer>
         {({ height, width }) => (
           <ContextMenu.Root>
@@ -116,6 +116,7 @@ function DirectoryView() {
                       key={index}
                       style={style}
                       treeItem={listItem}
+                      boundaryRef={boundaryRef}
                       clickCreateFile={clickCreateFile}
                       clickCreateFolder={clickCreateFolder}
                       clickCreateDrawFile={clickCreateDrawFile}
