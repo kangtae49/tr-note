@@ -13,6 +13,7 @@ export type FileViewType =
   | 'Audio'
   | 'Empty'
   | 'None'
+  | 'Error'
 
 export type FileViewTypeGroup =
   | 'GroupBinary'
@@ -73,6 +74,9 @@ export const getFileViewTypeGroup = async (treeItem?: TreeItem): Promise<FileVie
   let inferMimeType = treeItem.mt;
   if (res.status === 'ok') {
     inferMimeType = res.data;
+  } else {
+    console.log(`${Object.values(res.error)[0]}`)
+    throw res.error;
   }
 
   let fileViewTypeGroup: FileViewTypeGroup

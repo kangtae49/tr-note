@@ -6,6 +6,7 @@ import {TreeItem} from "@/components/tree/tree.ts";
 export interface FileViewItem {
   fileViewType: FileViewType
   selectedItem: TreeItem
+  error?: any
 }
 
 export interface FileViewItemStore {

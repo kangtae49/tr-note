@@ -1,10 +1,9 @@
-import React, {useEffect, useRef} from "react";
+import React, {useRef} from "react";
 import * as monaco from 'monaco-editor'
 import {editor} from 'monaco-editor'
 import Editor, {OnMount} from '@monaco-editor/react';
 import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {getMonacoLanguage} from "@/components/content.ts";
-import {TreeItem} from "@/components/tree/tree.ts";
 import {useFileContent} from "@/stores/contentsStore.ts";
 import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
 import {getTabFromTreeItem} from "@/components/tab/tab.ts";
@@ -14,14 +13,10 @@ import {useFileViewTypeGroupStore} from "@/stores/fileViewTypeGroupStore.ts";
 import {useEditorPos} from "@/stores/editorPosStore.ts";
 import ScrollType = editor.ScrollType;
 import {ErrorBoundary} from "react-error-boundary";
+import {FileViewProps} from "@/components/FileView.tsx";
 
-interface Props {
-  style?: React.CSSProperties
-  selectedItem?: TreeItem
-  fullscreenHandler?: (e: any) => Promise<void>
-}
 
-function MonacoView({ style, selectedItem, fullscreenHandler }: Props): React.ReactElement {
+function MonacoView({ style, selectedItem, fullscreenHandler }: FileViewProps): React.ReactElement {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const http = useHttp();
   const {content, setContent} = useFileContent<string | undefined>(selectedItem?.full_path);

@@ -1,15 +1,9 @@
 import React, {useEffect, useRef} from "react";
 import {useHttp} from "@/components/HttpServerProvider.tsx";
-import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
-import {TreeItem} from "@/components/tree/tree.ts";
+import {FileViewProps} from "@/components/FileView.tsx";
 
-interface Props {
-  style?: React.CSSProperties
-  selectedItem?: TreeItem
-  fullscreenHandler?: (e: any) => Promise<void>
-}
 
-function VideoView({ style, selectedItem, fullscreenHandler }: Props): React.ReactElement {
+function VideoView({ style, selectedItem, fullscreenHandler }: FileViewProps): React.ReactElement {
   const mediaRef = useRef<HTMLVideoElement>(null)
   const http = useHttp();
 

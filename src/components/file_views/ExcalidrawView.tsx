@@ -5,19 +5,14 @@ import "@excalidraw/excalidraw/index.css";
 
 import {useSaveFile} from "@/components/utils.ts";
 import {useHttp} from "@/components/HttpServerProvider.tsx";
-import {TreeItem} from "@/components/tree/tree.ts";
 import {AppState, BinaryFiles} from "@excalidraw/excalidraw/types";
 import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
 import {getTabFromTreeItem} from "@/components/tab/tab.ts";
 import {useFileContent} from "@/stores/contentsStore.ts";
 import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
 import {ErrorBoundary} from "react-error-boundary";
+import {FileViewProps} from "@/components/FileView.tsx";
 
-interface Props {
-  style?: React.CSSProperties
-  selectedItem?: TreeItem
-  fullscreenHandler?: (e: any) => Promise<void>
-}
 
 interface ContentType {
   elements?: readonly OrderedExcalidrawElement[];
@@ -49,7 +44,7 @@ function textToContent(text: string | undefined): ContentType | undefined {
   }
 }
 
-function ExcalidrawView({ style, selectedItem, fullscreenHandler }: Props) {
+function ExcalidrawView({ style, selectedItem, fullscreenHandler }: FileViewProps) {
   const http = useHttp();
   const {content, setContent} = useFileContent<string | undefined>(selectedItem?.full_path);
   const {setSavedContent} = useFileSavedContent<string | undefined>(selectedItem?.full_path);

@@ -19,12 +19,14 @@ import {getAllWindows} from "@tauri-apps/api/window";
 import {useFileViewTypeStore} from "@/stores/fileViewTypeStore.ts";
 import {ErrorBoundary} from "react-error-boundary";
 import {useFileViewItemStore} from "@/stores/fileViewItemStore.ts";
+import ErrorView from "@/components/file_views/ErrorView.tsx";
 
 
-interface Props {
+export interface FileViewProps {
   style?: React.CSSProperties
   selectedItem?: TreeItem
   fullscreenHandler?: (e: any) => Promise<void>
+  error?: any
 }
 
 
@@ -100,12 +102,14 @@ function FileView() {
     <div className="file-view">
       <AutoSizer>
         {({ height, width }) => {
-          const props: Props = {
+          const props: FileViewProps = {
             selectedItem: fileViewItem.selectedItem,
-            fullscreenHandler
+            fullscreenHandler,
+            error: fileViewItem.error
           }
           return(
           <>
+            {fileViewItem.fileViewType === 'Error' && <ErrorView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
             {fileViewItem.fileViewType === 'None' && <NoneView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
             {fileViewItem.fileViewType === 'Empty' && <MonacoView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
             {fileViewItem.fileViewType === 'Img' && <ImageView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}

@@ -50,7 +50,11 @@ function FileHeadView(): React.ReactElement {
       } else {
         setFileViewItem(undefined);
       }
-
+    }).catch((e) => {
+      console.error(e);
+      if (selectedItem !== undefined) {
+        setFileViewItem({fileViewType: 'Error', selectedItem, error: e})
+      }
     })
   }, [selectedItem])
 

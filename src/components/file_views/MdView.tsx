@@ -4,20 +4,15 @@ import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {useSaveFile} from "@/components/utils.ts";
 import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
 import {MdPreviewType, useMdPreviewTypeStore} from "@/stores/mdPreviewTypeStore.ts";
-import {TreeItem} from "@/components/tree/tree.ts";
 import {useFileContent} from "@/stores/contentsStore.ts";
 import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
 import {getTabFromTreeItem} from "@/components/tab/tab.ts";
 import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
 import {ErrorBoundary} from "react-error-boundary";
+import {FileViewProps} from "@/components/FileView.tsx";
 
-interface Props {
-  style?: React.CSSProperties
-  selectedItem?: TreeItem
-  fullscreenHandler?: (e: any) => Promise<void>
-}
 
-function MdView({ style, selectedItem, fullscreenHandler }: Props) {
+function MdView({ style, selectedItem, fullscreenHandler }: FileViewProps) {
   const http = useHttp();
   const {saveFile} = useSaveFile();
   const {folderTree} = useFolderTreeStore()

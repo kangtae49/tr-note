@@ -14,7 +14,7 @@
 .file-head-view .info .sz { padding: 0 0 0 5px; }
 .file-head-view .info .tm { padding: 0 0 0 5px; }
 
-
+.file-view .error-view { width: 100%; height: 100%; padding: 10px; }
 .file-view .embed-view { width: 100%; height: 100%; }
 .file-view .embed-view embed {width: 100%; height: 100%;}
 .file-view .image-view { width: 100%; height: 100%; }
