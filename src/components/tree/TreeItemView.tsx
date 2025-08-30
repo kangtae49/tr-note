@@ -1,10 +1,11 @@
-import React, {useCallback, useEffect, useState} from "react";
-import {commands} from "@/bindings.ts";
+import React from "react";
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import { faFolderPlus, faFile } from '@fortawesome/free-solid-svg-icons'
 import {getNthParent, toggleDirectory, TreeItem} from "@/components/tree/tree.ts";
 import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
+import * as Tooltip from "@radix-ui/react-tooltip";
+import {useHttp} from "@/components/HttpServerProvider.tsx";
 
 const SEP = "\\";
 const TREE_DEPT_SIZE = 13;
@@ -17,6 +18,7 @@ type Prop = {
 function TreeItemView({treeItem, style}: Prop) {
   const {folderTree, setFolderTree} = useFolderTreeStore()
   const {selectedItem, setSelectedItem} = useSelectedTreeItemStore()
+  const http = useHttp();
 
   const clickIcon = async (treeItem?: TreeItem): Promise<void> => {
     console.log('click', treeItem)

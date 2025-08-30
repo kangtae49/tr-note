@@ -134,9 +134,8 @@ function DirectoryItemView({ treeItem, style, clickCreateFolder, clickCreateFile
         <div className="icon" onClick={() => utils.shellShowItemInFolder(fullPath)}>
           <Icon icon={treeItem.dir ? faFolder : faFile} />
         </div>
-        <Tooltip.Provider>
-          <Tooltip.Root>
           <ContextMenu.Root>
+            <Tooltip.Root>
             <Tooltip.Trigger asChild>
             <ContextMenu.Trigger>
               {editing ? (
@@ -182,9 +181,8 @@ function DirectoryItemView({ treeItem, style, clickCreateFolder, clickCreateFile
                 </ContextMenu.Item>
               </ContextMenu.Content>
             </ContextMenu.Portal>
+            </Tooltip.Root>
           </ContextMenu.Root>
-          </Tooltip.Root>
-        </Tooltip.Provider>
       </div>
       {folderListVisibleCols.includes('Sz') && <div className="sz" title={`${treeItem.sz || 0}`}>{sz}</div>}
       {folderListVisibleCols.includes('Ext') && <div className="ext" title={treeItem?.ext || ''}>{ext}</div>}
