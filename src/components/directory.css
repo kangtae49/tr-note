@@ -93,7 +93,8 @@ input:focus {
 .directory-item-view .tooltip-content {
     border: 1px solid #ccc;
     background-color: #fff;
-    width: 300px; height: 300px; margin-top: 120px; margin-left: -100px;
+    width: 300px; height: 300px;
+    margin-top: 250px; margin-left: -35px;
     z-index: 1000;
 }
 .directory-item-view .tooltip-image {
