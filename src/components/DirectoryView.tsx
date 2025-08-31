@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from "react";
 import "@/components/directory.css"
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
-import {faFile, faFolder, faFileImage} from "@fortawesome/free-solid-svg-icons";
+import {faFile, faFolder, faFileImage, faFileInvoice} from "@fortawesome/free-solid-svg-icons";
 import {
   fetchTreeItems,
   LIST_HEAD_SIZE,
@@ -21,6 +21,7 @@ import "@/components/contextmenu.css";
 import {commands} from "@/bindings.ts";
 import toast from "react-hot-toast";
 import {useCreatePathStore} from "@/stores/createPathStore.ts";
+import {useRecentPathStore} from "@/stores/recentPathStore.ts";
 
 function DirectoryView() {
   const {selectedItem} = useSelectedTreeItemStore()
@@ -28,16 +29,18 @@ function DirectoryView() {
   const {folderList, setFolderList} = useFolderListStore()
   const {renderTreeFromPath} = useRenderTreeFromPath();
   const {createPath, setCreatePath} = useCreatePathStore()
+  const {recentPath, setRecentPath} = useRecentPathStore()
   const listRef = useRef<List>(null)
   const boundaryRef = useRef<HTMLDivElement>(null);
 
-  const clickCreateFile = () => {
+  const clickCreateFile = (ext: string) => {
     if (selectedItem == undefined) return;
-    commands.createFile(selectedItem.full_path).then(async (res) => {
+    commands.createFile(selectedItem.full_path, ext).then(async (res) => {
       if(res.status === 'ok') {
         await renderTreeFromPath(selectedItem.full_path)
         toast.success(`success ${res.data}`);
         setCreatePath(res.data);
+        setRecentPath(res.data);
       } else {
         toast.error(`fail ${Object.values(res.error)[0]}`);
       }
@@ -55,6 +58,7 @@ function DirectoryView() {
         await renderTreeFromPath(selectedItem.full_path)
         toast.success(`success ${res.data}`);
         setCreatePath(res.data);
+        setRecentPath(res.data);
       } else {
         toast.error(`fail ${Object.values(res.error)[0]}`);
       }
@@ -63,20 +67,20 @@ function DirectoryView() {
     });
   }
 
-  const clickCreateDrawFile = () => {
-    if (selectedItem == undefined) return;
-    commands.createDrawFile(selectedItem.full_path).then(async (res) => {
-      if(res.status === 'ok') {
-        await renderTreeFromPath(selectedItem.full_path)
-        toast.success(`success ${res.data}`);
-        setCreatePath(res.data);
-      } else {
-        toast.error(`fail ${Object.values(res.error)[0]}`);
-      }
-    }).catch((err) => {
-      toast.error(`fail ${err}`);
-    });
-  }
+  // const clickCreateDrawFile = () => {
+  //   if (selectedItem == undefined) return;
+  //   commands.createDrawFile(selectedItem.full_path).then(async (res) => {
+  //     if(res.status === 'ok') {
+  //       await renderTreeFromPath(selectedItem.full_path)
+  //       toast.success(`success ${res.data}`);
+  //       setCreatePath(res.data);
+  //     } else {
+  //       toast.error(`fail ${Object.values(res.error)[0]}`);
+  //     }
+  //   }).catch((err) => {
+  //     toast.error(`fail ${err}`);
+  //   });
+  // }
 
 
   useEffect(() => {
@@ -119,7 +123,6 @@ function DirectoryView() {
                       boundaryRef={boundaryRef}
                       clickCreateFile={clickCreateFile}
                       clickCreateFolder={clickCreateFolder}
-                      clickCreateDrawFile={clickCreateDrawFile}
                     />
                   ) : null
                 }}
@@ -130,11 +133,14 @@ function DirectoryView() {
                 <ContextMenu.Item className="context-menu-item" onSelect={clickCreateFolder}>
                   <Icon icon={faFolder}/> Create Folder
                 </ContextMenu.Item>
-                <ContextMenu.Item className="context-menu-item" onSelect={clickCreateFile}>
+                <ContextMenu.Item className="context-menu-item" onSelect={() => clickCreateFile("txt")}>
                   <Icon icon={faFile}/> Create File
                 </ContextMenu.Item>
-                <ContextMenu.Item className="context-menu-item" onSelect={clickCreateDrawFile}>
+                <ContextMenu.Item className="context-menu-item" onSelect={() => clickCreateFile("excalidraw")}>
                   <Icon icon={faFileImage}/> Create Draw File
+                </ContextMenu.Item>
+                <ContextMenu.Item className="context-menu-item" onSelect={() => clickCreateFile("md")}>
+                  <Icon icon={faFileInvoice}/> Create Markdown File
                 </ContextMenu.Item>
               </ContextMenu.Content>
             </ContextMenu.Portal>

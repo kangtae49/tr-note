@@ -31,6 +31,10 @@ input:focus {
     box-sizing: border-box;
 }
 
+.directory-view .folder-list .directory-item-view.created {
+    background-color: #e3ceb2;
+}
+
 .directory-view .folder-list .directory-item-view .nm { flex: 1; display: flex; text-align: left; width: 100%;}
 .directory-view .folder-list .directory-item-view .nm .icon { flex: 0 0 18px; cursor: pointer; }
 .directory-view .folder-list .directory-item-view .nm .label { cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}

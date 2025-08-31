@@ -1,6 +1,6 @@
 import React, {RefObject, useCallback, useEffect, useRef, useState} from "react";
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
-import {faFile, faFolder, faRocket, faFileImage} from "@fortawesome/free-solid-svg-icons";
+import {faFile, faFolder, faRocket, faFileImage, faFileInvoice} from "@fortawesome/free-solid-svg-icons";
 import {useRenderTreeFromPath, TreeItem} from "@/components/tree/tree.ts";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 import {useFolderListVisibleColsStore} from "@/stores/folderListVisibleColsStore.ts";
@@ -14,16 +14,17 @@ import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
 import {useFileContent} from "@/stores/contentsStore.ts";
 import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
 import {useHttp} from "@/components/HttpServerProvider.tsx";
+import {useCreatePathStore} from "@/stores/createPathStore.ts";
+import {useRecentPathStore} from "@/stores/recentPathStore.ts";
 
 interface Props {
   style: React.CSSProperties
   treeItem: TreeItem
   boundaryRef: RefObject<HTMLDivElement | null>;
   clickCreateFolder: () => void
-  clickCreateFile: () => void
-  clickCreateDrawFile: () => void
+  clickCreateFile: (ext: string) => void
 }
-function DirectoryItemView({ treeItem, style, boundaryRef, clickCreateFolder, clickCreateFile, clickCreateDrawFile }: Props) {
+function DirectoryItemView({ treeItem, style, boundaryRef, clickCreateFolder, clickCreateFile }: Props) {
   const {selectedItem, setSelectedItem} = useSelectedTreeItemStore()
   const {folderListVisibleCols} = useFolderListVisibleColsStore()
   const inputRef = useRef<HTMLInputElement>(null);
@@ -34,6 +35,8 @@ function DirectoryItemView({ treeItem, style, boundaryRef, clickCreateFolder, cl
   const {removeSavedContent} = useFileSavedContent(treeItem.full_path)
   const http = useHttp();
   const {renderTreeFromPath} = useRenderTreeFromPath();
+  const {createPath, setCreatePath} = useCreatePathStore();
+  const {recentPath, setRecentPath} = useRecentPathStore()
 
   const clickRename = useCallback(() => {
     setTempName(treeItem.nm);
@@ -70,6 +73,9 @@ function DirectoryItemView({ treeItem, style, boundaryRef, clickCreateFolder, cl
         if(res.status === 'ok') {
           removeTab(treeItem as TabItem)
           await renderTreeFromPath(selectedItem.full_path)
+          if (recentPath === selectedItem.full_path) {
+            setRecentPath(undefined);
+          }
           toast.success(`success ${res.data}`);
 
         } else {
@@ -106,11 +112,9 @@ function DirectoryItemView({ treeItem, style, boundaryRef, clickCreateFolder, cl
   const ext = treeItem.dir ? '' : treeItem.ext?.slice(-10) || ''
   const tm = toDate(treeItem.tm)
 
-
-
   return (
     <Tooltip.Root>
-    <div className="directory-item-view" style={style}>
+    <div className={`directory-item-view ${recentPath === fullPath ? "created" : ""}`} style={style}>
       <div className="nm">
         <div className="icon">
           <Icon icon={faRocket} onClick={() => utils.shellOpenPath(fullPath)} />
@@ -163,11 +167,14 @@ function DirectoryItemView({ treeItem, style, boundaryRef, clickCreateFolder, cl
                 <ContextMenu.Item className="context-menu-item" onSelect={clickCreateFolder}>
                   <Icon icon={faFolder}/> Create Folder
                 </ContextMenu.Item>
-                <ContextMenu.Item className="context-menu-item" onSelect={clickCreateFile}>
+                <ContextMenu.Item className="context-menu-item" onSelect={() => clickCreateFile("txt")}>
                   <Icon icon={faFile}/> Create File
                 </ContextMenu.Item>
-                <ContextMenu.Item className="context-menu-item" onSelect={clickCreateDrawFile}>
+                <ContextMenu.Item className="context-menu-item" onSelect={() => clickCreateFile("excalidraw")}>
                   <Icon icon={faFileImage}/> Create Draw File
+                </ContextMenu.Item>
+                <ContextMenu.Item className="context-menu-item" onSelect={() => clickCreateFile("md")}>
+                  <Icon icon={faFileInvoice}/> Create Markdown File
                 </ContextMenu.Item>
               </ContextMenu.Content>
             </ContextMenu.Portal>

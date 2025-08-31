@@ -169,30 +169,17 @@ pub async fn create_folder(base_path: &str) -> ApiResult<String> {
 
 #[tauri::command]
 #[specta::specta]
-pub async fn create_file(base_path: &str) -> ApiResult<String> {
+pub async fn create_file(base_path: &str, ext: &str) -> ApiResult<String> {
     let imoji_str: String = get_imoji();
     // let uuid = Uuid::new_v4();
     // let short_id = &uuid.as_simple().to_string()[0..4];
     // let name = format!("new_file_{}.txt", short_id);
-    let name = format!("{}_new_file.txt", &imoji_str);
+    let name = format!("{}_new_file.{}", &imoji_str, &ext);
     let new_path = Path::new(base_path).join(name);
     std::fs::File::create(&new_path)?;
     Ok(new_path.to_string_lossy().into_owned())
 }
 
-#[tauri::command]
-#[specta::specta]
-pub async fn create_draw_file(base_path: &str) -> ApiResult<String> {
-    let imoji_str: String = get_imoji();
-
-    // let uuid = Uuid::new_v4();
-    // let short_id = &uuid.as_simple().to_string()[0..4];
-    // let name = format!("new_file_{}.excalidraw", short_id);
-    let name = format!("{}_new_file.excalidraw", &imoji_str);
-    let new_path = Path::new(base_path).join(name);
-    std::fs::File::create(&new_path)?;
-    Ok(new_path.to_string_lossy().into_owned())
-}
 
 fn get_imoji() -> String {
     let mut rng = rand::thread_rng();

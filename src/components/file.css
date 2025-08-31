@@ -35,3 +35,4 @@
 .fa-file-code.inactive { color: var(--inactive-color); cursor: pointer;}
 .fa-file-image { width: 16px; height: 16px; color: var(--folder-color); }
 .fa-file-image.inactive { color: var(--inactive-color); cursor: pointer;}
+.fa-file-invoice { width: 16px; height: 16px; color: var(--folder-color); }

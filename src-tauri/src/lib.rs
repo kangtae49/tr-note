@@ -40,7 +40,6 @@ pub fn run() {
         dir_api::rename_path,
         dir_api::create_folder,
         dir_api::create_file,
-        dir_api::create_draw_file,
         dir_api::get_infer_mime_type
     ]);
 
