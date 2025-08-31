@@ -12,6 +12,7 @@ import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
 import {ErrorBoundary} from "react-error-boundary";
 import {FileViewProps} from "@/components/FileView.tsx";
 import {getFullpathFromFileItem} from "@/components/tree/tree.ts";
+import {useSaveKey} from "@/stores/saveKeyStore.ts";
 
 
 interface ContentType {
@@ -47,10 +48,10 @@ function textToContent(text: string | undefined): ContentType | undefined {
 function ExcalidrawView({ style, fileItem, fullscreenHandler }: FileViewProps) {
   const http = useHttp();
   const {content, setContent} = useFileContent<string | undefined>(fileItem?.full_path);
-  const {setSavedContent} = useFileSavedContent<string | undefined>(fileItem?.full_path);
+  const {savedContent, setSavedContent} = useFileSavedContent<string | undefined>(fileItem?.full_path);
   const {saveFile} = useSaveFile();
   const {addTab} = useTab();
-  // const {fileViewType} = useFileViewTypeStore();
+  const {saveKey} = useSaveKey(fileItem?.full_path);
 
   const keyDownHandler = useCallback(async (e: React.KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.code === "KeyS") {
@@ -62,6 +63,7 @@ function ExcalidrawView({ style, fileItem, fullscreenHandler }: FileViewProps) {
       if (content !== undefined) {
         saveFile(content).then((_item) => {
           console.log('saveFile done');
+          setContent(content);
           setSavedContent(content);
         });
       }
@@ -69,11 +71,11 @@ function ExcalidrawView({ style, fileItem, fullscreenHandler }: FileViewProps) {
       await fullscreenHandler(e);
     }
 
-  }, [content, fullscreenHandler])
+  }, [content, savedContent, fullscreenHandler])
 
   const onChangeContent = (elements: readonly OrderedExcalidrawElement[], appState: AppState, files: BinaryFiles) => {
     const jsonString = JSON.stringify({elements, appState, files}, null, 2);
-    if (jsonString !== content) {
+    if (!equalsContent(jsonString, content)) {
       setContent(jsonString);
       addTab(getFullpathFromFileItem(fileItem))
     }
@@ -105,7 +107,7 @@ function ExcalidrawView({ style, fileItem, fullscreenHandler }: FileViewProps) {
     >
       <ErrorBoundary fallback={<div>Error</div>}>
         <Excalidraw
-          key={fileItem?.full_path}
+          key={`${fileItem?.full_path}_${saveKey}`}
           initialData={textToContent(content)}
           onChange={onChangeContent}
         />
@@ -115,3 +117,20 @@ function ExcalidrawView({ style, fileItem, fullscreenHandler }: FileViewProps) {
 }
 
 export default ExcalidrawView;
+
+
+export function equalsContent(a: string | undefined, b: string | undefined) {
+  if (a == undefined || b == undefined) return false;
+  const a_data = JSON.parse(a) as ContentType;
+  const a_elements = a_data.elements;
+  const a_files = a_data.files;
+  const a_elements_str = JSON.stringify(a_elements);
+  const a_files_str = JSON.stringify(a_files);
+
+  const b_data = JSON.parse(b) as ContentType;
+  const b_elements = b_data.elements;
+  const b_files = b_data.files;
+  const b_elements_str = JSON.stringify(b_elements);
+  const b_files_str = JSON.stringify(b_files);
+  return a_elements_str == b_elements_str && a_files_str == b_files_str
+}

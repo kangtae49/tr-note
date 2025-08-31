@@ -30,6 +30,7 @@ function MdView({ style, fileItem, fullscreenHandler }: FileViewProps) {
       if (content == undefined) return;
       saveFile(content).then((_item) => {
         console.log('saveFile done');
+        setContent(content);
         setSavedContent(content);
       });
     } else if (fullscreenHandler !== undefined) {

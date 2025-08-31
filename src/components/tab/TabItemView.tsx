@@ -10,6 +10,8 @@ import {useFileContent} from "@/stores/contentsStore.ts";
 import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
+import {equalsContent} from "@/components/file_views/ExcalidrawView.tsx";
+import {useSaveKey} from "@/stores/saveKeyStore.ts";
 
 interface Props {
   item: TabItem
@@ -20,10 +22,11 @@ function TabItemView({ item, removeItem }: Props) {
   const {selectedItem} = useSelectedTreeItemStore()
   const {renderTreeFromPath} = useRenderTreeFromPath();
   const {content, setContent} = useFileContent<string | undefined>(item?.full_path);
-  const {savedContent, setSavedContent} = useFileSavedContent<string | undefined>(item?.full_path);
+  const {savedContent} = useFileSavedContent<string | undefined>(item?.full_path);
   const [openMenu, setOpenMenu] = useState(false);
   const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const {removeTab} = useTab();
+  const {setSaveKey} = useSaveKey(item.full_path);
 
   const sortable = useSortable({
     id: getItemId(item),
@@ -46,17 +49,27 @@ function TabItemView({ item, removeItem }: Props) {
     console.log('clickCloseTab', item);
     e.preventDefault();
     setPosition({ x: e.clientX, y: e.clientY });
-    if (content == savedContent) {
+    if (content == undefined || savedContent == undefined){
       removeItem(item);
+    } else if (item.full_path.endsWith('.excalidraw')) {
+      if (equalsContent(content, savedContent)) {
+        removeItem(item);
+      } else {
+        setOpenMenu(true);
+      }
     } else {
-      setOpenMenu(true);
+      if (content == savedContent) {
+        removeItem(item);
+      } else {
+        setOpenMenu(true);
+      }
     }
   }, [content, savedContent]);
 
   const clickSaveAndClose = () => {
     console.log('clickSaveAndClose', item);
-    if (savedContent !== undefined) {
-      commands.saveFile(item.full_path, savedContent).then((res) => {
+    if (content !== undefined) {
+      commands.saveFile(item.full_path, content).then((res) => {
         if (res.status === 'ok') {
           removeTab(item);
         }
@@ -66,6 +79,7 @@ function TabItemView({ item, removeItem }: Props) {
   const clickNotSaveAndClose = () => {
     console.log('clickNotSaveAndClose', item);
     setContent(savedContent);
+    setSaveKey(String(Date.now()))
     removeTab(item);
   }
   const clickCancel = () => {

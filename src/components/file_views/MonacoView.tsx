@@ -43,6 +43,7 @@ function MonacoView({ style, fileItem, fullscreenHandler }: FileViewProps): Reac
         if (text !== undefined) {
           saveFile(text).then((_item) => {
             console.log('saveFile done');
+            setContent(text);
             setSavedContent(text);
             setTimeout(() => {
               if (pos) {
