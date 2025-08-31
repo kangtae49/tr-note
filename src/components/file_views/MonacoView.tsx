@@ -13,7 +13,7 @@ import {useEditorPos} from "@/stores/editorPosStore.ts";
 import ScrollType = editor.ScrollType;
 import {ErrorBoundary} from "react-error-boundary";
 import {FileViewProps} from "@/components/FileView.tsx";
-import {getFullpathFromFileItem} from "@/components/tree/tree.ts";
+import {TabItem} from "@/bindings.ts";
 
 
 function MonacoView({ style, fileItem, fullscreenHandler }: FileViewProps): React.ReactElement {
@@ -69,7 +69,7 @@ function MonacoView({ style, fileItem, fullscreenHandler }: FileViewProps): Reac
     if (value == undefined) return;
     console.log('onChange monaco')
     setContent(value);
-    addTab(getFullpathFromFileItem(fileItem))
+    addTab(fileItem as TabItem)
   }
 
   if (http != undefined && fileItem != undefined && content == undefined) {

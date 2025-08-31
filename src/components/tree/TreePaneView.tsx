@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import "./tree.css";
 import { FixedSizeList as List } from 'react-window'
 import AutoSizer from 'react-virtualized-auto-sizer'
@@ -13,11 +13,13 @@ import {
   getCountOfTreeItems, getNth,
   getNthOfTreeItems,
   scrollToItem, toggleDirectory,
-  TREE_ITEM_SIZE
+  TREE_ITEM_SIZE, useRenderTreeFromPath
 } from "@/components/tree/tree.ts";
 import FavoritesView from "@/components/favorites/FavoritesView.tsx";
 import {SplitPane} from "@rexxars/react-split-pane";
 import {useIsResizingStore} from "@/stores/isResizingStore.ts";
+import {useFavoritesStore} from "@/components/favorites/stores/favoritesStore.ts";
+import {commands} from "@/bindings.ts";
 
 function TreePaneView() {
   const {setIsResizing} = useIsResizingStore();
@@ -25,8 +27,10 @@ function TreePaneView() {
   const {folderTree, setFolderTree} = useFolderTreeStore()
   const {selectedItem, setSelectedItem} = useSelectedTreeItemStore()
   const {folderTreeRef, setFolderTreeRef} = useFolderTreeRefStore()
-
+  const {favorites} = useFavoritesStore();
+  const {renderTreeFromPath} = useRenderTreeFromPath();
   const listRef = useRef<List>(null)
+  const [isOnce, setIsOnce] = useState(false);
 
   const keyDownHandler = useCallback(async (e: React.KeyboardEvent): Promise<void> => {
     console.log('keyDownHandler', e.key)
@@ -83,9 +87,18 @@ function TreePaneView() {
         setFolderTree(undefined)
       }
     })
-  }, [folderTreeRef, setFolderTree, setSelectedItem])
+  }, [folderTreeRef])
 
-
+  useEffect(() => {
+    if (folderTree == undefined) return;
+    if (favorites == undefined) return;
+    if (!isOnce) {
+      if (favorites.length > 0) {
+        renderTreeFromPath(favorites[0].full_path).then()
+      }
+      setIsOnce(true)
+    }
+  }, [folderTree, favorites]);
 
   return (
     <div className="tree-pane" tabIndex={0} onKeyDownCapture={keyDownHandler}>

@@ -2,7 +2,6 @@ import React from 'react'
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import { faStar, faPenToSquare, faFolder, faFile, faArrowUp, faRocket } from '@fortawesome/free-solid-svg-icons'
 import {
-  getFullpathFromFileItem,
   getParentPath,
   includesPath,
   SEP,
@@ -11,22 +10,23 @@ import {
 import * as utils from "@/components/utils.ts";
 import {useFavorite} from "@/components/favorites/stores/favoritesStore.ts";
 import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
-import {FileItem} from "@/bindings.ts";
-import {useFileViewItemStore} from "@/stores/fileViewItemStore.ts";
+import {FavoriteItem, FileItem, TabItem} from "@/bindings.ts";
+import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 
 function ContentHeadView() {
-  const {fileViewItem} = useFileViewItemStore()
+  // const {fileViewItem} = useFileViewItemStore()
+  const {selectedItem} = useSelectedTreeItemStore()
   const {favorites, addFavorite} = useFavorite();
   const {addTab} = useTab();
   const {renderTreeFromPath} = useRenderTreeFromPath();
 
   const toggleStar = async (fileItem?: FileItem): Promise<void> => {
     console.log('toggleStar', fileItem);
-    addFavorite(getFullpathFromFileItem(fileItem))
+    addFavorite(fileItem as FavoriteItem)
   }
   const clickAddTab = async (fileItem?: FileItem): Promise<void> => {
     console.log('clickAddTab', fileItem);
-    addTab(getFullpathFromFileItem(fileItem))
+    addTab(fileItem as TabItem)
   }
   const clickPath = async (fullPath: string | undefined): Promise<void> => {
     if (fullPath) {
@@ -37,8 +37,8 @@ function ContentHeadView() {
   let pathList: string[] = []
   let fullPathList: string[] = []
 
-  if (fileViewItem?.fileItem) {
-    let fullPath = fileViewItem?.fileItem.full_path
+  if (selectedItem) {
+    let fullPath = selectedItem.full_path
     if (fullPath.endsWith(`:${SEP}`)) {
       fullPath = fullPath.split(SEP).join("")
     }
@@ -47,30 +47,30 @@ function ContentHeadView() {
       return pathList.slice(0, idx + 1).join(SEP)
     })
   }
-  if (fileViewItem == undefined) return null;
+  if (selectedItem == undefined) return null;
   return (
     <div className="content-head">
 
       <div className="title-path">
         <div className="icon">
-          <Icon icon={faStar} className={includesPath(fileViewItem?.fileItem.full_path, favorites) ? "" : "inactive"} onClick={() => toggleStar(fileViewItem?.fileItem)} />
+          <Icon icon={faStar} className={includesPath(selectedItem.full_path, favorites) ? "" : "inactive"} onClick={() => toggleStar(selectedItem as FileItem)} />
         </div>
-        {!fileViewItem?.fileItem?.dir && (
+        {!selectedItem?.dir && (
           <div className="icon">
-            <Icon icon={faPenToSquare} onClick={() => clickAddTab(fileViewItem?.fileItem)} />
+            <Icon icon={faPenToSquare} onClick={() => clickAddTab(selectedItem as FileItem)} />
           </div>
         )}
         <div className="icon">
-          <Icon icon={faArrowUp} onClick={() => clickPath(getParentPath(fileViewItem?.fileItem?.full_path))} />
+          <Icon icon={faArrowUp} onClick={() => clickPath(getParentPath(selectedItem.full_path))} />
         </div>
         <div className="icon">
-          <Icon icon={faRocket} onClick={() => utils.shellOpenPath(fileViewItem?.fileItem?.full_path)} />
+          <Icon icon={faRocket} onClick={() => utils.shellOpenPath(selectedItem.full_path)} />
         </div>
         <div
           className="icon"
-          onClick={() => utils.shellShowItemInFolder(fileViewItem?.fileItem?.full_path)}
+          onClick={() => utils.shellShowItemInFolder(selectedItem.full_path)}
         >
-          <Icon icon={fileViewItem?.fileItem?.dir ? faFolder: faFile} />
+          <Icon icon={selectedItem.dir ? faFolder: faFile} />
         </div>
 
         {fullPathList.map((fullPath, idx) => {

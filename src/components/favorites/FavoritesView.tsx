@@ -11,6 +11,7 @@ import {getItemId} from "@/components/tree/tree.ts";
 
 export default function FavoritesView() {
   const {removeFavorite, favorites, setFavorites} = useFavorite();
+
   const removeItem = (favoriteItem: FavoriteItem) => {
     removeFavorite(favoriteItem);
   }
@@ -66,7 +67,6 @@ export default function FavoritesView() {
       }
     })
   }, [favorites])
-
 
   useEffect(() => {
     // load favorite items

@@ -11,8 +11,8 @@ import {useFileContent} from "@/stores/contentsStore.ts";
 import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
 import {ErrorBoundary} from "react-error-boundary";
 import {FileViewProps} from "@/components/FileView.tsx";
-import {getFullpathFromFileItem} from "@/components/tree/tree.ts";
 import {useSaveKey} from "@/stores/saveKeyStore.ts";
+import {TabItem} from "@/bindings.ts";
 
 
 interface ContentType {
@@ -77,7 +77,7 @@ function ExcalidrawView({ style, fileItem, fullscreenHandler }: FileViewProps) {
     const jsonString = JSON.stringify({elements, appState, files}, null, 2);
     if (!equalsContent(jsonString, content)) {
       setContent(jsonString);
-      addTab(getFullpathFromFileItem(fileItem))
+      addTab(fileItem as TabItem)
     }
   }
 

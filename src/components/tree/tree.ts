@@ -441,7 +441,4 @@ export function getItemId (item: FullpathItem) {
   return item.full_path;
 }
 
-export function getFullpathFromFileItem(item: FileItem | undefined): FullpathItem | undefined {
-  if (item === undefined) return undefined;
-  return {full_path: item.full_path, dir: item.dir || false}
-}
+

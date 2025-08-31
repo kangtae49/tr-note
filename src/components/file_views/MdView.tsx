@@ -9,7 +9,7 @@ import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
 import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
 import {ErrorBoundary} from "react-error-boundary";
 import {FileViewProps} from "@/components/FileView.tsx";
-import {getFullpathFromFileItem} from "@/components/tree/tree.ts";
+import {TabItem} from "@/bindings.ts";
 
 
 function MdView({ style, fileItem, fullscreenHandler }: FileViewProps) {
@@ -52,7 +52,7 @@ function MdView({ style, fileItem, fullscreenHandler }: FileViewProps) {
     if (value == undefined) return;
     console.log('onChange md')
     setContent(value);
-    addTab(getFullpathFromFileItem(fileItem))
+    addTab(fileItem as TabItem)
   }
 
   useEffect(() => {
