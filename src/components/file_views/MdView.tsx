@@ -2,7 +2,6 @@ import React, {useCallback, useEffect} from "react";
 import MDEditor, {commands, ExecuteState, TextAreaTextApi} from '@uiw/react-md-editor';
 import {useHttp} from "@/components/HttpServerProvider.tsx";
 import {useSaveFile} from "@/components/utils.ts";
-import {useFolderTreeStore} from "@/components/tree/stores/folderTreeStore.ts";
 import {MdPreviewType, useMdPreviewTypeStore} from "@/stores/mdPreviewTypeStore.ts";
 import {useFileContent} from "@/stores/contentsStore.ts";
 import {useTab} from "@/components/tab/stores/tabItemsStore.ts";
@@ -15,7 +14,6 @@ import {TabItem} from "@/bindings.ts";
 function MdView({ style, fileItem, fullscreenHandler }: FileViewProps) {
   const http = useHttp();
   const {saveFile} = useSaveFile();
-  const {folderTree} = useFolderTreeStore()
   const {mdPreviewType, setMdPreviewType} = useMdPreviewTypeStore();
   const {content, setContent} = useFileContent<string | undefined>(fileItem?.full_path);
   const {setSavedContent} = useFileSavedContent<string | undefined>(fileItem?.full_path);
@@ -26,7 +24,6 @@ function MdView({ style, fileItem, fullscreenHandler }: FileViewProps) {
       e.preventDefault();
       console.log('handleKeyDown');
       if (fileItem == undefined) return;
-      if(folderTree == undefined) return;
       if (content == undefined) return;
       saveFile(content).then((_item) => {
         console.log('saveFile done');

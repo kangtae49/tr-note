@@ -17,6 +17,7 @@ import {useFileViewTypeStore} from "@/stores/fileViewTypeStore.ts";
 import {useFileViewItemStore} from "@/stores/fileViewItemStore.ts";
 import ErrorView from "@/components/file_views/ErrorView.tsx";
 import {FileItem} from "@/bindings.ts";
+import QuillView from "@/components/file_views/QuillView.tsx";
 
 
 export interface FileViewProps {
@@ -116,6 +117,7 @@ function FileView() {
             {fileViewItem.fileViewType === 'Audio' && <AudioView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
             {fileViewItem.fileViewType === 'Video' && <VideoView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
             {fileViewItem.fileViewType === 'Monaco' && <MonacoView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewItem.fileViewType === 'Quill' && <QuillView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
           </>
         )}}
       </AutoSizer>

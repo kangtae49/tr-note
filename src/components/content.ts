@@ -9,6 +9,7 @@ export type FileViewType =
   | 'Monaco'
   | 'Md'
   | 'Excalidraw'
+  | 'Quill'
   | 'Video'
   | 'Audio'
   | 'Empty'
@@ -22,6 +23,7 @@ export type FileViewTypeGroup =
   | 'GroupImageText'
   | 'GroupPdf'
   | 'GroupMd'
+  | 'GroupHtml'
   | 'GroupExcalidraw'
   | 'GroupAudio'
   | 'GroupVideo'
@@ -42,6 +44,7 @@ export const fileViewTypeGroupMap: FileViewTypeGroupMap = {
   GroupImageText: ["Img", "Monaco"],
   GroupPdf: ["Embed"],
   GroupMd: ["Monaco", "Md"],
+  GroupHtml: ["Monaco", "Quill"],
   GroupExcalidraw: ["Excalidraw", "Monaco"],
   GroupVideo: ["Video"],
   GroupAudio: ["Audio"],
@@ -57,6 +60,7 @@ export const defaultFileViewTypeOfGroup: FileViewTypeMap = {
   GroupImageText: "Img",
   GroupPdf: "Embed",
   GroupMd: "Md",
+  GroupHtml: "Quill",
   GroupExcalidraw: "Excalidraw",
   GroupVideo: "Video",
   GroupAudio: "Audio",
@@ -134,6 +138,8 @@ export const getFileViewInfo = async (fileItem?: FileItem): Promise<FileViewType
     fileViewTypeGroup = 'GroupImage'
   } else if (mimeType.endsWith('/pdf')) {
     fileViewTypeGroup = 'GroupPdf'
+  // } else if (mimeType.endsWith('/html') && sz < 2 * 1024 * 1024) {
+  //   fileViewTypeGroup = 'GroupHtml'
   } else if (mimeType.endsWith('/html') && sz < 2 * 1024 * 1024) {
     fileViewTypeGroup = 'GroupMd'
   } else if (mimeType.endsWith('/markdown') && sz < 2 * 1024 * 1024) {
