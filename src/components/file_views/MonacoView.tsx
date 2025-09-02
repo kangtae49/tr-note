@@ -74,12 +74,28 @@ function MonacoView({ style, fileItem, fullscreenHandler }: FileViewProps): Reac
     addTab(fileItem as TabItem)
   }
 
+  useEffect(() => {
+    if (fileItem?.full_path == undefined) return
+    if (editorPos == undefined) {
+      setEditorPos({column: 0, lineNumber: 0})
+      editorRef.current?.setPosition({lineNumber: 0, column: 0})
+    } else {
+      editorRef.current?.setPosition({lineNumber: editorPos.lineNumber || 0, column: editorPos.column || 0})
+    }
+
+  }, [fileItem?.full_path])
+
   if (http != undefined && fileItem != undefined && content == undefined) {
     http.getSrcText(fileItem.full_path).then(text => {
       console.log('getSrcText monaco');
       setContent(text);
       setSavedContent(text);
-      editorRef.current?.setPosition({lineNumber: 0, column: 0})
+      if (editorPos == undefined) {
+        setEditorPos({column: 0, lineNumber: 0})
+        editorRef.current?.setPosition({lineNumber: 0, column: 0})
+      } else {
+        editorRef.current?.setPosition({lineNumber: editorPos.lineNumber || 0, column: editorPos.column || 0})
+      }
     })
   }
 
