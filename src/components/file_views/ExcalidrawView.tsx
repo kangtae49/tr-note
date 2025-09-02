@@ -11,7 +11,6 @@ import {useFileContent} from "@/stores/contentsStore.ts";
 import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
 import {ErrorBoundary} from "react-error-boundary";
 import {FileViewProps} from "@/components/FileView.tsx";
-import {useSaveKey} from "@/stores/saveKeyStore.ts";
 import {TabItem} from "@/bindings.ts";
 
 
@@ -51,7 +50,6 @@ function ExcalidrawView({ style, fileItem, fullscreenHandler }: FileViewProps) {
   const {savedContent, setSavedContent} = useFileSavedContent<string | undefined>(fileItem?.full_path);
   const {saveFile} = useSaveFile();
   const {addTab} = useTab();
-  const {saveKey} = useSaveKey(fileItem?.full_path);
 
   const keyDownHandler = useCallback(async (e: React.KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.code === "KeyS") {
@@ -107,7 +105,6 @@ function ExcalidrawView({ style, fileItem, fullscreenHandler }: FileViewProps) {
     >
       <ErrorBoundary fallback={<div>Error</div>}>
         <Excalidraw
-          key={`${fileItem?.full_path}_${saveKey}`}
           initialData={textToContent(content)}
           onChange={onChangeContent}
         />

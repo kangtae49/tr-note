@@ -93,12 +93,12 @@ export default function TabView() {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}>
         <SortableContainer id="target">
-          <div className="tab-list">
+          <div className="tab-list" key={tabItems?.length}>
             {(tabItems != undefined) && (
               <SortableContext items={tabItems.map(item => getItemId(item))} strategy={horizontalListSortingStrategy}>
                 {(tabItems).map((tabItem, _index: number) => {
                   return (
-                    <TabItemView key={getItemId(tabItem)} item={tabItem} removeItem={removeItem} />
+                    <TabItemView key={tabItem.full_path} item={tabItem} removeItem={removeItem} />
                   )
                 })}
               </SortableContext>

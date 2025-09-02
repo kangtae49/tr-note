@@ -18,6 +18,7 @@ import {useFileViewItemStore} from "@/stores/fileViewItemStore.ts";
 import ErrorView from "@/components/file_views/ErrorView.tsx";
 import {FileItem} from "@/bindings.ts";
 import QuillView from "@/components/file_views/QuillView.tsx";
+import {useSaveKey} from "@/stores/saveKeyStore.ts";
 
 
 export interface FileViewProps {
@@ -36,6 +37,7 @@ function FileView() {
   const [newStyle, setNewStyle] = useState<React.CSSProperties | undefined>({});
   const {fileViewType} = useFileViewTypeStore()
   const {fileViewItem} = useFileViewItemStore()
+  const {saveKey} = useSaveKey(fileViewItem?.fileItem?.full_path);
 
   const fullscreenHandler = useCallback(async (e: React.KeyboardEvent) => {
     if (e.code === "Escape") {
@@ -107,17 +109,17 @@ function FileView() {
           }
           return(
           <>
-            {fileViewItem.fileViewType === 'Error' && <ErrorView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
-            {fileViewItem.fileViewType === 'None' && <NoneView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
-            {fileViewItem.fileViewType === 'Empty' && <MonacoView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
-            {fileViewItem.fileViewType === 'Img' && <ImageView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
-            {fileViewItem.fileViewType === 'Embed' && <EmbedView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
-            {fileViewItem.fileViewType === 'Md' && <MdView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
-            {fileViewItem.fileViewType === 'Excalidraw' && <ExcalidrawView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
-            {fileViewItem.fileViewType === 'Audio' && <AudioView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
-            {fileViewItem.fileViewType === 'Video' && <VideoView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
-            {fileViewItem.fileViewType === 'Monaco' && <MonacoView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
-            {fileViewItem.fileViewType === 'Quill' && <QuillView style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewItem.fileViewType === 'Error' && <ErrorView key={`${fileViewItem?.fileItem?.full_path}_${saveKey}`} style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewItem.fileViewType === 'None' && <NoneView key={`${fileViewItem?.fileItem?.full_path}_${saveKey}`} style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewItem.fileViewType === 'Empty' && <MonacoView key={`${fileViewItem?.fileItem?.full_path}_${saveKey}`} style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewItem.fileViewType === 'Img' && <ImageView key={`${fileViewItem?.fileItem?.full_path}_${saveKey}`} style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewItem.fileViewType === 'Embed' && <EmbedView key={`${fileViewItem?.fileItem?.full_path}_${saveKey}`} style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewItem.fileViewType === 'Md' && <MdView key={`${fileViewItem?.fileItem?.full_path}_${saveKey}`} style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewItem.fileViewType === 'Excalidraw' && <ExcalidrawView key={`${fileViewItem?.fileItem?.full_path}_${saveKey}`} style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewItem.fileViewType === 'Audio' && <AudioView key={`${fileViewItem?.fileItem?.full_path}_${saveKey}`} style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewItem.fileViewType === 'Video' && <VideoView key={`${fileViewItem?.fileItem?.full_path}_${saveKey}`} style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewItem.fileViewType === 'Monaco' && <MonacoView key={`${fileViewItem?.fileItem?.full_path}_${saveKey}`} style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
+            {fileViewItem.fileViewType === 'Quill' && <QuillView key={`${fileViewItem?.fileItem?.full_path}_${saveKey}`} style={isFullscreen ? newStyle : {width, height: height - LIST_HEAD_SIZE}} {...props} />}
           </>
         )}}
       </AutoSizer>

@@ -21,7 +21,7 @@ export function useTab() {
     if (tabItems == undefined) return;
     if (!includesPath(item.full_path, tabItems)){
       // setTabItems(tabItems.filter((tab) => tab.full_path != item.full_path))
-      setTabItems([item, ...tabItems])
+      setTabItems([{full_path: item.full_path, dir: item.dir}, ...tabItems])
     }
     // else {
     // }
@@ -30,7 +30,7 @@ export function useTab() {
   const removeTab = (item: TabItem | undefined) => {
     if (item == undefined) return;
     if (tabItems === undefined) return;
-    setTabItems(tabItems.filter((tab: TabItem) => getItemId(tab) !== item.full_path));
+    setTabItems(tabItems.filter((tab) => tab.full_path !== item.full_path));
   }
 
   return {
