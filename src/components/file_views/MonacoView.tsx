@@ -1,4 +1,4 @@
-import React, {useRef} from "react";
+import React, {useEffect, useRef} from "react";
 import * as monaco from 'monaco-editor'
 import {editor} from 'monaco-editor'
 import Editor, {OnMount} from '@monaco-editor/react';
@@ -79,12 +79,11 @@ function MonacoView({ style, fileItem, fullscreenHandler }: FileViewProps): Reac
       console.log('getSrcText monaco');
       setContent(text);
       setSavedContent(text);
-      setEditorPos({
-        lineNumber: 0,
-        column: 0,
-      })
+      editorRef.current?.setPosition({lineNumber: 0, column: 0})
     })
   }
+
+
 
   return (
     <div className="monaco-view"
