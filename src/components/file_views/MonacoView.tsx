@@ -14,6 +14,7 @@ import ScrollType = editor.ScrollType;
 import {ErrorBoundary} from "react-error-boundary";
 import {FileViewProps} from "@/components/FileView.tsx";
 import {TabItem} from "@/bindings.ts";
+import {useSaveKey} from "@/stores/saveKeyStore.ts";
 
 
 function MonacoView({ style, fileItem, fullscreenHandler }: FileViewProps): React.ReactElement {
@@ -26,6 +27,7 @@ function MonacoView({ style, fileItem, fullscreenHandler }: FileViewProps): Reac
   const {fileViewTypeGroup} = useFileViewTypeGroupStore();
   const {editorPos, setEditorPos} = useEditorPos(fileItem?.full_path);
   const readonly = fileViewTypeGroup === 'GroupBinarySmall' || fileViewTypeGroup === 'GroupBinary';
+  const {saveKey} = useSaveKey(fileItem?.full_path);
 
   const handleEditorDidMount: OnMount = (editor, _monaco) => {
     editorRef.current = editor;
@@ -87,12 +89,13 @@ function MonacoView({ style, fileItem, fullscreenHandler }: FileViewProps): Reac
          onKeyDownCapture={fullscreenHandler}>
       <ErrorBoundary fallback={<div>Error</div>}>
         <Editor
-                value={content}
-                defaultLanguage={getMonacoLanguage(fileItem?.ext ?? '')}
-                theme="vs"
-                options={{ readOnly: readonly }}
-                onMount={handleEditorDidMount}
-                onChange={ onChangeContent }
+          key={`${fileItem?.full_path}_${saveKey}`}
+          value={content}
+          defaultLanguage={getMonacoLanguage(fileItem?.ext ?? '')}
+          theme="vs"
+          options={{ readOnly: readonly }}
+          onMount={handleEditorDidMount}
+          onChange={ onChangeContent }
         />
       </ErrorBoundary>
     </div>

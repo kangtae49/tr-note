@@ -9,6 +9,7 @@ import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
 import {ErrorBoundary} from "react-error-boundary";
 import {FileViewProps} from "@/components/FileView.tsx";
 import {TabItem} from "@/bindings.ts";
+import {useSaveKey} from "@/stores/saveKeyStore.ts";
 
 
 function MdView({ style, fileItem, fullscreenHandler }: FileViewProps) {
@@ -18,6 +19,7 @@ function MdView({ style, fileItem, fullscreenHandler }: FileViewProps) {
   const {content, setContent} = useFileContent<string | undefined>(fileItem?.full_path);
   const {setSavedContent} = useFileSavedContent<string | undefined>(fileItem?.full_path);
   const {addTab} = useTab();
+  const {saveKey} = useSaveKey(fileItem?.full_path);
 
   const keyDownHandler = useCallback(async (e: React.KeyboardEvent) => {
     if ((e.ctrlKey || e.metaKey) && e.code === "KeyS") {
@@ -75,6 +77,7 @@ function MdView({ style, fileItem, fullscreenHandler }: FileViewProps) {
          onKeyDownCapture={keyDownHandler}>
       <ErrorBoundary fallback={<div>Error</div>}>
         <MDEditor
+          key={`${fileItem?.full_path}_${saveKey}`}
           value={content}
           preview={undefined}
           onChange={onChangeContent}
