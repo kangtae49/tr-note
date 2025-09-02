@@ -1,8 +1,8 @@
 import { create } from "zustand";
 
 export type EditorPos = {
-  column?: number
   lineNumber?: number,
+  column?: number
   start?: number,
   end?: number
 }

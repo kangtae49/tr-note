@@ -79,6 +79,10 @@ function MonacoView({ style, fileItem, fullscreenHandler }: FileViewProps): Reac
       console.log('getSrcText monaco');
       setContent(text);
       setSavedContent(text);
+      setEditorPos({
+        lineNumber: 0,
+        column: 0,
+      })
     })
   }
 
