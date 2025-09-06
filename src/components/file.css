@@ -9,6 +9,7 @@
     align-items: center;
 }
 .file-head-view .file-types {flex: 0 0 60px; }
+.file-head-view .btn-icons {flex: 0 0 18px;}
 .file-head-view .info {display:flex; flex: 1; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
 .file-head-view .info .nm { padding: 0; }
 .file-head-view .info .sz { padding: 0 0 0 5px; }
@@ -37,3 +38,5 @@
 .fa-file-image { width: 16px; height: 16px; color: var(--folder-color); }
 .fa-file-image.inactive { color: var(--inactive-color); cursor: pointer;}
 .fa-file-invoice { width: 16px; height: 16px; color: var(--folder-color); }
+
+.fa-arrow-rotate-right {color: var(--folder-color); }

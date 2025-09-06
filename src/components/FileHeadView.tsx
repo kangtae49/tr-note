@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {FontAwesomeIcon as Icon} from "@fortawesome/react-fontawesome";
+import {faArrowRotateRight} from "@fortawesome/free-solid-svg-icons";
 import {useSelectedTreeItemStore} from "@/components/tree/stores/selectedTreeItemStore.ts";
 import {useFileViewTypeMapStore} from "@/stores/fileViewTypeMapStore.ts";
 import {formatFileSize, toDate} from "@/components/utils.ts";
@@ -11,17 +12,20 @@ import {
 import {useFileViewTypeStore} from "@/stores/fileViewTypeStore.ts";
 import {useFileViewTypeGroupStore} from "@/stores/fileViewTypeGroupStore.ts";
 import {useFileViewItemStore} from "@/stores/fileViewItemStore.ts";
+import {useFileContent} from "@/stores/contentsStore.ts";
+import {useFileSavedContent} from "@/stores/savedContentsStore.ts";
 
 function FileHeadView(): React.ReactElement {
   const {selectedItem} = useSelectedTreeItemStore()
   const {fileViewTypeMap, setFileViewTypeMap} = useFileViewTypeMapStore()
   const {fileViewType, setFileViewType} = useFileViewTypeStore()
   const {fileViewTypeGroup, setFileViewTypeGroup} = useFileViewTypeGroupStore();
-  const {setFileViewItem} = useFileViewItemStore()
+  const {fileViewItem, setFileViewItem} = useFileViewItemStore()
   const [fileViewTypeList, setFileViewTypeList] = useState<FileViewType[]>([]);
-
   const [sz, setSz] = useState(0);
   const [fileItem, setFileItem] = useState<any>();
+  const {setContent} = useFileContent<string | undefined>(fileItem?.full_path);
+  const {setSavedContent} = useFileSavedContent<string | undefined>(fileItem?.full_path);
 
   const clickFileViewType = (viewType: FileViewType) => {
     if (fileViewTypeGroup == undefined) return;
@@ -33,6 +37,14 @@ function FileHeadView(): React.ReactElement {
     // })
 
     setFileViewType(viewType);
+  }
+
+  const clickRefresh = () => {
+    if(fileViewItem != undefined) {
+      setContent(undefined);
+      setSavedContent(undefined);
+      setFileViewItem({...fileViewItem})
+    }
   }
 
   useEffect(() => {
@@ -87,6 +99,9 @@ function FileHeadView(): React.ReactElement {
           }
         </div>
       )}
+      <div className="btn-icons">
+        <Icon icon={faArrowRotateRight} onClick={() => clickRefresh()}/>
+      </div>
       <div className="info">
         <div className="nm">{fileItem?.nm}</div>
         <div className="sz" title={`${sz}`}>{formatFileSize(sz)}</div>
