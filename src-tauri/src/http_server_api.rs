@@ -306,6 +306,7 @@ async fn post_emit(axum::extract::State(app_state): axum::extract::State<Arc<RwL
 async fn get_file(Query(params): Query<HashMap<String, String>>,
                   headers: HeaderMap,
 ) -> impl IntoResponse {
+    println!("{:?}", params);
     let Some(path) = params.get("path") else {
         return (StatusCode::NOT_FOUND, "File not found".to_string()).into_response();
     };

@@ -22,25 +22,25 @@ export function HttpServerProvider({children}: Props) {
   const [servInfo, setServInfo] = useState<ServInfo|undefined>(undefined);
 
   const getSrc = (path: string) => {
-    return `http://localhost:${servInfo?.port}/get_file?path=${path}`
+    return `http://localhost:${servInfo?.port}/get_file?path=${encodeURIComponent(path)}`
   };
   const getSrcJson = async (path: string) => {
-    const url = `http://localhost:${servInfo?.port}/get_file?path=${path}`;
+    const url = `http://localhost:${servInfo?.port}/get_file?path=${encodeURIComponent(path)}`;
     return fetch(url)
       .then(res => res.json());
   };
   const getSrcText = async (path: string) => {
-    const url = `http://localhost:${servInfo?.port}/get_file?path=${path}`;
+    const url = `http://localhost:${servInfo?.port}/get_file?path=${encodeURIComponent(path)}`;
     return fetch(url)
       .then(res => res.text())
   };
   const getSrcBlob = async (path: string) => {
-    const url = `http://localhost:${servInfo?.port}/get_file?path=${path}`;
+    const url = `http://localhost:${servInfo?.port}/get_file?path=${encodeURIComponent(path)}`;
     return fetch(url)
       .then(res => res.blob());
   }
   const getSrcBlobUrl = async (path: string) => {
-    const url = `http://localhost:${servInfo?.port}/get_file?path=${path}`;
+    const url = `http://localhost:${servInfo?.port}/get_file?path=${encodeURIComponent(path)}`;
     return fetch(url)
       .then(res => res.blob())
       .then(blob => URL.createObjectURL(blob))

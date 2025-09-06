@@ -20,11 +20,8 @@ export function useTab() {
     if (item == undefined) return;
     if (tabItems == undefined) return;
     if (!includesPath(item.full_path, tabItems)){
-      // setTabItems(tabItems.filter((tab) => tab.full_path != item.full_path))
       setTabItems([{full_path: item.full_path, dir: item.dir}, ...tabItems])
     }
-    // else {
-    // }
   }
 
   const removeTab = (item: TabItem | undefined) => {
